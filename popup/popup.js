@@ -33,7 +33,7 @@ function notify(message)
 {
 	if (message.type == "refresh")
 	{
-		console.log (JSON.stringify(message.text));
+		console.log (JSON.stringify(message));
 
 		$.ui.fancytree.getTree("#GBE-bkm-tree").reload(
           // message.text
