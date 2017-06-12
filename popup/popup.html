@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+
+<!--     <link rel="stylesheet" href="../lib/jquery-ui.min.css" type="text/css"> -->
+    <link rel="stylesheet" type="text/css" href="popup.css" />
+    <script type="text/javascript" src="../lib/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../lib/jquery-ui.min.js"></script>
+    <link href="../lib/skin-lion/ui.fancytree.min.css" rel="stylesheet">
+    <script src="../lib/jquery.fancytree-all.min.js"></script>
+
+    <script type="text/javascript" src=">>/script/f.js"></script>
+    <script type="text/javascript" src="popup.js"></script>
+  </head>
+  <body>
+    <div id="GBE-popup">
+      <nav id="GBE-hmenu">
+        <ul class="GBE-nav-bar">
+          <li class="GBE-tb-hmenuRefresh"><a href="#"></a></li>
+          <li class="GBE-tb-hmenuAdd"><a href="#"></a></li>
+          <li class="GBE-tb-hmenuEdit"><a href="#"></a></li>
+          <li class="GBE-tb-hmenuDel"><a href="#"></a></li>
+          <li class="GBE-tb-hmenuAddOpenTabs"><a href="#"></a></li>
+          <li class="GBE-tb-hmenuOpt"><a href="#"></a></li>
+          <li class="GBE-tb-hmenuGBs"><a href="#"></a></li>
+          <li class="GBE-tb-hmenuFFbookmark"><a href="#"></a></li>
+          <li class="GBE-tb-menuAbout"><a href="#"></a></li>
+          <li class="GBE-tb-hmenuLgn"><a href="#">Login</a></li>
+          <li class="GBE-tb-hmenuLgt"><a href="#">Logout</a></li>
+        </ul>
+      </nav>
+      <div class="GBE-filterHBox">
+          <label for="GBE-filterTextbox">Search: </label>
+          <span><input type="text" name="GBE-filterTextbox" id="GBE-filterTextbox" value=""  placeholder="" /></span>
+          <div class="GBE-filterHBox-clear"></div>
+      </div>
+      <hr>
+
+      <div class="GBE-info-box">
+        <img class="GBE-info-image" src="../images/ajax-loader.gif">
+        <img class="GBE-error-image" src="../images/warning.png">
+        <label class="GBE-info-label"></label>
+      </div>
+
+      <div id="GBE-bkm-tree"></div>
+
+    </div>
+
+
+
+    
+
+    <p>I am popup.html</p>
+    <button id="btn">hello</button>
+    <br>msg from background.js: 
+    <div id="div"></div>
+
+  </body>
+</html>

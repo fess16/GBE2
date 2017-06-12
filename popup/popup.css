@@ -1,0 +1,126 @@
+body 
+{ 
+	font-family: sans-serif; 
+	min-width:  350px;
+	width:  350px;
+	min-height: 550px;
+}
+
+#GBE-hmenu .GBE-nav-bar 
+{ 
+	list-style:none; margin-top: 0px; 
+	padding-left: 0px;
+	height: 5px;
+}
+
+#GBE-hmenu .GBE-nav-bar li 
+{ 
+	display:inline; padding:0 0; 
+	font-size: 10pt;
+}
+
+#GBE-hmenu .GBE-nav-bar li a 
+{
+  /*text-decoration: none; */
+  padding-left: 24px;
+/*   text-transform: uppercase; */
+/*   color: #333; */
+/* 	text-shadow: 1px 1px 1px #ccc; */
+}
+
+.GBE-nav-bar .GBE-tb-hmenuRefresh a 
+{ 
+	background:url("../images/update.png") no-repeat 0px 0px transparent; 
+}
+
+.GBE-nav-bar .GBE-tb-hmenuAdd a 
+{ 
+	background:url("../images/bkmrk_add_on.png") no-repeat 0px 0px transparent; 
+}
+
+.GBE-nav-bar .GBE-tb-hmenuEdit a 
+{ 
+	background:url("../images/bkmrk_edit_off.png") no-repeat 0px 0px transparent; 
+}
+
+.GBE-nav-bar .GBE-tb-hmenuDel a 
+{ 
+	background:url("../images/bkmrk_delete_off.png") no-repeat 0px 0px transparent; 
+}
+.GBE-nav-bar .GBE-tb-hmenuAddOpenTabs a 
+{ 
+	background:url("../images/add_open_tabs.png") no-repeat 0px 0px transparent; 
+}
+.GBE-nav-bar .GBE-tb-hmenuOpt a 
+{ 
+	background:url("../images/setting_tools.png") no-repeat 0px 0px transparent; 
+}
+.GBE-nav-bar .GBE-tb-hmenuGBs a 
+{ 
+	background:url("../images/star.png") no-repeat 0px 0px transparent; 
+}
+.GBE-nav-bar .GBE-tb-hmenuFFbookmark a 
+{ 
+	background:url("../images/import_export.png") no-repeat 0px 0px transparent; 
+}
+.GBE-nav-bar .GBE-tb-menuAbout a 
+{ 
+	background:url("../images/About_icon.png") no-repeat 0px 0px transparent; 
+}
+.GBE-nav-bar .GBE-tb-hmenuLgn a 
+{ 
+
+}
+.GBE-nav-bar .GBE-tb-hmenuLgt a 
+{ 
+	 display: none;
+}
+
+div.GBE-filterHBox{
+    padding:0.1em;
+    margin:0.1em;
+}
+
+div.GBE-filterHBox label{
+    float:left;
+    margin-right:5px;
+    padding: 4px 0;
+    font-size: 10pt;
+}
+
+div.GBE-filterHBox span{
+    display: block;
+    overflow: hidden;
+    padding-right: 5px;
+    padding-top: 1px;
+}
+
+div.GBE-filterHBox input{
+    width:100%;
+    padding-top:1px;
+    border:thin solid gray;
+    background: url("../images/searchicon.png") no-repeat 99% center;
+    /*background: url("../images/searchicon.png") no-repeat right center;*/
+    font-size: 11pt;
+}
+
+.GBE-filterHBox-clear {
+    clear: both; 
+}
+
+.GBE-info-box {
+	display: none;
+}
+
+.GBE-info-box img {
+	width: 18px;
+	height: 18px;
+}
+
+.GBE-error-image {
+	display: none;
+}
+
+.GBE-info-label {
+	
+}
