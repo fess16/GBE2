@@ -1,10 +1,10 @@
+// получаем ссылку на background страницу
 browser.runtime.onMessage.addListener(notify);
 var getting = browser.runtime.getBackgroundPage();
 var bg;
 getting.then((page) => {bg = page}, (error) => {_errorLog ("Popup-getBackgroundPage", error)});
 
 $(document).ready(function(){
-
 		$(function(){
       // Create the tree inside the <div id="tree"> element.
       $("#GBE-bkm-tree").fancytree({
@@ -14,11 +14,8 @@ $(document).ready(function(){
 
 
 	console.log("I am popup.js");
-	// document.getElementById("btn").onclick = function(e){
-	//   hello();
-	// }
 	$(".GBE-tb-hmenuRefresh a").click(function(event) {
-		hello();
+		refresh();
 	});
 	$(".GBE-tb-hmenuAdd a").click(function(event) {
 		test1();
@@ -31,7 +28,7 @@ $(document).ready(function(){
 
 function notify(message)
 {
-	if (message.type == "refresh")
+	if (message.type == "refreshed")
 	{
 		console.log (JSON.stringify(message));
 
@@ -46,11 +43,11 @@ function notify(message)
 	}
 }
 
-function hello() {
-  console.log("hello");
+function refresh() {
+  console.log("refresh");
   $("#GBE-bkm-tree").fancytree("disable");
   chrome.runtime.sendMessage({
-      greeting: "hello"
+      type: "refresh"
     }//,
     // function(response) {
     //   document.getElementById("div").textContent = response.msg;
@@ -61,7 +58,7 @@ function hello() {
 function test1() {
   console.log("test1");
   chrome.runtime.sendMessage({
-      greeting: "test1"
+      type: "test1"
     },
     function(response) {
     	if (response) document.getElementById("div").textContent = response.msg;
@@ -92,33 +89,5 @@ var tSourse = [
         {"title":"все о inkscape","key":1666563759,"folder":true,"children":[],"path":"Графика/все о inkscape"}
     ] ,"path":"Графика"}
 ];
-
-function searchObject(array, keyvalue){
-	var found = false;
-	key = Object.keys(keyvalue)[0];
-  for (let i = 0, len1 = array.length; i < len1; i++)
-  {
-    let object = array[i];
-    if (object.hasOwnProperty(key))
-    {
-      if (object[key] == keyvalue[key])
-      {
-        console.log("found prop: " + object["title"]);
-        return object;
-      }
-      else
-      {
-        if (object['children'].length)
-        {
-          found = searchObject(object["children"], keyvalue);
-          if (found)
-            return found;
-        }
-      }
-    }
-  }
-}
-
-var found = searchObject(q,{"key" : 1666563759});
 */
 
