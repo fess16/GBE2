@@ -1,0 +1,24 @@
+{
+  "popupFilterLabel": {
+    "message": "Filter:",
+    "description": "Label for filter textbox"
+  },
+
+  "popupHmenuRefresh": {
+    "message": "Refresh bookmarks",
+    "description": "Подсказка - Обновить закладки"
+  },
+
+  "options_saveBtn": {
+  	"message": "Save",
+  	"description": "Надпись кнопки сохранения настроек дополнения"
+  },
+  "options_nestedLabelSep": {
+    "message": "Nested Labels Separator:",
+    "description": "Подпись поля разделителя вложенных меток"
+  },
+  "options_enableNotes": {
+    "message": "Show bookmarks notes (Warning: local URLs in bookmarks will be empty)",
+    "description": ""
+  }
+}

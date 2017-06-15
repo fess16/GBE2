@@ -5,23 +5,26 @@ var bg;
 getting.then((page) => {bg = page}, (error) => {_errorLog ("Popup-getBackgroundPage", error)});
 
 $(document).ready(function(){
-		$(function(){
-      // Create the tree inside the <div id="tree"> element.
-      $("#GBE-bkm-tree").fancytree({
-      	source: bg.GBE2.m_treeSource
-      });
-    });
 
-
+  $("#GBE-bkm-tree").fancytree({
+  	source: bg.GBE2.m_treeSource
+  });
+	$(".GBE-filterHBox label").text(browser.i18n.getMessage("popupFilterLabel"));
 	console.log("I am popup.js");
-	$(".GBE-tb-hmenuRefresh a").click(function(event) {
-		refresh();
+
+	$(".GBE-tb-hmenuRefresh a")
+		.attr('title', browser.i18n.getMessage("popupHmenuRefresh"))
+		.click(function(event) { refresh();	});
+
+	
+
+	$(".GBE-tb-hmenuOpt a").click(function(event) {
+		openOptionsPage();
 	});
+
 	$(".GBE-tb-hmenuAdd a").click(function(event) {
 		test1();
 	});
-
-
 
 });
 
@@ -53,6 +56,10 @@ function refresh() {
     //   document.getElementById("div").textContent = response.msg;
     // }
     );
+}
+
+function openOptionsPage () {
+	browser.runtime.openOptionsPage().then( ()=> {window.close();});
 }
 
 function test1() {

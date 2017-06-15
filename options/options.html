@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="options.css" />
+    <script type="text/javascript" src="../lib/jquery-3.2.1.min.js"></script>
+    <!-- <script type="text/javascript" src="../lib/jquery-ui.min.js"></script> -->
+    <script type="text/javascript" src="../script/f.js"></script>
+    <script type="text/javascript" src="options.js"></script>
+    <title>Fess Google Bookmarks options page</title>
+  </head>
+
+  <body>
+
+    <form>
+      <div class="fRow">
+        <label for="nestedLabelSep">Nested labels separator:</label>
+        <input type="text" id="nestedLabelSep" name="nestedLabelSep">
+      </div>
+      <div class="fRow">
+        <label for="enableNotes">Show bookmarks notes:</label>
+        <!-- <input id="enableNotes" type="checkbox" name="enableNotes"> -->
+        <label class="switch">
+          <input id="enableNotes" type="checkbox">
+          <div class="slider round"></div>
+        </label>
+      </div>
+      <button type="submit">Save</button>
+    </form>
+  </body>
+
+</html>

@@ -3,7 +3,7 @@
   "name": "Fess GBE2",
   "version": "0.0.1b",
   "description": "Google Bookmark tool",
-  // "homepage_url": "https://github.com/mdn/webextensions-examples/tree/master/bookmark-it",
+  "homepage_url": "https://github.com/mdn/webextensions-examples/tree/master/bookmark-it",
   "icons": {
     "48": "images/logo.svg"
   },
@@ -11,15 +11,23 @@
   "applications": {
     "gecko": {
       "id": "GBE2@fess16.blogspot.com",
-      "strict_min_version": "48.0"
+      "strict_min_version": "53.0"
     }
   },
 
   "permissions": [
-    "http://www.google.com/bookmarks/", "https://www.google.com/bookmarks/", "chrome://favicon/", "http://*/*", "https://*/*" ,
+    "http://www.google.com/bookmarks/", "https://www.google.com/bookmarks/", "http://*/*", "https://*/*" ,
     "bookmarks",
     "tabs",
     "activeTab","contextMenus","cookies","notifications","storage","webNavigation","webRequest", "history"
+
+  ],
+
+  "optional_permissions": [
+    "http://www.google.com/bookmarks/", "https://www.google.com/bookmarks/",  "http://*/*", "https://*/*" ,
+    "bookmarks",
+    "tabs",
+    "activeTab","cookies","notifications","webNavigation","webRequest", "history"
 
   ],
 
@@ -34,7 +42,12 @@
 
   "background": {
     "page": "background.html"
-    //"scripts": ["background.js"]
-  }
+  },
 
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab":true
+  },
+  
+  "default_locale": "en"
 }

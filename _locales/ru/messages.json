@@ -1,0 +1,32 @@
+{
+  "popupFilterLabel": {
+    "message": "Фильтр:",
+    "description": "Подпись поля фильтра"
+  },
+
+  "popupHmenuRefresh": {
+    "message": "Обновить закладки",
+    "description": "Подсказка - Обновить закладки"
+  },
+
+
+  
+  "options_saveBtn": {
+  	"message": "Сохранить",
+  	"description": "Надпись кнопки сохранения настроек дополнения"
+  },
+  "options_nestedLabelSep": {
+  	"message": "Разделитель вложенных меток",
+  	"description": "Подпись поля разделителя вложенных меток"
+  },
+  "options_enableNotes": {
+  	"message": "Показывать примечания к закладкам (Предупреждение: локальные URL в закладках будут пустыми)",
+  	"description": ""
+  },
+
+
+  "options": {
+  	"message": "",
+  	"description": ""
+  }
+}

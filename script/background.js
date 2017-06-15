@@ -12,6 +12,7 @@
 
   // разделитель меток при сортировке
   'm_labelSep'	: "{!|!}",
+  opt : new Options(),
 	
 	// тайм-аут ответа сервера при получении закладок и сигнатуры
 	'p_timeout' : 10000,
@@ -488,6 +489,7 @@
     	    	}
     	    	else
     	    	{
+    	    		_consoleLog("Obtain url for bkmk: ", JSON.stringify(bkmk));
     	    		return this.doRequestBookmarkURL(bkmk);
     	    	}
     	    })
@@ -762,59 +764,57 @@
 		);
 	},
 
+	reloadBkmks :  function () {
+		if (!this.m_signature)
+		{
+			this.doRequestSignature().catch((error) => {_errorLog("reloadBkmks", error);});
+		}
+		return this.doRequestBookmarks().then((result) => {return this.doProcessBookmarks(result);});
+	},
+
 
 }; // GBE2 end
 
-_consoleLog("I am background.js");
+
+
+$(document).ready(function()
+{
+	_consoleLog("GBE2:background.js started");
+	GBE2.opt.read()
+		.then(function(){
+			return GBE2.reloadBkmks();
+		})
+		.catch ( (error) => {
+    	_errorLog("background:ready", error);
+	 	});
+});
+
+
+// при изменении параметров дополнения - перечитываем их
+browser.storage.onChanged.addListener((changes) => {
+	// console.log(JSON.stringify(changes));
+	GBE2.opt.read().then();
+});
+
 
 chrome.runtime.onMessage.addListener(
   function (request, sender, sendResponse) {
     switch (request.type)
     {
-	    // if (request.type == "refresh")
 	    case "refresh" :
 	    {
-	     	// получаем сигнатуру, если не заполнена
-	     	if (!GBE2.m_signature) {
-		     	GBE2.doRequestSignature()
-	     		.then(function(sig)
-		   		{
-		   			_consoleLog (sig);	
-		   		})
-		   		.catch( (error) => {
-			    	_errorLog("refresh - ", error);
-					}
-					);
-		   	}
-		   	// получаем список закладок
-	     	GBE2.doRequestBookmarks()
-	     	// обрабатываем их
-	     	.then(
-	     		function (result) {
-	     			return GBE2.doProcessBookmarks (result);
-	     		}.bind(this.GBE2))
-	     	// уведомляем popup
-	     	.then ((result) => {
-	     		// browser.runtime.sendMessage({"type" : "refreshed", "data" : result});
-	     		browser.runtime.sendMessage(result);
-	     		console.log(JSON.stringify(result));
-	     	})
-	     	.catch ( function (error) {
-	  	    _errorLog("hello 2", error);
-	   	 	}
-	     	);
+	    	// получаем список закладок
+	    	GBE2.reloadBkmks()
+	    		.then((result) => {
+	    			// уведомляем popup
+	     			browser.runtime.sendMessage(result);
+	     		})
+	     		.catch ( (error) => {
+	  	    	_errorLog("background:refresh", error);
+	   	 		}
+	     		);
 		    break;
-	   		// GBE2.doRequestBookmarkURL({id: "2014929379963161864", name: "МІНІСТЕРСТВО ЕНЕРГЕТИКИ..."},0).then(function(url)
-	   		// {
-	   		// 	console.log ( url);	
-	   		// });
-
-
-	      // sendResponse({
-	      //   msg: GBE2.m_signature
-	      // });
 	    }
-	    // if (request.type == "test1")
 	    case "test1" :
 	    {
 	    	let bkmks = [
