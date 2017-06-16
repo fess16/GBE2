@@ -7,6 +7,14 @@ getting.then((page) => {bg = page}, (error) => {_errorLog ("Popup-getBackgroundP
 $(document).ready(function(){
 
   $("#GBE-bkm-tree").fancytree({
+  	autoScroll: true, // Automatically scroll nodes into visible area
+    clickFolderMode: 3, // 1:activate, 2:expand, 3:activate and expand, 4:activate (dblclick expands)
+    debugLevel: 2, // 0:quiet, 1:normal, 2:debug
+    focusOnSelect: true, // Set focus when node is checked by a mouse click
+    quicksearch: true, // Navigate to next node by typing the first letters
+    selectMode: 1, // 1:single, 2:multi, 3:multi-hier
+    tabindex: "0", // Whole tree behaves as one single control
+    tooltip: true, // Use title as tooltip (also a callback could be specified)
   	source: bg.GBE2.m_treeSource
   });
 	$(".GBE-filterHBox label").text(browser.i18n.getMessage("popupFilterLabel"));
@@ -41,26 +49,29 @@ function notify(message)
         ).done(function(){
           console.log ("reloaded");
         });
-    $("#GBE-bkm-tree").fancytree("enable");
+    $("#GBE-bkm-tree").fancytree("enable").show();
+     $(".GBE-info-box").css({display: 'none'});
 
 	}
 }
 
 function refresh() {
   console.log("refresh");
-  $("#GBE-bkm-tree").fancytree("disable");
+  $(".GBE-info-box").css({display: 'flex'});
+  // TODO сообщение изменить
+  $(".GBE-info-box label").text("Loading bookmarks");
+  $("#GBE-bkm-tree").fancytree("disable").hide();
   chrome.runtime.sendMessage({
       type: "refresh"
-    }//,
-    // function(response) {
-    //   document.getElementById("div").textContent = response.msg;
-    // }
-    );
+    }
+  );
 }
 
 function openOptionsPage () {
 	browser.runtime.openOptionsPage().then( ()=> {window.close();});
 }
+
+
 
 function test1() {
   console.log("test1");
@@ -68,7 +79,7 @@ function test1() {
       type: "test1"
     },
     function(response) {
-    	if (response) document.getElementById("div").textContent = response.msg;
+    	// if (response) document.getElementById("div").textContent = response.msg;
     });
 }
 

@@ -1,9 +1,12 @@
 body 
 { 
 	font-family: sans-serif; 
-	min-width:  350px;
-	width:  350px;
-	min-height: 550px;
+	/*min-width:  350px;*/
+	width:  100%;
+	height:  100%;
+	overflow: hidden;
+	/*min-height: 550px;*/
+	/*max-height: 700px;*/
 }
 
 #GBE-hmenu .GBE-nav-bar 
@@ -79,6 +82,7 @@ body
 div.GBE-filterHBox{
     padding:0.1em;
     margin:0.1em;
+    width: 330px;
 }
 
 div.GBE-filterHBox label{
@@ -91,7 +95,7 @@ div.GBE-filterHBox label{
 div.GBE-filterHBox span{
     display: block;
     overflow: hidden;
-    padding-right: 5px;
+    padding-right: 20px;
     padding-top: 1px;
 }
 
@@ -108,19 +112,47 @@ div.GBE-filterHBox input{
     clear: both; 
 }
 
-.GBE-info-box {
+.GBE-info-box, .GBE-error-box {
 	display: none;
+	/*display: flex;*/
+  align-items: center;
+/*  justify-content: center;*/
+  padding-right: 15px;
+	max-width: 330px !important;
 }
 
-.GBE-info-box img {
+
+.GBE-info-box img, .GBE-error-box img {
 	width: 18px;
 	height: 18px;
 }
 
-.GBE-error-image {
-	display: none;
+.GBE-info-box label, .GBE-error-box label {
+	margin-left: 5px;
+	font-size: 10pt;
+	flex: 1;
 }
 
-.GBE-info-label {
-	
+
+/*#wrap {
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	height: 100%;
+	overflow-x: hidden;
+	overflow-y: scroll
+}*/
+
+
+ul.fancytree-container {
+	width:  330px!important;
+	/*width:  350px;*/
+	height: 450px!important;
+  /*overflow: auto!important;*/
+  overflow-x: hidden;;
+  overflow-y: auto!important;
+  position: relative!important;
+
 }
+

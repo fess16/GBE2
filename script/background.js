@@ -395,8 +395,9 @@
 							"key" 			: tempKey,
 							"folder"		: true,
 							"children"	: [],
-							"path"			: fullName
-							});
+							"path"			: fullName,
+							"icon"			: "../images/folder_blue.png"
+						});
 					}
 					for (j = 1; j < arr_nested_label.length; j++)
 					{
@@ -410,7 +411,8 @@
 								"key" 			: tempKey,
 								"folder"		: true,
 								"children"	: [],
-								"path"			: fullName
+								"path"			: fullName,
+								"icon"			: "../images/folder_blue.png"
  							});
 						}
 					}
@@ -573,7 +575,8 @@
 						"key" 			: pKey,
 						"folder"		: true,
 						"children"	: [],
-						"path"			: "fessGBE.resentLabel"
+						"path"			: "fessGBE.resentLabel",
+						"icon"			: "../images/folder_blue.png"
 					};
 					for (let i = 0; i < this.m_recent10bkmrk.length; i++)
 					{
@@ -592,7 +595,8 @@
 						"key" 			: pKey,
 						"folder"		: true,
 						"children"	: [],
-						"path"			: "fessGBE.VisitedLabel"
+						"path"			: "fessGBE.VisitedLabel",
+						"icon"			: "../images/folder_blue.png"
 					};
 					let visitsCount = (visitsArray.length < 10 ? visitsArray.length : 10);
 					for (let i = 0; i < visitsCount; i++)
