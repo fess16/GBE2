@@ -155,7 +155,13 @@
 	 *
 	 */
 	appendBkmkToBkmksList : (parent, bkmk, parentKey) => {
-			let item = {"title" : bkmk.title, "key" : (bkmk.id + "|" + parentKey), "refKey": bkmk.id, "url": bkmk.url};
+			let item = {
+				"title" : bkmk.title, 
+				"key" : (bkmk.id + "|" + parentKey), 
+				"refKey": bkmk.id, 
+				"url": bkmk.url,
+				"icon": "../images/bkmrk.png"
+			};
 			parent.push (item);
 	},
 
