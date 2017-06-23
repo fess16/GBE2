@@ -44,6 +44,13 @@
     "page": "background.html"
   },
 
+  "content_scripts": [ {
+       "css": [ "lib/jquery-ui.min.css", "content/content.css" ],
+       "js": [ "lib/jquery-3.2.1.min.js", "lib/jquery-ui.min.js", "content/content.js" ],
+       "matches": [ "*://*/*" ]
+    }
+  ],
+
   "options_ui": {
     "page": "options/options.html",
     "open_in_tab":true

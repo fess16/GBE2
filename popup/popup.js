@@ -1,12 +1,15 @@
 // получаем ссылку на background страницу
 browser.runtime.onMessage.addListener(notify);
 var getting = browser.runtime.getBackgroundPage();
-var bg;
+var bg, aTab;
 getting.then((page) => {bg = page}, (error) => {_errorLog ("Popup-getBackgroundPage", error)});
+
+browser.tabs.query({active: true, currentWindow: true}).then((tabs) => {aTab = tabs[0]});
+
 
 $(document).ready(function(){
 
-  $("#GBE-bkm-tree").fancytree({
+  $("#bkm-tree").fancytree({
   	autoScroll: true, // Automatically scroll nodes into visible area
     clickFolderMode: 3, // 1:activate, 2:expand, 3:activate and expand, 4:activate (dblclick expands)
     debugLevel: 2, // 0:quiet, 1:normal, 2:debug
@@ -17,24 +20,117 @@ $(document).ready(function(){
     tooltip: true, // Use title as tooltip (also a callback could be specified)
   	source: bg.GBE2.m_treeSource
   });
-	$(".GBE-filterHBox label").text(browser.i18n.getMessage("popupFilterLabel"));
+	$(".filterHBox label").text(browser.i18n.getMessage("popupFilterLabel"));
+
+	// отключаем контекстное меню на кнопках дополнения
+	$(".nav-bar li").on("contextmenu",function(){
+   return false;
+	}); 
+
 	console.log("I am popup.js");
 
-	$(".GBE-tb-hmenuRefresh a")
+	// если m_dlgInfo.needOpen == true, то необходимо открыть диалог редактирования закладки
+	// с параметрами из m_dlgInfo
+	if (bg.GBE2.m_dlgInfo !== null && bg.GBE2.m_dlgInfo.needOpen)
+	{
+		$("#editBkmkDialog-name").val(bg.GBE2.m_dlgInfo.title);
+		$("#editBkmkDialog-url").val(bg.GBE2.m_dlgInfo.url);
+		bg.GBE2.m_dlgInfo.needOpen = false;
+		// setTimeout(() => {
+		openBkmkDialog("editBkmkDialog");
+		$("#editBkmkDialog").dialog('option', 'position', { my: "center", at: "center", of: "#wrapper" })
+		// }, 100);
+	}
+
+	$(".hmenuRefresh a")
 		.attr('title', browser.i18n.getMessage("popupHmenuRefresh"))
 		.click(function(event) { refresh();	});
 
+	$(".hmenuEdit a").click(function(event) {
+		openBkmkDialog("editBkmkDialog");
+	});
 	
 
-	$(".GBE-tb-hmenuOpt a").click(function(event) {
+	$(".hmenuOpt a").click(function(event) {
 		openOptionsPage();
 	});
 
-	$(".GBE-tb-hmenuAdd a").click(function(event) {
+	$(".hmenuDel a").click(function(event) {
+		// browser.tabs.executeScript(null, {
+		//       file: "/content/content.js"
+  //   });
+    console.log ("aTab  " + aTab.url);
+    	// if (aTab.url == "" || aTab.url.indexOf("about:") == 0 )
+    	// {
+    		// console.log ("url 1  " + aTab.url);
+    		openBkmkDialog("editBkmkDialog");
+    	// }
+    	// else
+    	// {
+    	// 	console.log ("url 2  " + aTab.url);
+     //  	window.close();
+     //  	browser.tabs.sendMessage(aTab.id, {type: "ShowEditDialog", message: "Show Edit Bookmark Dialog"});
+     //  }
+	});
+
+	$(".hmenuAdd a").click(function(event) {
+		$("#editBkmkDialog-name").val(aTab.title);
+		$("#editBkmkDialog-url").val(aTab.url);
+		openBkmkDialog("editBkmkDialog");
+	});
+
+	$(".hmenuAddOpenTabs a").click(function(event) {
 		test1();
 	});
 
+	$(".hmenuGBs a").click(function(event) {
+		chrome.tabs.create({active: true, url: "https://www.google.com/bookmarks/"});
+		window.close();
+	});
+
+
 });
+
+var editBkmkDialog = null;
+function openBkmkDialog (dlgName)
+{
+	if (editBkmkDialog == null)
+	{
+		var dlg = $("#" + dlgName);
+		dlg.dialog({
+			dialogClass: "no-close",
+      autoOpen: false,
+      modal: true,
+      draggable: true,
+      resizable: false,
+      position: { my: "center", at: "center", of: "#wrapper" },
+      // closeOnEscape: false
+      // minWidth: "480px",
+      width: 500,
+      buttons: [
+        {
+          text: "!Save",
+          // icons: {
+          //   primary: "ui-icon-heart"
+          // },
+          click: function() {
+            // $( this ).dialog( "close" );
+          }
+        },
+        {
+          text: "!Cancel",
+          click: function() {
+            $( this ).dialog( "close" );
+          }
+        },
+      ],
+      close: function( event, ui ) {$("#wrapper").width("350px");}
+
+     });
+	}
+	$("#wrapper").width("500px");
+	dlg.dialog("open");
+}
 
 
 function notify(message)
@@ -43,24 +139,30 @@ function notify(message)
 	{
 		console.log (JSON.stringify(message));
 
-		$.ui.fancytree.getTree("#GBE-bkm-tree").reload(
+		$.ui.fancytree.getTree("#bkm-tree").reload(
           // message.text
           bg.GBE2.m_treeSource
         ).done(function(){
           console.log ("reloaded");
         });
-    $("#GBE-bkm-tree").fancytree("enable").show();
-     $(".GBE-info-box").css({display: 'none'});
+    $("#bkm-tree").fancytree("enable").show();
+     $(".info-box").css({display: 'none'});
 
+	}
+	if (message.type == "CntxOpenBkmkDialog")
+	{
+		$("#editBkmkDialog-name").val(message.title);
+		$("#editBkmkDialog-url").val(message.url);
+		openBkmkDialog("editBkmkDialog");
 	}
 }
 
 function refresh() {
   console.log("refresh");
-  $(".GBE-info-box").css({display: 'flex'});
+  $(".info-box").css({display: 'flex'});
   // TODO сообщение изменить
-  $(".GBE-info-box label").text("Loading bookmarks");
-  $("#GBE-bkm-tree").fancytree("disable").hide();
+  $(".info-box label").text("!Loading bookmarks");
+  $("#bkm-tree").fancytree("disable").hide();
   chrome.runtime.sendMessage({
       type: "refresh"
     }

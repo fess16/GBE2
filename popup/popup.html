@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
 
-<!--     <link rel="stylesheet" href="../lib/jquery-ui.min.css" type="text/css"> -->
+    <link rel="stylesheet" href="../lib/jquery-ui.min.css" type="text/css">
     <link rel="stylesheet" type="text/css" href="popup.css" />
     <script type="text/javascript" src="../lib/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="../lib/jquery-ui.min.js"></script>
@@ -15,49 +15,61 @@
     <script type="text/javascript" src="popup.js"></script>
   </head>
   <body>
-    <div id="GBE-popup">
-      <nav id="GBE-hmenu">
-        <ul class="GBE-nav-bar">
-          <li class="GBE-tb-hmenuRefresh"><a href="#"></a></li>
-          <li class="GBE-tb-hmenuAdd"><a href="#"></a></li>
-          <li class="GBE-tb-hmenuEdit"><a href="#"></a></li>
-          <li class="GBE-tb-hmenuDel"><a href="#"></a></li>
-          <li class="GBE-tb-hmenuAddOpenTabs"><a href="#"></a></li>
-          <li class="GBE-tb-hmenuOpt"><a href="#"></a></li>
-          <li class="GBE-tb-hmenuGBs"><a href="#"></a></li>
-          <li class="GBE-tb-hmenuFFbookmark"><a href="#"></a></li>
-          <li class="GBE-tb-menuAbout"><a href="#"></a></li>
-          <li class="GBE-tb-hmenuLgn"><a href="#">Login</a></li>
-          <li class="GBE-tb-hmenuLgt"><a href="#">Logout</a></li>
+  <div id="wrapper">
+    <div id="popup">
+      <nav id="hmenu">
+        <ul class="nav-bar">
+          <li class="hmenuRefresh"><a href="#"></a></li>
+          <li class="hmenuAdd"><a href="#"></a></li>
+          <li class="hmenuEdit"><a href="#"></a></li>
+          <li class="hmenuDel"><a href="#"></a></li>
+          <li class="hmenuAddOpenTabs"><a href="#"></a></li>
+          <li class="hmenuOpt"><a href="#"></a></li>
+          <li class="hmenuGBs"><a href="#"></a></li>
+          <li class="hmenuFFbookmark"><a href="#"></a></li>
+          <li class="menuAbout"><a href="#"></a></li>
+          <li class="hmenuLgn"><a href="#">Login</a></li>
+          <li class="hmenuLgt"><a href="#">Logout</a></li>
         </ul>
       </nav>
-      <div class="GBE-filterHBox">
-          <label for="GBE-filterTextbox">Search: </label>
-          <span><input type="text" name="GBE-filterTextbox" id="GBE-filterTextbox" value=""  placeholder="" /></span>
-          <div class="GBE-filterHBox-clear"></div>
+      <div class="filterHBox">
+          <label for="filterTextbox">Search: </label>
+          <span><input type="text" name="filterTextbox" id="filterTextbox" value=""  placeholder="" /></span>
+          <div class="filterHBox-clear"></div>
       </div>
       <hr>
-      </div>
-      <div class="GBE-info-box">
+<!--       </div> -->
+      <div class="info-box">
         <img src="../images/ajax-loader.gif">
         <label></label>
       </div>
-      <div class="GBE-error-box">
+      <div class="error-box">
         <img src="../images/warning.png">
         <label></label>
       </div>
  <!--      <div id="wrap"> -->
-      <div id="GBE-bkm-tree"></div>
+      <div id="bkm-tree"></div>
 <!--       </div> -->
     </div>
+      <div id="editBkmkDialog" title="!Редактирование закладки" class="dialog">
+        <label for="editBkmkDialog-name">!Название:</label><br/>
+        <input type="text" name="editBkmkDialog-name" id="editBkmkDialog-name"><br/>
+        <span>
+        <label for="editBkmkDialog-url">!URL:</label><!-- <br/> -->
+          <input id="editBkmkDialog-enableUrlEdit" type="checkbox"><!-- <br/> -->
+        </span>
+          <input type="text" name="editBkmkDialog-url" id="editBkmkDialog-url">
+        <label for="editBkmkDialog-labels">!Метки:</label><br/>
+        <input type="text" name="editBkmkDialog-labels" id="editBkmkDialog-labels"><br/>
+        <label for="editBkmkDialog-notes">!Заметки:</label><br/>
+        <textarea rows="3" name="editBkmkDialog-notes" id="editBkmkDialog-notes"></textarea> 
 
-    
-
+      </div>
 <!-- 
     <p>I am popup.html</p>
     <button id="btn">hello</button>
     <br>msg from background.js: 
     <div id="div"></div> -->
-
+</div>
   </body>
 </html>

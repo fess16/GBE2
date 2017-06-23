@@ -9,7 +9,7 @@ function _consoleLog (s) {
 
 function _errorLog (f, e) {
 	console.log ("GBE-" + f + " : " + e.message);
-	console.log ("GBE-" + f + " : " + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+	console.log ("GBE-" + f + " : " + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName + ")");
 }
 
 function Options () {

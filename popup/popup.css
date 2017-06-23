@@ -9,20 +9,20 @@ body
 	/*max-height: 700px;*/
 }
 
-#GBE-hmenu .GBE-nav-bar 
+#hmenu .nav-bar 
 { 
 	list-style:none; margin-top: 0px; 
 	padding-left: 0px;
 	height: 5px;
 }
 
-#GBE-hmenu .GBE-nav-bar li 
+#hmenu .nav-bar li 
 { 
 	display:inline; padding:0 0; 
 	font-size: 10pt;
 }
 
-#GBE-hmenu .GBE-nav-bar li a 
+#hmenu .nav-bar li a 
 {
   /*text-decoration: none; */
   padding-left: 24px;
@@ -31,75 +31,80 @@ body
 /* 	text-shadow: 1px 1px 1px #ccc; */
 }
 
-.GBE-nav-bar .GBE-tb-hmenuRefresh a 
+.nav-bar .hmenuRefresh a 
 { 
 	background:url("../images/update.png") no-repeat 0px 0px transparent; 
 }
 
-.GBE-nav-bar .GBE-tb-hmenuAdd a 
+.nav-bar .hmenuAdd a 
 { 
 	background:url("../images/bkmrk_add_on.png") no-repeat 0px 0px transparent; 
 }
 
-.GBE-nav-bar .GBE-tb-hmenuEdit a 
+.nav-bar .hmenuEdit a 
 { 
 	background:url("../images/bkmrk_edit_off.png") no-repeat 0px 0px transparent; 
 }
 
-.GBE-nav-bar .GBE-tb-hmenuDel a 
+.nav-bar .hmenuDel a 
 { 
 	background:url("../images/bkmrk_delete_off.png") no-repeat 0px 0px transparent; 
 }
-.GBE-nav-bar .GBE-tb-hmenuAddOpenTabs a 
+.nav-bar .hmenuAddOpenTabs a 
 { 
 	background:url("../images/add_open_tabs.png") no-repeat 0px 0px transparent; 
 }
-.GBE-nav-bar .GBE-tb-hmenuOpt a 
+.nav-bar .hmenuOpt a 
 { 
 	background:url("../images/setting_tools.png") no-repeat 0px 0px transparent; 
 }
-.GBE-nav-bar .GBE-tb-hmenuGBs a 
+.nav-bar .hmenuGBs a 
 { 
 	background:url("../images/star.png") no-repeat 0px 0px transparent; 
 }
-.GBE-nav-bar .GBE-tb-hmenuFFbookmark a 
+.nav-bar .hmenuFFbookmark a 
 { 
 	background:url("../images/import_export.png") no-repeat 0px 0px transparent; 
 }
-.GBE-nav-bar .GBE-tb-menuAbout a 
+.nav-bar .menuAbout a 
 { 
 	background:url("../images/About_icon.png") no-repeat 0px 0px transparent; 
 }
-.GBE-nav-bar .GBE-tb-hmenuLgn a 
+.nav-bar .hmenuLgn a 
 { 
 
 }
-.GBE-nav-bar .GBE-tb-hmenuLgt a 
+.nav-bar .hmenuLgt a 
 { 
 	 display: none;
 }
 
-div.GBE-filterHBox{
+#wrapper{
+	width: 350px;
+	/*height: 450px;*/
+}
+
+div.filterHBox{
     padding:0.1em;
     margin:0.1em;
     width: 330px;
 }
 
-div.GBE-filterHBox label{
+div.filterHBox label{
     float:left;
     margin-right:5px;
     padding: 4px 0;
     font-size: 10pt;
 }
 
-div.GBE-filterHBox span{
+div.filterHBox span{
     display: block;
     overflow: hidden;
     padding-right: 20px;
     padding-top: 1px;
 }
 
-div.GBE-filterHBox input{
+div.filterHBox input{
     width:100%;
     padding-top:1px;
     border:thin solid gray;
@@ -108,26 +113,27 @@ div.GBE-filterHBox input{
     font-size: 11pt;
 }
 
-.GBE-filterHBox-clear {
+.filterHBox-clear {
     clear: both; 
 }
 
-.GBE-info-box, .GBE-error-box {
+.info-box, .error-box {
 	display: none;
 	/*display: flex;*/
   align-items: center;
 /*  justify-content: center;*/
   padding-right: 15px;
-	max-width: 330px !important;
+	/*max-width: 330px !important;*/
+	max-width: 99%;
 }
 
 
-.GBE-info-box img, .GBE-error-box img {
+.info-box img, .error-box img {
 	width: 18px;
 	height: 18px;
 }
 
-.GBE-info-box label, .GBE-error-box label {
+.info-box label, .error-box label {
 	margin-left: 5px;
 	font-size: 10pt;
 	flex: 1;
@@ -146,8 +152,8 @@ div.GBE-filterHBox input{
 
 
 ul.fancytree-container {
-	width:  330px!important;
-	/*width:  350px;*/
+	/*width:  330px!important;*/
+	width:  99%;
 	height: 450px!important;
   /*overflow: auto!important;*/
   overflow-x: hidden;;
@@ -156,3 +162,23 @@ ul.fancytree-container {
 
 }
 
+.dialog {
+	display: none
+}
+
+.dialog input[type="text"], .dialog textarea 
+{
+	width: -moz-available;
+}
+
+.dialog label{
+	margin-bottom: 3px;
+}
+
+.no-close .ui-dialog-titlebar-close {
+  display: none;
+}
+
+.ui-dialog {
+	font-size: 10pt;
+}

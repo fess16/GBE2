@@ -40,6 +40,7 @@
   /* ------Свойства------*/
   // разделитель вложенных меток
   'p_nestedLabelSep' : '/',
+  'm_dlgInfo' : null,
 
 		/**
 	 * функция сравнения закладок и меток по имени
@@ -792,11 +793,100 @@ $(document).ready(function()
 	_consoleLog("GBE2:background.js started");
 	GBE2.opt.read()
 		.then(function(){
-			return GBE2.reloadBkmks();
+			//return GBE2.reloadBkmks();
 		})
 		.catch ( (error) => {
     	_errorLog("background:ready", error);
 	 	});
+});
+
+browser.contextMenus.create({
+  id: "contextMenuAddBookmark",
+  title: "Добавить страницу в Google Bookmarks",
+  contexts: ["page"],
+  command: "_execute_browser_action"
+});
+
+browser.contextMenus.create({
+  id: "contextMenuAddLinkToBookmark",
+  title: "Добавить ссылку в Google Bookmarks",
+  contexts: ["link"],
+  command: "_execute_browser_action"
+});
+
+browser.contextMenus.onClicked.addListener(function(info, tab) {
+  let mId = info.menuItemId;
+  switch (mId) {
+  	// при клике на одном из пунктов контекстного меню (добавление страницы или ссылки в закладки)
+    case "contextMenuAddBookmark":
+    case "contextMenuAddLinkToBookmark":
+    	// название закладки
+    	let title = (mId == "contextMenuAddBookmark") ? tab.title : null;
+    	// адрес закладки
+    	let url = (mId == "contextMenuAddBookmark") ? tab.url : info.linkUrl;
+      // console.log(JSON.stringify(info));
+      // console.log(JSON.stringify(tab));
+    //   {"id":6,"index":2,"windowId":3,"url":"file:///D:/my_exepr/fancytree/fancytree-master/demo/index.html#sample-source.html","title":"Fancytree - Example Browser"}
+      // setTimeout(() => {
+      // let popups = browser.extension.getViews({type: "popup"});
+      // if (popups.length)
+      // {
+      // 	console.log("popup is open")
+    		// let chain = Promise.resolve();
+    		// для страниц название уже заполнено
+    		Promise.resolve().then(() => {
+    			if (title !== null) { 
+    				return title}
+    			else {
+    				// для ссылок - запрашиваем у content.js
+    				return browser.tabs.sendMessage(
+    		      tab.id,
+    		      {type: "GetLinkTitle"}
+    		    ).then(response => {
+    		      return response.linkTitle;
+    		    }).catch(() => {
+    		    	return url.replace(/^(?:https?:\/\/)?(?:www\.)?/i, "").split('/')[0]
+    		    });
+    			}
+    		}
+    		).then((result) => {
+	      	// отправляем сообщение о необходимости открыть диалог редактирования закладки в popup
+	      	browser.runtime.sendMessage({
+	      		"type": "CntxOpenBkmkDialog",
+	      		"title": result,
+	      		"url": url
+	      	}).catch((e) => {
+	      		// при неудаче (popup уще не открылся) - заполняем m_dlgInfo (будет прочитан при открыии popup)
+	      		GBE2.m_dlgInfo = {
+		      		"needOpen" : true,
+		      		"title": result,
+		      		"url": url
+		      	}
+	      	});
+	      });
+
+     //  }
+     //  else
+     //  {
+     //  	GBE2.m_dlgInfo = {
+     //  		needOpen : true,
+     //  		title: ((mId == "contextMenuAddBookmark") ? tab.title : info.linkUrl ),
+     //  		url: ((mId == "contextMenuAddBookmark") ? tab.url : info.linkUrl )
+     //  	}
+     //  	console.log("popup is still closed");
+     // 	}
+     // }, 500);
+
+    break;
+      // console.log(JSON.stringify(info));
+      // //"menuItemId":"contextMenuAddLinkToBookmark","linkUrl":"http://start.nefteproduct.su/#"
+      // console.log(JSON.stringify(tab));
+      // break;
+    // case "remove-me":
+    //   var removing = browser.contextMenus.remove(info.menuItemId);
+    //   removing.then(onRemoved, onError);
+    //   break;
+  }
 });
 
 
@@ -809,6 +899,8 @@ browser.storage.onChanged.addListener((changes) => {
 
 chrome.runtime.onMessage.addListener(
   function (request, sender, sendResponse) {
+    // console.log(JSON.stringify(request));
+    // console.log(JSON.stringify(sender));
     switch (request.type)
     {
 	    case "refresh" :
@@ -824,6 +916,11 @@ chrome.runtime.onMessage.addListener(
 	   	 		}
 	     		);
 		    break;
+	    }
+	    case "openBkmkDialog" :
+	    {
+	    	console.log("background.js " + JSON.stringify(sender.tab));
+	    	break;
 	    }
 	    case "test1" :
 	    {
@@ -891,24 +988,16 @@ chrome.runtime.onMessage.addListener(
 	    	});
 	    	break;
 	    }
+	    default: 
+	    	console.log(JSON.stringify(request));
+	    	browser.notifications.create({
+	    	    "type": "basic",
+	    	    "iconUrl": browser.extension.getURL("link.png"),
+	    	    "title": "You clicked a link!",
+	    	    "message": request.url
+	    	  });
   	}
  });
-/*
 
-function gotVisits(visits) {
-  console.log("Visit count: " + visits.length);
-  for (visit of visits) {
-    console.log(visit.visitTime);
-  }
-}
 
-function listVisits(historyItems) {
-  if (historyItems.length) {
-    console.log("URL " + historyItems[0].url);
-    var gettingVisits = browser.history.getVisits({
-      url: historyItems[0].url
-    });
-    gettingVisits.then(gotVisits);
-  }
-}
-*/
+
