@@ -110,17 +110,25 @@ function openBkmkDialog (dlgName)
       buttons: [
         {
           text: "!Save",
-          // icons: {
-          //   primary: "ui-icon-heart"
-          // },
           click: function() {
-            // $( this ).dialog( "close" );
+          	let bkmk = {
+	          	title: $("#editBkmkDialog-name").val(),
+	          	url: $("#editBkmkDialog-url").val(),
+	          	labels: $("#editBkmkDialog-labels").val(),
+	          	notes: $("#editBkmkDialog-notes").val()
+          	}
+          	browser.runtime.sendMessage({
+		      		"type": "addBookmark",
+		      		"data": bkmk
+	      		}).then((result) => {
+            	$(this).dialog("close");
+	      		});
           }
         },
         {
           text: "!Cancel",
           click: function() {
-            $( this ).dialog( "close" );
+            $(this).dialog("close");
           }
         },
       ],
@@ -135,25 +143,27 @@ function openBkmkDialog (dlgName)
 
 function notify(message)
 {
-	if (message.type == "refreshed")
-	{
-		console.log (JSON.stringify(message));
+	switch (message.type){
+		case "needRefresh":
+			refresh();
+			break;
+		case "refreshed":
+			console.log (JSON.stringify(message));
 
-		$.ui.fancytree.getTree("#bkm-tree").reload(
-          // message.text
-          bg.GBE2.m_treeSource
-        ).done(function(){
-          console.log ("reloaded");
-        });
-    $("#bkm-tree").fancytree("enable").show();
-     $(".info-box").css({display: 'none'});
-
-	}
-	if (message.type == "CntxOpenBkmkDialog")
-	{
-		$("#editBkmkDialog-name").val(message.title);
-		$("#editBkmkDialog-url").val(message.url);
-		openBkmkDialog("editBkmkDialog");
+			$.ui.fancytree.getTree("#bkm-tree").reload(
+	          // message.text
+	          bg.GBE2.m_treeSource
+	        ).done(function(){
+	          console.log ("reloaded");
+	        });
+	    $("#bkm-tree").fancytree("enable").show();
+	    $(".info-box").css({display: 'none'});
+	    break;
+		case "CntxOpenBkmkDialog":
+			$("#editBkmkDialog-name").val(message.title);
+			$("#editBkmkDialog-url").val(message.url);
+			openBkmkDialog("editBkmkDialog");
+			break;
 	}
 }
 

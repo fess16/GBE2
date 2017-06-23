@@ -774,6 +774,65 @@
 			}
 		);
 	},
+		// 	request.open("POST", this.baseUrl2, true);
+		// let data = 	"zx="+((new Date()).getTime()) + "&bkmk=" + encodeURIComponent(params.url) + 
+		// 						"&title=" + encodeURIComponent(params.name) + "&labels=" + encodeURIComponent(params.labels) +
+		// 						"&annotation=" + encodeURIComponent(params.notes) + "&prev=%2Flookup&sig=" + 
+		// 						(params.sig ? params.sig : this.m_signature) + 	"&cd=bkmk&q=&start=0";
+
+	doChangeBookmark : function (bkmk)
+	{
+		let result = bkmk;
+		return Promise.resolve()
+			.then(() => {
+				console.log("doChangeBookmark:m_signature");
+				if (this.m_signature) 
+					{return this.m_signature;}
+				else
+					{return this.doRequestSignature();}
+			})
+			.catch((e) => {
+				_errorLog("doChangeBookmark", e);
+				_consoleLog ("GBE2:doChangeBookmark", "Obtain signature - error!");
+				throw new Error("doChangeBookmark : Obtain signature - error!");
+			})
+			.then(() => {
+				console.log("doChangeBookmark:ajax");
+				return $.ajax({
+					url: this.m_baseUrl2,
+					method: "GET",
+					data: { 
+						zx : (new Date()).getTime(),
+						bkmk : bkmk.url,
+						title : bkmk.title,
+						labels : bkmk.labels,
+						annotation : bkmk.notes,
+						prev : "lookup",
+						sig : this.m_signature,
+						cd : "bkmk",
+						q : "",
+						start : 0
+					},
+					timeout : this.p_timeout,
+				})
+				.then( (response, status, xhr) => {
+			    	console.log("doChangeBookmark : Ok");
+				    	// if (params.oldUrl && params.oldUrl != params.url)
+				    	// {
+				    	// 	self.ErrorLog("Changing bookmarks URL from ", params.oldUrl, "to", params.url);
+				    	// 	self.doDeleteBookmark({"url" : params.oldUrl, "id" : params.id, "sig" : params.sig}, overlay);
+				    	// }
+				    	// 	if (overlay !== null) overlay.changeButtonIcon(params.url, params.id, false); 
+					},
+					function (jqXHR, textStatus)
+					{
+						_consoleLog ("GBE2:doChangeBookmark", "Saving bookmark ", JSON.stringify(bkmk), " - error!");
+						_consoleLog ("GBE2:doChangeBookmark - Request failed: ", textStatus);
+						_consoleLog (jqXHR.responseText);
+					}
+				);
+			});
+	},
 
 	reloadBkmks :  function () {
 		if (!this.m_signature)
@@ -850,7 +909,7 @@ browser.contextMenus.onClicked.addListener(function(info, tab) {
     			}
     		}
     		).then((result) => {
-	      	// отправляем сообщение о необходимости открыть диалог редактирования закладки в popup
+	      	// отправляем в popup сообщение о необходимости открыть диалог редактирования закладки 
 	      	browser.runtime.sendMessage({
 	      		"type": "CntxOpenBkmkDialog",
 	      		"title": result,
@@ -920,6 +979,19 @@ chrome.runtime.onMessage.addListener(
 	    case "openBkmkDialog" :
 	    {
 	    	console.log("background.js " + JSON.stringify(sender.tab));
+	    	break;
+	    }
+	    case "addBookmark" :
+	    {
+	    	console.log("background.js " + JSON.stringify(request.data));
+	    	GBE2.doChangeBookmark(request.data)
+	    		.then(() => {
+	    			browser.runtime.sendMessage({type: "needRefresh"});
+	    			console.log("background:addBookmark");
+	    		})
+	    		.catch((e) => {
+	    			_errorLog("background:addBookmark",e);
+	    		});
 	    	break;
 	    }
 	    case "test1" :
