@@ -41,15 +41,34 @@ body
 	background:url("../images/bkmrk_add_on.png") no-repeat 0px 0px transparent; 
 }
 
+.nav-bar .hmenuAdd a.disabled-link 
+{ 
+	background:url("../images/bkmrk_add_off.png") no-repeat 0px 0px transparent; 
+	pointer-events: none;
+}
+
 .nav-bar .hmenuEdit a 
 { 
+	background:url("../images/bkmrk_edit_on.png") no-repeat 0px 0px transparent; 
+}
+
+.nav-bar .hmenuEdit a.disabled-link 
+{ 
 	background:url("../images/bkmrk_edit_off.png") no-repeat 0px 0px transparent; 
+	pointer-events: none;
 }
 
 .nav-bar .hmenuDel a 
 { 
-	background:url("../images/bkmrk_delete_off.png") no-repeat 0px 0px transparent; 
+	background:url("../images/bkmrk_delete_on.png") no-repeat 0px 0px transparent; 
 }
+
+.nav-bar .hmenuDel a.disabled-link
+{ 
+	background:url("../images/bkmrk_delete_off.png") no-repeat 0px 0px transparent; 
+	pointer-events: none;
+}
+
 .nav-bar .hmenuAddOpenTabs a 
 { 
 	background:url("../images/add_open_tabs.png") no-repeat 0px 0px transparent; 

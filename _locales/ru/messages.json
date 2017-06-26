@@ -1,12 +1,23 @@
 {
-  "popupFilterLabel": {
+  "popup_filterLabel": {
     "message": "Фильтр:",
     "description": "Подпись поля фильтра"
   },
-
-  "popupHmenuRefresh": {
+  "popup_hmenuRefresh": {
     "message": "Обновить закладки",
     "description": "Подсказка - Обновить закладки"
+  },
+  "popup_hmenuAdd": {
+    "message": "Добавить текущую страницу в закладки Google",
+    "description": "Подсказка - Добавление закладки"
+  },
+  "popup_hmenuEdit": {
+    "message": "Изменить закладку текущей страницы",
+    "description": "Подсказка - Изменение закладки"
+  },
+  "popup_hmenuDel": {
+    "message": "Удалить текущую страницу из закладок",
+    "description": "Подсказка - Удаление закладки"
   },
 
 

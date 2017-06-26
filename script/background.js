@@ -119,7 +119,7 @@
 	searchLabel : function (array, keyvalue){
 		var found = false;
 		// поле поиска
-		key = Object.keys(keyvalue)[0];
+		let key = Object.keys(keyvalue)[0];
 		// ищем на текущем уровне
 		let elem = array.filter(x => (x.hasOwnProperty("folder") && x[key] === keyvalue[key]));
 		if (elem.length)
@@ -145,6 +145,21 @@
 	  	}
 		}
 
+	},
+
+	isBookmarked : function (tUrl) {
+		if (this.m_bookmarkList.length)
+			return (this.m_bookmarkList.some( item => item.url == tUrl));
+		return false;
+	},
+
+	getBookmark : function (keyvalue) {
+		if (this.m_bookmarkList.length){
+			let key = Object.keys(keyvalue)[0];
+			let bkmk = this.m_bookmarkList.filter( x => (x[key] === keyvalue[key]));
+			if (bkmk.length) return bkmk[0];
+		}
+		return null;
 	},
 
 	/**
@@ -843,7 +858,7 @@
 	},
 
 	setBrowserActionIcon : function (tUrl) {
-		if (this.m_bookmarkList.some( item => item.url == tUrl)) {
+		if (this.isBookmarked(tUrl)) {
 			browser.browserAction.setIcon({
 				path: { 18: "./images/Star_full.png", 32: "./images/Star_full32.png" }
 			});
@@ -1001,6 +1016,7 @@ chrome.runtime.onMessage.addListener(
 	    		.then((result) => {
 	    			// уведомляем popup
 	     			browser.runtime.sendMessage(result);
+	     			GBE2.setBrowserActionIcon(request.tab.url);
 	     		})
 	     		.catch ( (error) => {
 	  	    	_errorLog("background:refresh", error);

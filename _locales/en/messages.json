@@ -1,13 +1,26 @@
 {
-  "popupFilterLabel": {
+  "popup_filterLabel": {
     "message": "Filter:",
     "description": "Label for filter textbox"
   },
-
-  "popupHmenuRefresh": {
+  "popup_hmenuRefresh": {
     "message": "Refresh bookmarks",
     "description": "Подсказка - Обновить закладки"
   },
+  "popup_hmenuAdd": {
+    "message": "Add current page to Google Bookmarks",
+    "description": "Подсказка - Добавление  закладки"
+  },
+  "popup_hmenuEdit": {
+    "message": "Edit Google Bookmark for current page",
+    "description": "Подсказка - Изменение закладки"
+  },
+  "popup_hmenuDel": {
+    "message": "Delete current page from Bookmarks",
+    "description": "Подсказка - Удаление закладки"
+  },
+
+  
 
   "options_saveBtn": {
   	"message": "Save",

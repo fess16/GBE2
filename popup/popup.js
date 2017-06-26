@@ -1,13 +1,64 @@
 // получаем ссылку на background страницу
 browser.runtime.onMessage.addListener(notify);
 var getting = browser.runtime.getBackgroundPage();
-var bg, aTab;
+var bg, aTab, aBkmk = null;
 getting.then((page) => {bg = page}, (error) => {_errorLog ("Popup-getBackgroundPage", error)});
-
 browser.tabs.query({active: true, currentWindow: true}).then((tabs) => {aTab = tabs[0]});
 
 
+function setClickHandlers (aBkmk)
+{
+	removeClickHandlers();
+	$(".hmenuAdd a").attr('title', browser.i18n.getMessage("popup_hmenuAdd"));
+	$(".hmenuEdit a").attr('title', browser.i18n.getMessage("popup_hmenuEdit"))
+	$(".hmenuDel a").attr('title', browser.i18n.getMessage("popup_hmenuDel"))
+	
+	if (aBkmk !== null) {
+		$(".hmenuAdd a")
+			.addClass('disabled-link')
+			.click(function(event) {
+				return false;
+			});	
+		$(".hmenuEdit a")
+			.removeClass('disabled-link')
+			.click(function(event) {
+				openBkmkDialog("editBkmkDialog");
+		});
+		$(".hmenuDel a")
+			.removeClass('disabled-link')
+			.click(function(event) {
+				//TODO open remove dialog
+		});
+	}
+	else {
+		$(".hmenuAdd a")
+			.removeClass('disabled-link')
+			.click(function(event) {
+				$("#editBkmkDialog-name").val(aTab.title);
+				$("#editBkmkDialog-url").val(aTab.url);
+				openBkmkDialog("editBkmkDialog");
+		});
+		$(".hmenuEdit a")
+			.addClass('disabled-link')
+			.click(function(event) {
+				return false;
+		});
+		$(".hmenuDel a")
+			.addClass('disabled-link')
+			.click(function(event) {
+				return false;
+		});
+
+	}
+}
+
+function removeClickHandlers () {
+	$(".hmenuAdd a, .hmenuEdit a").off( "click", "**" );
+}
+
+
 $(document).ready(function(){
+
 
   $("#bkm-tree").fancytree({
   	autoScroll: true, // Automatically scroll nodes into visible area
@@ -20,7 +71,7 @@ $(document).ready(function(){
     tooltip: true, // Use title as tooltip (also a callback could be specified)
   	source: bg.GBE2.m_treeSource
   });
-	$(".filterHBox label").text(browser.i18n.getMessage("popupFilterLabel"));
+	$(".filterHBox label").text(browser.i18n.getMessage("popup_filterLabel"));
 
 	// отключаем контекстное меню на кнопках дополнения
 	$(".nav-bar li").on("contextmenu",function(){
@@ -42,20 +93,22 @@ $(document).ready(function(){
 		// }, 100);
 	}
 
+	aBkmk = bg.GBE2.getBookmark({ url : aTab.url});
+	setClickHandlers (aBkmk);
+	// назначем обработчики кнопок
+	// 
+	// обновление списка закладок
 	$(".hmenuRefresh a")
-		.attr('title', browser.i18n.getMessage("popupHmenuRefresh"))
-		.click(function(event) { refresh();	});
-
-	$(".hmenuEdit a").click(function(event) {
-		openBkmkDialog("editBkmkDialog");
+		.attr('title', browser.i18n.getMessage("popup_hmenuRefresh"))
+		.click(function(event) { 
+			refresh();	
 	});
-	
 
 	$(".hmenuOpt a").click(function(event) {
 		openOptionsPage();
 	});
 
-	$(".hmenuDel a").click(function(event) {
+/*	$(".hmenuDel a").click(function(event) {
 		// browser.tabs.executeScript(null, {
 		//       file: "/content/content.js"
   //   });
@@ -71,13 +124,8 @@ $(document).ready(function(){
      //  	window.close();
      //  	browser.tabs.sendMessage(aTab.id, {type: "ShowEditDialog", message: "Show Edit Bookmark Dialog"});
      //  }
-	});
+	});*/
 
-	$(".hmenuAdd a").click(function(event) {
-		$("#editBkmkDialog-name").val(aTab.title);
-		$("#editBkmkDialog-url").val(aTab.url);
-		openBkmkDialog("editBkmkDialog");
-	});
 
 	$(".hmenuAddOpenTabs a").click(function(event) {
 		test1();
@@ -148,7 +196,9 @@ function notify(message)
 			refresh();
 			break;
 		case "refreshed":
-			console.log (JSON.stringify(message));
+			aBkmk = bg.GBE2.getBookmark({ url : aTab.url});
+			setClickHandlers (aBkmk);
+			// console.log (JSON.stringify(message));
 
 			$.ui.fancytree.getTree("#bkm-tree").reload(
 	          // message.text
@@ -174,7 +224,8 @@ function refresh() {
   $(".info-box label").text("!Loading bookmarks");
   $("#bkm-tree").fancytree("disable").hide();
   chrome.runtime.sendMessage({
-      type: "refresh"
+      type: "refresh",
+      tab: aTab
     }
   );
 }
