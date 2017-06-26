@@ -842,6 +842,20 @@
 		return this.doRequestBookmarks().then((result) => {return this.doProcessBookmarks(result);});
 	},
 
+	setBrowserActionIcon : function (tUrl) {
+		if (this.m_bookmarkList.some( item => item.url == tUrl)) {
+			browser.browserAction.setIcon({
+				path: { 18: "./images/Star_full.png", 32: "./images/Star_full32.png" }
+			});
+		}
+		else
+		{
+			browser.browserAction.setIcon({ 
+				path: { 18: "./images/Star_empty.png", 32: "./images/Star_empty32.png" }
+			});
+		}
+	}
+
 
 }; // GBE2 end
 
@@ -954,6 +968,24 @@ browser.storage.onChanged.addListener((changes) => {
 	// console.log(JSON.stringify(changes));
 	GBE2.opt.read().then();
 });
+
+// при изменении адреса вкладки - меняем значок на панели,
+// если такой адрес есть в закладках
+function handleTabUrlUpdated(tabId, changeInfo, tabInfo) {
+  if (changeInfo.url) {
+    GBE2.setBrowserActionIcon(changeInfo.url);
+  }
+}
+browser.tabs.onUpdated.addListener(handleTabUrlUpdated);
+
+// при активации вкладки - меняем значок на панели,
+// если такой адрес есть в закладках
+function handleTabActivated(activeInfo) {
+  browser.tabs.get(activeInfo.tabId).then((tabInfo) => {
+  	GBE2.setBrowserActionIcon(tabInfo.url);
+  });
+}
+browser.tabs.onActivated.addListener(handleTabActivated);
 
 
 chrome.runtime.onMessage.addListener(
