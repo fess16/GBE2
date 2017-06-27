@@ -857,7 +857,6 @@
 		let result = bkmk;
 		return Promise.resolve()
 			.then(() => {
-				console.log("doChangeBookmark:m_signature");
 				if (this.m_signature) 
 					{return this.m_signature;}
 				else
@@ -1079,13 +1078,23 @@ chrome.runtime.onMessage.addListener(
 	    	GBE2.doChangeBookmark(request.data)
 	    		.then(() => {
 	    			browser.runtime.sendMessage({type: "needRefresh"});
-	    			console.log("background:addBookmark");
+	    			// console.log("background:addBookmark");
 	    		})
 	    		.catch((e) => {
 	    			_errorLog("background:addBookmark",e);
 	    		});
 	    	break;
 	    }
+	    case "deleteBookmark":
+	    	GBE2.doDeleteBookmark(request.data)
+	    		.then(() => {
+	    			browser.runtime.sendMessage({type: "needRefresh"});
+	    			// console.log("background:deleteBookmark");
+	    		})
+	    		.catch((e) => {
+	    			_errorLog("background:deleteBookmark",e);
+	    		});
+	    	break;
 	    case "test1" :
 	    {
 	    	let bkmks = [

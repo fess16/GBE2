@@ -32,7 +32,8 @@ function setClickHandlers (aBkmk)
 		$(".hmenuDel a")
 			.removeClass('disabled-link')
 			.click(function(event) {
-				//TODO open remove dialog
+				$("#delBkmkDialog label").text(browser.i18n.getMessage("delBkmkDialog_label", aBkmk.title));
+				openDelBkmkDialog();
 		});
 	}
 	else {
@@ -78,12 +79,13 @@ $(document).ready(function(){
   	source: bg.GBE2.m_treeSource
   });
 	$(".filterHBox label").text(browser.i18n.getMessage("popup_filterLabel"));
+
 	$("#editBkmkDialog").attr("title", browser.i18n.getMessage("editBkmkDialog_title"));
 	$("label[for='editBkmkDialog-name']").text(browser.i18n.getMessage("editBkmkDialog_name"));
 	$("label[for='editBkmkDialog-url']").text(browser.i18n.getMessage("editBkmkDialog_url"));
 	$("label[for='editBkmkDialog-labels']").text(browser.i18n.getMessage("editBkmkDialog_labels"));
 	$("label[for='editBkmkDialog-notes']").text(browser.i18n.getMessage("editBkmkDialog_notes"));
-
+	
 	// отключаем контекстное меню на кнопках дополнения
 	$(".nav-bar li").on("contextmenu",function(){
    return false;
@@ -192,10 +194,43 @@ function openBkmkDialog (dlgName)
         },
       ],
       close: function( event, ui ) {$("#wrapper").width("350px");}
-
      });
 	}
 	$("#wrapper").width("500px");
+	dlg.dialog("open");
+}
+
+function openDelBkmkDialog (){
+	let dlg = $("#delBkmkDialog");
+	dlg.dialog({
+		dialogClass: "no-close",
+    autoOpen: false,
+    modal: true,
+    draggable: true,
+    resizable: false,
+    // width: 500,
+    position: { my: "center", at: "center", of: "#wrapper" },
+    title: 	browser.i18n.getMessage("delBkmkDialog_title"),
+    buttons: [
+      {
+        text: browser.i18n.getMessage("btn_Delete"),
+        click: function() {
+        	browser.runtime.sendMessage({
+	      		"type": "deleteBookmark",
+	      		"data": aBkmk
+      		}).then((result) => {
+          	$(this).dialog("close");
+      		});
+        }
+      },
+      {
+        text: browser.i18n.getMessage("btn_Cancel"),
+        click: function() {
+          $(this).dialog("close");
+        }
+      },
+    ],
+	});
 	dlg.dialog("open");
 }
 

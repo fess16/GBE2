@@ -41,16 +41,33 @@
     "description": "Надпись поля с заметками закладки"
   },
 
+
   "btn_Save": {
     "message": "Сохранить",
     "description": "Надпись кнопки сохранения в диалогах"
   },
-
   "btn_Cancel": {
     "message": "Отменить",
     "description": "Надпись кнопки отмены в диалогах"
   },
+  "btn_Delete": {
+    "message": "Удалить",
+    "description": "Надпись кнопки удаления в диалогах"
+  },
 
+  "delBkmkDialog_title": {
+    "message": "Удаление закладки",
+    "description": "Заголовок диалога удаления закладки"
+  },
+  "delBkmkDialog_label": {
+    "message": "Вы действительно ходите удалить закладку ($bkmkTitle$)?",
+    "description": "Надпись в диалоге удаления закладки",
+    "placeholders": {
+      "bkmkTitle" : {
+        "content" : "$1"
+      }
+    }
+  },
 
   
   "options_saveBtn": {

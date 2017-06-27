@@ -42,15 +42,31 @@
   },
 
   "btn_Save": {
-    "message": "Сохранить",
+    "message": "Save",
     "description": "Надпись кнопки сохранения в диалогах"
   },
-
   "btn_Cancel": {
-    "message": "Отменить",
+    "message": "Cancel",
     "description": "Надпись кнопки отмены в диалогах"
   },
+  "btn_Delete": {
+    "message": "Удалить",
+    "description": "Надпись кнопки удаления в диалогах"
+  },
 
+  "delBkmkDialog_title": {
+    "message": "Delete Bookmark",
+    "description": "Заголовок диалога удаления закладки"
+  },
+  "delBkmkDialog_label": {
+    "message": "Are you sure you want to delete bookmark ($bkmkTitle$)?",
+    "description": "Надпись в диалоге удаления закладки",
+    "placeholders": {
+      "bkmkTitle" : {
+        "content" : "$1"
+      }
+    }
+  },
 
 
   "options_saveBtn": {
