@@ -22,6 +22,11 @@ function setClickHandlers (aBkmk)
 		$(".hmenuEdit a")
 			.removeClass('disabled-link')
 			.click(function(event) {
+				$("#editBkmkDialog-name").val(aBkmk.title);
+				$("#editBkmkDialog-url").val(aBkmk.url).attr("disabled",true);
+				$("#editBkmkDialog-labels").val(aBkmk.labels);
+				$("#editBkmkDialog-notes").val(aBkmk.notes);
+
 				openBkmkDialog("editBkmkDialog");
 		});
 		$(".hmenuDel a")
@@ -35,7 +40,8 @@ function setClickHandlers (aBkmk)
 			.removeClass('disabled-link')
 			.click(function(event) {
 				$("#editBkmkDialog-name").val(aTab.title);
-				$("#editBkmkDialog-url").val(aTab.url);
+				$("#editBkmkDialog-url").val(aTab.url);//.attr("disabled",true);
+				$("#editBkmkDialog-enableUrlEdit").attr("disabled",true);
 				openBkmkDialog("editBkmkDialog");
 		});
 		$(".hmenuEdit a")
@@ -72,6 +78,11 @@ $(document).ready(function(){
   	source: bg.GBE2.m_treeSource
   });
 	$(".filterHBox label").text(browser.i18n.getMessage("popup_filterLabel"));
+	$("#editBkmkDialog").attr("title", browser.i18n.getMessage("editBkmkDialog_title"));
+	$("label[for='editBkmkDialog-name']").text(browser.i18n.getMessage("editBkmkDialog_name"));
+	$("label[for='editBkmkDialog-url']").text(browser.i18n.getMessage("editBkmkDialog_url"));
+	$("label[for='editBkmkDialog-labels']").text(browser.i18n.getMessage("editBkmkDialog_labels"));
+	$("label[for='editBkmkDialog-notes']").text(browser.i18n.getMessage("editBkmkDialog_notes"));
 
 	// отключаем контекстное меню на кнопках дополнения
 	$(".nav-bar li").on("contextmenu",function(){
@@ -157,7 +168,7 @@ function openBkmkDialog (dlgName)
       width: 500,
       buttons: [
         {
-          text: "!Save",
+          text: browser.i18n.getMessage("btn_Save"),
           click: function() {
           	let bkmk = {
 	          	title: $("#editBkmkDialog-name").val(),
@@ -174,7 +185,7 @@ function openBkmkDialog (dlgName)
           }
         },
         {
-          text: "!Cancel",
+          text: browser.i18n.getMessage("btn_Cancel"),
           click: function() {
             $(this).dialog("close");
           }

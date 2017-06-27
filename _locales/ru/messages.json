@@ -20,6 +20,37 @@
     "description": "Подсказка - Удаление закладки"
   },
 
+  "editBkmkDialog_title": {
+    "message": "Добавление/редактирование закладки",
+    "description": "Заголовок диалога редактирования закладки"
+  },
+  "editBkmkDialog_name": {
+    "message": "Название:",
+    "description": "Надпись поля с названием закладки"
+  },
+  "editBkmkDialog_url": {
+    "message": "Адрес (URL):",
+    "description": "Надпись поля с URL закладки"
+  },
+  "editBkmkDialog_labels": {
+    "message": "Метки:",
+    "description": "Надпись поля с метками закладки"
+  },
+  "editBkmkDialog_notes": {
+    "message": "Заметки:",
+    "description": "Надпись поля с заметками закладки"
+  },
+
+  "btn_Save": {
+    "message": "Сохранить",
+    "description": "Надпись кнопки сохранения в диалогах"
+  },
+
+  "btn_Cancel": {
+    "message": "Отменить",
+    "description": "Надпись кнопки отмены в диалогах"
+  },
+
 
   
   "options_saveBtn": {

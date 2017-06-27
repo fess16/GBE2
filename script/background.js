@@ -522,6 +522,7 @@
   	      	if (result && result.url.length)
   	      	{
 	    	    	bkmk.url = result.url;
+	    	    	//console.log (JSON.stringify(bkmk));
 	    	      return bkmk;
   	        }
   	        else
@@ -641,7 +642,7 @@
     	  // console.log(JSON.stringify(visitsArray));
 				// получаем массив меток
 				// console.log (JSON.stringify(treeSource));
-				// console.log (JSON.stringify(this.m_bookmarkList));
+				//console.log (JSON.stringify(this.m_bookmarkList));
 				//resolve({"type" : "refresh", "data" : treeSource});
 				//browser.runtime.sendMessage({"type" : "refresh", "data" : treeSource});
 				//treeSource = [];
@@ -800,7 +801,7 @@
 		let result = bkmk;
 		return Promise.resolve()
 			.then(() => {
-				console.log("doChangeBookmark:m_signature");
+				// console.log("doChangeBookmark:m_signature");
 				if (this.m_signature) 
 					{return this.m_signature;}
 				else
@@ -808,11 +809,11 @@
 			})
 			.catch((e) => {
 				_errorLog("doChangeBookmark", e);
-				_consoleLog ("GBE2:doChangeBookmark", "Obtain signature - error!");
+				// _consoleLog ("GBE2:doChangeBookmark", "Obtain signature - error!");
 				throw new Error("doChangeBookmark : Obtain signature - error!");
 			})
 			.then(() => {
-				console.log("doChangeBookmark:ajax");
+				// console.log("doChangeBookmark:ajax");
 				return $.ajax({
 					url: this.m_baseUrl2,
 					method: "GET",
@@ -831,7 +832,7 @@
 					timeout : this.p_timeout,
 				})
 				.then( (response, status, xhr) => {
-			    	console.log("doChangeBookmark : Ok");
+			    	// console.log("doChangeBookmark : Ok");
 				    	// if (params.oldUrl && params.oldUrl != params.url)
 				    	// {
 				    	// 	self.ErrorLog("Changing bookmarks URL from ", params.oldUrl, "to", params.url);
@@ -843,6 +844,49 @@
 					{
 						_consoleLog ("GBE2:doChangeBookmark", "Saving bookmark ", JSON.stringify(bkmk), " - error!");
 						_consoleLog ("GBE2:doChangeBookmark - Request failed: ", textStatus);
+						_consoleLog (jqXHR.responseText);
+					}
+				);
+			});
+	},
+
+	// let data = 	"?zx="+((new Date()).getTime()) + "&dlq=" + params.id + "&sig=" + (params.sig ? params.sig : this.m_signature);
+	// 	request.open("GET", this.baseUrl2 + data, true);
+	doDeleteBookmark : function (bkmk)
+	{
+		let result = bkmk;
+		return Promise.resolve()
+			.then(() => {
+				console.log("doChangeBookmark:m_signature");
+				if (this.m_signature) 
+					{return this.m_signature;}
+				else
+					{return this.doRequestSignature();}
+			})
+			.catch((e) => {
+				_errorLog("doDeleteBookmark", e);
+				// _consoleLog ("GBE2:doDeleteBookmark", "Obtain signature - error!");
+				throw new Error("doDeleteBookmark : Obtain signature - error!");
+			})
+			.then(() => {
+				// console.log("doDeleteBookmark:ajax");
+				return $.ajax({
+					url: this.m_baseUrl2,
+					method: "GET",
+					data: { 
+						zx : (new Date()).getTime(),
+						dlq : bkmk.id,
+						sig : this.m_signature
+					},
+					timeout : this.p_timeout,
+				})
+				.then( (response, status, xhr) => {
+			    	// console.log("doDeleteBookmark : Ok");
+					},
+					function (jqXHR, textStatus)
+					{
+						_consoleLog ("GBE2:doDeleteBookmark", "Deleting bookmark ", JSON.stringify(bkmk), " - error!");
+						_consoleLog ("GBE2:doDeleteBookmark - Request failed: ", textStatus);
 						_consoleLog (jqXHR.responseText);
 					}
 				);
