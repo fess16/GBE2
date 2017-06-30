@@ -20,6 +20,48 @@
     "description": "Подсказка - Удаление закладки"
   },
 
+  "cntx-folder-menuEdit": {
+    "message": "Редактировать"
+  },
+  "cntx-folder-menuRemove": {
+    "message": "Удалить"
+  },
+  "cntx-folder-menuOpenAll": {
+    "message": "Открыть все"
+  },
+  "cntx-folder-menuAddHere": {
+    "message": "Добавить закладку здесь"
+  },
+  "cntx-folder-menuAddAllTabs": {
+    "message": "Добавить в закладки открытые вкладки"
+  },
+  "cntx-folder-menuHideFolder": {
+    "message": "Добавить в скрытые"
+  },
+  "cntx-folder-menuUnhideFolder": {
+    "message": "Убрать из скрытых"
+  },
+  "cntx-folder-menuUnhideAll": {
+    "message": "Убрать из скрытых все"
+  },
+  "cntx-folder-menuExport": {
+    "message": "Экспорт в HTML"
+  },
+
+  "cntx-page-go": {
+    "message": "Открыть на месте"
+  },
+  "cntx-page-edit": {
+    "message": "Редактировать"
+  },
+  "cntx-page-delete": {
+    "message": "Удалить"
+  },
+  "cntx-qrcode-icon": {
+    "message": "Получить QR-код"
+  },
+
+
   "editBkmkDialog_title": {
     "message": "Добавление/редактирование закладки",
     "description": "Заголовок диалога редактирования закладки"

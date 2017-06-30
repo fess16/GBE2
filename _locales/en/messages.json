@@ -20,6 +20,50 @@
     "description": "Подсказка - Удаление закладки"
   },
 
+  "cntx-folder-menuEdit": {
+    "message": "Edit"
+  },
+  "cntx-folder-menuRemove": {
+    "message": "Delete"
+  },
+  "cntx-folder-menuOpenAll": {
+    "message": "Open all"
+  },
+  "cntx-folder-menuAddHere": {
+    "message": "Add Bookmark Here"
+  },
+  "cntx-folder-menuAddAllTabs": {
+    "message": "Bookmark all tabs here"
+  },
+  "cntx-folder-menuHideFolder": {
+    "message": "Hide"
+  },
+  "cntx-folder-menuUnhideFolder": {
+    "message": "Unhide"
+  },
+  "cntx-folder-menuUnhideAll": {
+    "message": "Unhide all"
+  },
+  "cntx-folder-menuExport": {
+    "message": "Export to HTML"
+  },
+
+  
+  "cntx-page-go": {
+    "message": "Open in current Tab"
+  },
+  "cntx-page-edit": {
+    "message": "Edit"
+  },
+  "cntx-page-delete": {
+    "message": "Delete"
+  },
+  "cntx-qrcode-icon": {
+    "message": "Obtain QR-code"
+  },
+
+
+
   "editBkmkDialog_title": {
     "message": "Add/Edit Bookmark",
     "description": "Заголовок диалога редактирования закладки"

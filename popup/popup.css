@@ -201,3 +201,71 @@ ul.fancytree-container {
 .ui-dialog {
 	font-size: 10pt;
 }
+
+.ui-menu {
+	font-size: 0.8em;
+	border-radius: 6px;
+	width: 250px;
+}
+
+ui-menu-item-wrapper, ui-menu {
+	border-radius: 6px;
+}
+
+/*#bkmk-tree.ui-widget-content .ui-state-active:hover, .ui-state-active:hover{*/
+.GBE-ui-contextmenu .ui-state-active, .GBE-ui-contextmenu .ui-state-active:hover {
+	background:#e4f1fb;
+	font-weight:normal;
+	color:#000;
+	border-radius: 6px;
+}
+
+.GBE-ui-contextmenu .ui-icon {
+	margin: 3px;
+}
+
+.GBE-ui-contextmenu .cntx-page-edit {
+	background-image: url("../images/page_edit.png");
+}
+
+
+.GBE-ui-contextmenu .cntx-page-go {
+	background-image: url("../images/page_go.png");
+}
+.GBE-ui-contextmenu .cntx-page-delete {
+	background-image: url("../images/delete.png");
+}
+.GBE-ui-contextmenu .cntx-qrcode-icon {
+	background-image: url("../images/qr-code-icon.gif");
+}
+.GBE-ui-contextmenu .cntx-bookmark-emai {
+	background-image: url("../images/bookmark_email.png");
+}
+.GBE-ui-contextmenu .cntx-bookmark-fbshare {
+	background-image: url("../images/bookmark_fbshare.png");
+}
+.GBE-ui-contextmenu .cntx-bookmark-twshare {
+	background-image: url("../images/bookmark_twshare.png");
+}
+
+.GBE-ui-contextmenu .cntx-folder-menuEdit{
+	background-image: url("../images/folder_edit.png");
+}
+.GBE-ui-contextmenu .cntx-folder-menuRemove{
+	background-image: url("../images/folder_delete.png");
+}
+.GBE-ui-contextmenu .cntx-folder-menuOpenAll{
+	background-image: url("../images/folder_go.png");
+}
+.GBE-ui-contextmenu .cntx-folder-menuAddHere{
+	background-image: url("../images/folder_add.png");
+}
+.GBE-ui-contextmenu .cntx-folder-menuAddAllTabs{
+	background-image: url("../images/add_open_tabs.png");
+}
+.GBE-ui-contextmenu .cntx-folder-menuHideFolder{
+	background-image: url("../images/folder.png");
+}
+.GBE-ui-contextmenu .cntx-folder-menuUnhideFolder, .GBE-ui-contextmenu .cntx-folder-menuUnhideAll{
+	background-image: url("../images/folder_blue.png");
+}

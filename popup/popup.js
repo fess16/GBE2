@@ -2,6 +2,7 @@
 browser.runtime.onMessage.addListener(notify);
 var getting = browser.runtime.getBackgroundPage();
 var bg, aTab, aBkmk = null;
+var popup = window;
 getting.then((page) => {bg = page}, (error) => {_errorLog ("Popup-getBackgroundPage", error)});
 browser.tabs.query({active: true, currentWindow: true}).then((tabs) => {aTab = tabs[0]});
 
@@ -67,9 +68,9 @@ function removeClickHandlers () {
 $(document).ready(function(){
 
 
-  $("#bkm-tree").fancytree({
+  $("#bkmk-tree").fancytree({
   	autoScroll: true, // Automatically scroll nodes into visible area
-    clickFolderMode: 3, // 1:activate, 2:expand, 3:activate and expand, 4:activate (dblclick expands)
+    clickFolderMode: 4, // 1:activate, 2:expand, 3:activate and expand, 4:activate (dblclick expands)
     debugLevel: 2, // 0:quiet, 1:normal, 2:debug
     focusOnSelect: true, // Set focus when node is checked by a mouse click
     quicksearch: true, // Navigate to next node by typing the first letters
@@ -78,6 +79,109 @@ $(document).ready(function(){
     tooltip: true, // Use title as tooltip (also a callback could be specified)
   	source: bg.GBE2.m_treeSource
   });
+
+
+  $("#bkmk-tree").contextmenu({
+    delegate: "span.fancytree-title",
+    addClass : "GBE-ui-contextmenu",
+    autoFocus: true,
+    // hide : "fast",
+    show : "fast",
+//      menu: "#options",
+    menu: [
+    	// folder (label) menu
+      {title: browser.i18n.getMessage("cntx-folder-menuEdit"), cmd: "menuEdit", uiIcon: "cntx-folder-menuEdit"},
+      {title: browser.i18n.getMessage("cntx-folder-menuRemove"), cmd: "menuRemove", uiIcon: "cntx-folder-menuRemove"},
+      {title: "----", cmd: "msepf"},
+      {title: browser.i18n.getMessage("cntx-folder-menuOpenAll"), cmd: "menuOpenAll", uiIcon: "cntx-folder-menuOpenAll"},
+      {title: "----", cmd: "msepf"},
+      {title: browser.i18n.getMessage("cntx-folder-menuAddHere"), cmd: "menuAddHere", uiIcon: "cntx-folder-menuAddHere"},
+      {title: browser.i18n.getMessage("cntx-folder-menuAddAllTabs"), cmd: "menuAddAllTabs", uiIcon: "cntx-folder-menuAddAllTabs"},
+      {title: "----", cmd: "msepf"},
+      {title: browser.i18n.getMessage("cntx-folder-menuHideFolder"), cmd: "menuHideFolder", uiIcon: "cntx-folder-menuHideFolder"},
+      {title: browser.i18n.getMessage("cntx-folder-menuUnhideFolder"), cmd: "menuUnhideFolder", uiIcon: "cntx-folder-menuUnhideFolder"},
+      {title: browser.i18n.getMessage("cntx-folder-menuUnhideAll"), cmd: "menuUnhideAll", uiIcon: "cntx-folder-menuUnhideAll"},
+      {title: "----", cmd: "msepf"},
+      {title: browser.i18n.getMessage("cntx-folder-menuExport"), cmd: "menuExport"},
+      // bookmark menu
+      {title: browser.i18n.getMessage("cntx-page-go"), cmd: "page-go", uiIcon: "cntx-page-go"},
+      {title: browser.i18n.getMessage("cntx-page-edit"), cmd: "page-edit", uiIcon: "cntx-page-edit"},
+      {title: browser.i18n.getMessage("cntx-page-delete"), cmd: "page-delete", uiIcon: "cntx-page-delete"},
+      {title: browser.i18n.getMessage("cntx-qrcode-icon"), cmd: "qrcode-icon", uiIcon: "cntx-qrcode-icon"},
+      {title: "----", cmd: "msepp"},
+      {title: "E-mail...", cmd: "bookmark-emai", uiIcon: "cntx-bookmark-emai"},
+      {title: "Facebook...", cmd: "bookmark-fbshare", uiIcon: "cntx-bookmark-fbshare"},
+      {title: "Twitter...", cmd: "bookmark-twshare", uiIcon: "cntx-bookmark-twshare"},
+    ],
+    beforeOpen: function(event, ui) {
+      var node = $.ui.fancytree.getNode(ui.target);
+      // Modify menu entries depending on node status
+      $("#bkmk-tree").contextmenu("enableEntry", "paste", node.isFolder());
+      // Show/hide single entries
+      if (node.isFolder()) {
+      	$("#bkmk-tree").contextmenu("showEntry", "menuEdit", true);
+      	$("#bkmk-tree").contextmenu("showEntry", "menuRemove", true);
+      	$("#bkmk-tree").contextmenu("showEntry", "menuOpenAll", true);
+      	$("#bkmk-tree").contextmenu("showEntry", "menuAddHere", true);
+      	$("#bkmk-tree").contextmenu("showEntry", "menuAddAllTabs", true);
+      	$("#bkmk-tree").contextmenu("showEntry", "menuHideFolder", true);
+      	$("#bkmk-tree").contextmenu("showEntry", "menuUnhideFolder", true);
+      	$("#bkmk-tree").contextmenu("showEntry", "menuUnhideAll", true);
+      	$("#bkmk-tree").contextmenu("showEntry", "menuExport", true);
+      	$("#bkmk-tree").contextmenu("showEntry", "msepf", true);
+
+      	$("#bkmk-tree").contextmenu("showEntry", "page-go", false);
+      	$("#bkmk-tree").contextmenu("showEntry", "page-edit", false);
+      	$("#bkmk-tree").contextmenu("showEntry", "page-delete", false);
+      	$("#bkmk-tree").contextmenu("showEntry", "qrcode-icon", false);
+      	$("#bkmk-tree").contextmenu("showEntry", "bookmark-emai", false);
+      	$("#bkmk-tree").contextmenu("showEntry", "bookmark-fbshare", false);
+      	$("#bkmk-tree").contextmenu("showEntry", "bookmark-twshare", false);
+      	$("#bkmk-tree").contextmenu("showEntry", "msepp", false);
+			}
+      else {
+      	$("#bkmk-tree").contextmenu("showEntry", "page-go", true);
+      	$("#bkmk-tree").contextmenu("showEntry", "page-edit", true);
+      	$("#bkmk-tree").contextmenu("showEntry", "page-delete", true);
+      	$("#bkmk-tree").contextmenu("showEntry", "qrcode-icon", true);
+      	$("#bkmk-tree").contextmenu("showEntry", "bookmark-emai", true);
+      	$("#bkmk-tree").contextmenu("showEntry", "bookmark-fbshare", true);
+      	$("#bkmk-tree").contextmenu("showEntry", "bookmark-twshare", true);
+      	$("#bkmk-tree").contextmenu("showEntry", "msepp", true);
+
+      	$("#bkmk-tree").contextmenu("showEntry", "menuEdit", false);
+      	$("#bkmk-tree").contextmenu("showEntry", "menuRemove", false);
+      	$("#bkmk-tree").contextmenu("showEntry", "menuOpenAll", false);
+      	$("#bkmk-tree").contextmenu("showEntry", "menuAddHere", false);
+      	$("#bkmk-tree").contextmenu("showEntry", "menuAddAllTabs", false);
+      	$("#bkmk-tree").contextmenu("showEntry", "menuHideFolder", false);
+      	$("#bkmk-tree").contextmenu("showEntry", "menuUnhideFolder", false);
+      	$("#bkmk-tree").contextmenu("showEntry", "menuUnhideAll", false);
+      	$("#bkmk-tree").contextmenu("showEntry", "menuExport", false);
+      	$("#bkmk-tree").contextmenu("showEntry", "msepf", false);
+      	
+      }
+
+      // Activate node on right-click
+      node.setActive();
+      // Disable tree keyboard handling
+      ui.menu.prevKeyboard = node.tree.options.keyboard;
+      node.tree.options.keyboard = false;
+    },
+    close: function(event, ui) {
+      // Restore tree keyboard handling
+      // console.log("close", event, ui, this)
+      // Note: ui is passed since v1.15.0
+      var node = $.ui.fancytree.getNode(ui.target);
+      node.tree.options.keyboard = ui.menu.prevKeyboard;
+      node.setFocus();
+    },
+    select: handleContextMenuClick
+  });
+
+
+
+
 	$(".filterHBox label").text(browser.i18n.getMessage("popup_filterLabel"));
 
 	$("#editBkmkDialog").attr("title", browser.i18n.getMessage("editBkmkDialog_title"));
@@ -234,6 +338,50 @@ function openDelBkmkDialog (){
 	dlg.dialog("open");
 }
 
+function handleContextMenuClick(event, ui) {
+  var node = $.ui.fancytree.getNode(ui.target);
+  console.log("select " + ui.cmd + " on " + node);
+  switch (ui.cmd) {
+  	// bookmark
+  	case "page-go":
+  			if (node.data.url.length) {
+  				let SearchString = new RegExp("^chrome:|^javascript:|^data:|^about:.*" );
+  				if (SearchString.test(node.data.url)) {
+  					console.log("In Firefox, you can't open, or navigate to privileged URLs: chrome:, javascript:, data:, about:");
+  					console.log("https://developer.mozilla.org/ru/Add-ons/WebExtensions/Chrome_incompatibilities");
+  				}
+  				else {
+  					chrome.tabs.update(aTab.id,{url: node.data.url});
+  				}
+  				$("#bkmk-tree").contextmenu("close");
+  				window.close();
+  			}
+  		break;
+  	case "page-edit":
+
+  		break;
+  	case "page-delete":
+
+  		break;
+  	case "qrcode-icon":
+
+  		break;
+  	case "bookmark-emai":
+
+  		break;
+  	case "bookmark-fbshare":
+
+  		break;
+  	case "bookmark-twshare":
+
+  		break;
+  	// label
+  	// case "":
+
+  	// 	break;
+  }
+}
+
 
 function notify(message)
 {
@@ -252,7 +400,7 @@ function notify(message)
 	        ).done(function(){
 	          console.log ("reloaded");
 	        });
-	    $("#bkm-tree").fancytree("enable").show();
+	    $("#bkmk-tree").fancytree("enable").show();
 	    $(".info-box").css({display: 'none'});
 	    break;
 		case "CntxOpenBkmkDialog":
@@ -268,7 +416,7 @@ function refresh() {
   $(".info-box").css({display: 'flex'});
   // TODO сообщение изменить
   $(".info-box label").text("!Loading bookmarks");
-  $("#bkm-tree").fancytree("disable").hide();
+  $("#bkmk-tree").fancytree("disable").hide();
   chrome.runtime.sendMessage({
       type: "refresh",
       tab: aTab
