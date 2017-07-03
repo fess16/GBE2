@@ -55,6 +55,8 @@
 <!--       </div> -->
     </div>
       <div id="editBkmkDialog" title="Редактирование закладки" class="dialog">
+        <input type="hidden" name="editBkmkDialog-id" id="editBkmkDialog-id" value="">
+        <input type="hidden" name="editBkmkDialog-oldUrl" id="editBkmkDialog-oldUrl" value="">
         <label for="editBkmkDialog-name">Название:</label><br/>
         <input type="text" name="editBkmkDialog-name" id="editBkmkDialog-name"><br/>
         <span>
@@ -70,6 +72,10 @@
       </div>
       <div id="delBkmkDialog" class="dialog">
         <label>!Вы действительно хотите удалить закладку?</label>
+      </div>
+
+      <div id="QRdialog" title="QR-code for bookmark" class="dialog">
+      <a href=""><img id="qr_dialog_image"  src=""></a>
       </div>
 <!-- 
     <p>I am popup.html</p>

@@ -269,3 +269,11 @@ ui-menu-item-wrapper, ui-menu {
 .GBE-ui-contextmenu .cntx-folder-menuUnhideFolder, .GBE-ui-contextmenu .cntx-folder-menuUnhideAll{
 	background-image: url("../images/folder_blue.png");
 }
+
+
+#qr_dialog_image {
+	width: 200px;
+	height: 200px;
+	margin-left: -1px;
+  margin-top: 6px;
+}

@@ -1,5 +1,5 @@
 // получаем ссылку на background страницу
-browser.runtime.onMessage.addListener(notify);
+browser.runtime.onMessage.addListener(bgListener);
 var getting = browser.runtime.getBackgroundPage();
 var bg, aTab, aBkmk = null;
 var popup = window;
@@ -23,28 +23,29 @@ function setClickHandlers (aBkmk)
 		$(".hmenuEdit a")
 			.removeClass('disabled-link')
 			.click(function(event) {
-				$("#editBkmkDialog-name").val(aBkmk.title);
-				$("#editBkmkDialog-url").val(aBkmk.url).attr("disabled",true);
-				$("#editBkmkDialog-labels").val(aBkmk.labels);
-				$("#editBkmkDialog-notes").val(aBkmk.notes);
+				// $("#editBkmkDialog-id").val(aBkmk.id);
+				// $("#editBkmkDialog-name").val(aBkmk.title);
+				// $("#editBkmkDialog-url").val(aBkmk.url).attr("readonly",true);
+				// $("#editBkmkDialog-labels").val(aBkmk.labels);
+				// $("#editBkmkDialog-notes").val(aBkmk.notes);
 
-				openBkmkDialog("editBkmkDialog");
+				openBkmkDialog(aBkmk);
 		});
 		$(".hmenuDel a")
 			.removeClass('disabled-link')
 			.click(function(event) {
-				$("#delBkmkDialog label").text(browser.i18n.getMessage("delBkmkDialog_label", aBkmk.title));
-				openDelBkmkDialog();
+				// $("#delBkmkDialog label").text(browser.i18n.getMessage("delBkmkDialog_label", aBkmk.title));
+				openDelBkmkDialog(aBkmk);
 		});
 	}
 	else {
 		$(".hmenuAdd a")
 			.removeClass('disabled-link')
 			.click(function(event) {
-				$("#editBkmkDialog-name").val(aTab.title);
-				$("#editBkmkDialog-url").val(aTab.url);//.attr("disabled",true);
-				$("#editBkmkDialog-enableUrlEdit").attr("disabled",true);
-				openBkmkDialog("editBkmkDialog");
+				// $("#editBkmkDialog-name").val(aTab.title);
+				// $("#editBkmkDialog-url").val(aTab.url);//.attr("disabled",true);
+				// $("#editBkmkDialog-enableUrlEdit").attr("disabled",true);
+				openBkmkDialog({id: null, title: aTab.title, url: aTab.url, labels: "", notes: ""});
 		});
 		$(".hmenuEdit a")
 			.addClass('disabled-link')
@@ -201,11 +202,11 @@ $(document).ready(function(){
 	// с параметрами из m_dlgInfo
 	if (bg.GBE2.m_dlgInfo !== null && bg.GBE2.m_dlgInfo.needOpen)
 	{
-		$("#editBkmkDialog-name").val(bg.GBE2.m_dlgInfo.title);
-		$("#editBkmkDialog-url").val(bg.GBE2.m_dlgInfo.url);
+		// $("#editBkmkDialog-name").val(bg.GBE2.m_dlgInfo.title);
+		// $("#editBkmkDialog-url").val(bg.GBE2.m_dlgInfo.url);
 		bg.GBE2.m_dlgInfo.needOpen = false;
 		// setTimeout(() => {
-		openBkmkDialog("editBkmkDialog");
+		openBkmkDialog({id: null, title: bg.GBE2.m_dlgInfo.title, url: bg.GBE2.m_dlgInfo.url, labels: "", notes: ""});
 		$("#editBkmkDialog").dialog('option', 'position', { my: "center", at: "center", of: "#wrapper" })
 		// }, 100);
 	}
@@ -253,16 +254,52 @@ $(document).ready(function(){
 		window.close();
 	});
 
+	$("#qr_dialog_image").on("click", function () {
+		chrome.tabs.create({active: true, url: $(this).attr("src")});
+		//$(this).dialog("close");
+		window.close();
+	});
 
-});
+
+
+}); // document ready
+
+function setBkmkControls (bkmk)
+{
+	$("#editBkmkDialog-name").val(bkmk.title);
+	$("#editBkmkDialog-url").val(bkmk.url);
+	if (bkmk.labels.length > 0) 
+	{
+		$("#editBkmkDialog-labels").val(bkmk.labels + ",");
+	}
+	$("#editBkmkDialog-notes").val(bkmk.notes);
+
+	if (bkmk.id == null) 	{
+		$("#editBkmkDialog-enableUrlEdit").attr("disabled",true);
+	}
+	else {
+		$("#editBkmkDialog-id").val(bkmk.id);
+		$("#editBkmkDialog-enableUrlEdit").prop("checked", false).attr("disabled",false);
+		$("#editBkmkDialog-url").attr("readonly",true);
+		// TODO if (!this._M.enableNotes)
+		// 			{
+		// 				// запрашиваем примечание к закладке
+		// if (this.windowsParams.url == "")
+
+	}
+}
 
 var editBkmkDialog = null;
-function openBkmkDialog (dlgName)
+var delBkmkDialog = null;
+
+// function openBkmkDialog (dlgName)
+function openBkmkDialog (bkmk)
 {
+	// var dlg = $("#" + dlgName);
 	if (editBkmkDialog == null)
 	{
-		var dlg = $("#" + dlgName);
-		dlg.dialog({
+		editBkmkDialog = $("#editBkmkDialog");
+		editBkmkDialog.dialog({
 			dialogClass: "no-close",
       autoOpen: false,
       modal: true,
@@ -276,7 +313,7 @@ function openBkmkDialog (dlgName)
         {
           text: browser.i18n.getMessage("btn_Save"),
           click: function() {
-          	let bkmk = {
+          	let result = {
 	          	title: $("#editBkmkDialog-name").val(),
 	          	url: $("#editBkmkDialog-url").val(),
 	          	labels: $("#editBkmkDialog-labels").val(),
@@ -284,7 +321,7 @@ function openBkmkDialog (dlgName)
           	}
           	browser.runtime.sendMessage({
 		      		"type": "addBookmark",
-		      		"data": bkmk
+		      		"data": result
 	      		}).then((result) => {
             	$(this).dialog("close");
 	      		});
@@ -301,10 +338,11 @@ function openBkmkDialog (dlgName)
      });
 	}
 	$("#wrapper").width("500px");
-	dlg.dialog("open");
+	setBkmkControls(bkmk);
+	editBkmkDialog.dialog("open");
 }
 
-function openDelBkmkDialog (){
+function openDelBkmkDialog (aBkmk){
 	let dlg = $("#delBkmkDialog");
 	dlg.dialog({
 		dialogClass: "no-close",
@@ -334,13 +372,56 @@ function openDelBkmkDialog (){
         }
       },
     ],
+    open: function( event, ui ) {
+    	$("#delBkmkDialog label").text(browser.i18n.getMessage("delBkmkDialog_label", aBkmk.title));
+    }
 	});
 	dlg.dialog("open");
+}
+
+function openQRdialog(aBkmk){
+	let dlg = $("#QRdialog");
+	dlg.dialog({
+		autoOpen: false,
+		modal: true,
+		draggable: false,
+		resizable: false,
+		position: { my: "center", at: "center", of: "#wrapper" },
+		width: 225,
+		title: 	"QR-code for bookmark",
+    open: function( event, ui ) {
+    	$("#qr_dialog_image")
+    		.attr("src", "https://chart.googleapis.com/chart?cht=qr&chl=" + encodeURIComponent(aBkmk.url) + "&choe=UTF-8&chs=200x200");
+    }
+	});
+	dlg.dialog("open");
+}
+
+function contextMenuShareBookmark (bkmk, mode) {
+	if (bkmk !== null)
+	{
+		let link = "";
+		switch (mode) {
+			case "fb":
+				link = "https://www.facebook.com/sharer/sharer.php?u=" + bkmk.url;
+				break;
+			case "tw":
+				link = "https://twitter.com/intent/tweet?text=" + bkmk.url + "&source=webclient";
+				break;
+			case "email":
+				link = "mailto:test@example.com?"
+         + "&subject=" + bkmk.title
+         + "&body=" + bkmk.title + "%0D%0A" + escape(bkmk.url);
+		}
+		if (link.length > 0) chrome.tabs.create({active: true, url: link});
+		window.close();
+	}
 }
 
 function handleContextMenuClick(event, ui) {
   var node = $.ui.fancytree.getNode(ui.target);
   console.log("select " + ui.cmd + " on " + node);
+  let bkmk = null;
   switch (ui.cmd) {
   	// bookmark
   	case "page-go":
@@ -353,27 +434,39 @@ function handleContextMenuClick(event, ui) {
   				else {
   					chrome.tabs.update(aTab.id,{url: node.data.url});
   				}
-  				$("#bkmk-tree").contextmenu("close");
+  				//$("#bkmk-tree").contextmenu("close");
   				window.close();
   			}
   		break;
   	case "page-edit":
-
+  		bkmk = bg.GBE2.getBookmark({id: node.refKey});
+  		// $("#editBkmkDialog-id").val(bkmk.id);
+  		// $("#editBkmkDialog-name").val(bkmk.title);
+  		// $("#editBkmkDialog-url").val(bkmk.url).attr("disabled",true);
+  		// $("#editBkmkDialog-labels").val(bkmk.labels);
+  		// $("#editBkmkDialog-notes").val(bkmk.notes);
+  		openBkmkDialog(bkmk);
   		break;
   	case "page-delete":
-
+  		bkmk = bg.GBE2.getBookmark({id: node.refKey});
+  		// $("#delBkmkDialog label").text(browser.i18n.getMessage("delBkmkDialog_label", bkmk.title));
+  		openDelBkmkDialog(bkmk);
   		break;
   	case "qrcode-icon":
-
+  		bkmk = bg.GBE2.getBookmark({id: node.refKey});
+  		openQRdialog(bkmk);
   		break;
   	case "bookmark-emai":
-
+  		bkmk = bg.GBE2.getBookmark({id: node.refKey});
+  		contextMenuShareBookmark(bkmk, "email");
   		break;
   	case "bookmark-fbshare":
-
+	  	bkmk = bg.GBE2.getBookmark({id: node.refKey});
+	  	contextMenuShareBookmark(bkmk, "fb");
   		break;
   	case "bookmark-twshare":
-
+  		bkmk = bg.GBE2.getBookmark({id: node.refKey});
+  		contextMenuShareBookmark(bkmk, "tw");
   		break;
   	// label
   	// case "":
@@ -383,7 +476,7 @@ function handleContextMenuClick(event, ui) {
 }
 
 
-function notify(message)
+function bgListener(message)
 {
 	switch (message.type){
 		case "needRefresh":
@@ -394,7 +487,7 @@ function notify(message)
 			setClickHandlers (aBkmk);
 			// console.log (JSON.stringify(message));
 
-			$.ui.fancytree.getTree("#bkm-tree").reload(
+			$.ui.fancytree.getTree("#bkmk-tree").reload(
 	          // message.text
 	          bg.GBE2.m_treeSource
 	        ).done(function(){
@@ -404,9 +497,10 @@ function notify(message)
 	    $(".info-box").css({display: 'none'});
 	    break;
 		case "CntxOpenBkmkDialog":
-			$("#editBkmkDialog-name").val(message.title);
-			$("#editBkmkDialog-url").val(message.url);
-			openBkmkDialog("editBkmkDialog");
+			// $("#editBkmkDialog-name").val(message.title);
+			// $("#editBkmkDialog-url").val(message.url);
+			// openBkmkDialog("editBkmkDialog");
+			openBkmkDialog({id: null, title: message.title, url: message.url, labels: "", notes: ""});
 			break;
 	}
 }
