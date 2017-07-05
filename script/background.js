@@ -893,8 +893,49 @@
 			});
 	},
 
-	// let data = 	"?zx="+((new Date()).getTime()) + "&dlq=" + params.id + "&sig=" + (params.sig ? params.sig : this.m_signature);
-	// 	request.open("GET", this.baseUrl2 + data, true);
+	doChangeLabel : function (lbl) {
+		return Promise.resolve()
+			.then(() => {
+				// console.log("doChangeBookmark:m_signature");
+				if (this.m_signature) 
+					{return this.m_signature;}
+				else
+					{return this.doRequestSignature();}
+			})
+			.catch((e) => {
+				_errorLog("doChangeLabel", e);
+				// _consoleLog ("GBE2:doChangeBookmark", "Obtain signature - error!");
+				throw new Error("doChangeLabel : Obtain signature - error!");
+			})
+			.then(() => {
+				// console.log("doChangeBookmark:ajax");
+				return $.ajax({
+					url: this.m_baseUrl2,
+					method: "GET",
+					data: { 
+						op : "modlabel",
+						zx : ((new Date()).getTime() + Math.random() * (99) + 1),
+						labels : lbl.oldName + "," + lbl.name,
+						sig : this.m_signature
+					},
+					timeout : this.p_timeout,
+				})
+				.then( (response, status, xhr) => {
+						 console.log("doChangeLabel : Ok");
+					},
+					function (jqXHR, textStatus)
+					{
+						_consoleLog ("GBE2:doChangeLabel", "Changing label ", JSON.stringify(lbl), " - error!");
+						_consoleLog ("GBE2:doChangeLabel - Request failed: ", textStatus);
+						_consoleLog (jqXHR.responseText);
+					}
+				);
+			});
+	},
+
+		// 	request.open("POST", this.baseUrl2, true);
+		// let data = 	"op=modlabel&zx="+((new Date()).getTime() + Math.random() * (99) + 1) + "&labels=" + 
+		// 						encodeURIComponent(oldLabel + "," + label) + "&sig=" + (signature ? signature : this.m_signature);
 	doDeleteBookmark : function (bkmk)
 	{
 		let result = bkmk;
@@ -1124,7 +1165,7 @@ chrome.runtime.onMessage.addListener(
 	    			// console.log("background:editBookmark");
 	    		})
 	    		.catch((e) => {
-	    			_errorLog("background:editBookmark",e);
+	    			_errorLog("background:editBookmark", e);
 	    		});
 	    	break;
 	    }
@@ -1135,9 +1176,20 @@ chrome.runtime.onMessage.addListener(
 	    			// console.log("background:deleteBookmark");
 	    		})
 	    		.catch((e) => {
-	    			_errorLog("background:deleteBookmark",e);
+	    			_errorLog("background:deleteBookmark", e);
 	    		});
 	    	break;
+	    case "editLabel":
+	    	GBE2.doChangeLabel(request.data)
+	    		.then(() => {
+	    			browser.runtime.sendMessage({type: "needRefresh"});
+	    			console.log("background:doChangeLabel");
+	    		})
+	    		.catch((e) => {
+	    			_errorLog("background:doChangeLabel", e);
+	    		});
+	    	break;
+
 	    case "test1" :
 	    {
 	    	let bkmks = [

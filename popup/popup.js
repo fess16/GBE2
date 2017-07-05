@@ -467,7 +467,7 @@ function openEditLblDlg (aLbl) {
           text: browser.i18n.getMessage("btn_Save"),
           click: function() {
           	let result = {
-	          	id: $("#editLblDlg-id").val(),
+	          	oldName: $("#editLblDlg-oldName").val(),
 	          	name: $("#editLblDlg-name").val(),
           	}
           	browser.runtime.sendMessage({
@@ -487,7 +487,7 @@ function openEditLblDlg (aLbl) {
       ]
 		});
 	}
-	$("#editLblDlg-id").val(aLbl.id),
+	$("#editLblDlg-oldName").val(aLbl.name),
 	$("#editLblDlg-name").val(aLbl.name),
 
 	editLblDlg.dialog("open");
