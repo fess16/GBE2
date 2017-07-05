@@ -217,7 +217,7 @@
 				}
 			};
 
-			let oType = this.p_enableNotes ? "rss" : "xml";
+			let oType = this.opt.enableNotes ? "rss" : "xml";
 			// получаем все закладки из XML ответа сервера
 	    let bookmarks = $(responseXML).find(bkmkFN[oType].bkmk);
 	    // получаем все метки из XML ответа сервера
@@ -352,7 +352,7 @@
 				// закладка с примечанием?
 				try 
 				{
-					if (this.p_enableNotes && bookmark.find(bkmkFN[oType].notes).length)
+					if (this.opt.enableNotes && bookmark.find(bkmkFN[oType].notes).length)
 					{
 						this.m_bookmarkList[i].notes = bookmark.find(bkmkFN[oType].notes).text();
 					}
@@ -639,7 +639,7 @@
     				hiddenLabel.hidden = "true";
     			}
     		}
-    	  // console.log(JSON.stringify(visitsArray));
+    	  // console.log(JSON.stringify(this.m_labelsArr));
 				// получаем массив меток
 				// console.log (JSON.stringify(treeSource));
 				//console.log (JSON.stringify(this.m_bookmarkList));
@@ -670,7 +670,7 @@
 			url: this.m_baseUrl + "lookup",
 			type: 'GET',
 			data: {
-				output : (this.p_enableNotes ? "rss" : "xml"),
+				output : (this.opt.enableNotes ? "rss" : "xml"),
 				num : 10000
 			},
 			timeout : this.p_timeout
@@ -774,7 +774,7 @@
 			        	return result;
 			        }
 						}
-						throw new Error("doRequestBookmarkURL : Bookmark <" +  bkmk.name + "> with id=" + bkmk.id + " was not found!");
+						throw new Error("doRequestBookmarkURL : Bookmark <" +  bkmk.title + "> with id=" + bkmk.id + " was not found!");
 					}
 		    }
 		    else
@@ -784,17 +784,63 @@
 			},
 			function (jqXHR, textStatus)
 			{
-				_consoleLog ("GBE2:doRequestBookmarkURL", "Obtain bookmark URL (", bkmk.name, ") - error!");
+				_consoleLog ("GBE2:doRequestBookmarkURL", "Obtain bookmark URL (", bkmk.title, ") - error!");
 				_consoleLog ("GBE2:doRequestBookmarkURL - Request failed: ", textStatus);
 				_consoleLog (jqXHR.responseText);
 			}
 		);
 	},
-		// 	request.open("POST", this.baseUrl2, true);
-		// let data = 	"zx="+((new Date()).getTime()) + "&bkmk=" + encodeURIComponent(params.url) + 
-		// 						"&title=" + encodeURIComponent(params.name) + "&labels=" + encodeURIComponent(params.labels) +
-		// 						"&annotation=" + encodeURIComponent(params.notes) + "&prev=%2Flookup&sig=" + 
-		// 						(params.sig ? params.sig : this.m_signature) + 	"&cd=bkmk&q=&start=0";
+
+	doRequestBookmarkNote : function (bkmk)
+	{
+		return $.ajax({
+			url: this.m_baseUrl + "find",
+			method: "GET",
+			data: { 
+				zx : (new Date()).getTime(),
+				output : "rss",
+				q : bkmk.title
+			},
+			timeout : this.p_timeout
+		})
+		.then(
+			function(response, status,xhr){
+				var ct = xhr.getResponseHeader("content-type") || "";
+				if (ct.indexOf('xml') > -1) {
+					let bookmarks = $(response).find("item");
+					if (bookmarks.length){
+						for (let i = 0; i < bookmarks.length; i++)
+						{
+							let item = $(bookmarks[i]);
+							if (bkmk.id == item.find("smh\\:bkmk_id").text()){
+								let notes = item.find("smh\\:bkmk_annotation");
+								if (notes.length)
+								{
+									bkmk.notes = notes.text();
+									// console.log ("doRequestBookmarkNote " + bkmk.id);
+									return notes.text();
+								}
+							}
+								
+						}
+						return "";
+					}
+				}
+				else
+				{
+					throw new Error("doRequestBookmarkNote : Answer of server is not XML.");
+				}
+			}
+			,
+			function (jqXHR, textStatus)
+			{
+				_consoleLog ("GBE2:doRequestBookmarkNote", "Obtain bookmark URL (", bkmk.title, ") - error!");
+				_consoleLog ("GBE2:doRequestBookmarkNote - Request failed: ", textStatus);
+				_consoleLog (jqXHR.responseText);
+			}
+		);
+	},
+
 
 	doChangeBookmark : function (bkmk)
 	{
@@ -832,13 +878,10 @@
 					timeout : this.p_timeout,
 				})
 				.then( (response, status, xhr) => {
-			    	// console.log("doChangeBookmark : Ok");
-				    	// if (params.oldUrl && params.oldUrl != params.url)
-				    	// {
-				    	// 	self.ErrorLog("Changing bookmarks URL from ", params.oldUrl, "to", params.url);
-				    	// 	self.doDeleteBookmark({"url" : params.oldUrl, "id" : params.id, "sig" : params.sig}, overlay);
-				    	// }
-				    	// 	if (overlay !== null) overlay.changeButtonIcon(params.url, params.id, false); 
+			    	if (bkmk.oldURL !== "" && bkmk.oldUrl !== bkmk.url) {
+			    		_consoleLog ("Changing bookmarks URL from ", bkmk.oldUrl, "to", bkmk.url);
+			    		return this.doDeleteBookmark(bkmk);
+			    	}
 					},
 					function (jqXHR, textStatus)
 					{
@@ -1072,16 +1115,16 @@ chrome.runtime.onMessage.addListener(
 	    	console.log("background.js " + JSON.stringify(sender.tab));
 	    	break;
 	    }
-	    case "addBookmark" :
+	    case "editBookmark" :
 	    {
-	    	console.log("background.js " + JSON.stringify(request.data));
+	    	// console.log("background.js " + JSON.stringify(request.data));
 	    	GBE2.doChangeBookmark(request.data)
 	    		.then(() => {
 	    			browser.runtime.sendMessage({type: "needRefresh"});
-	    			// console.log("background:addBookmark");
+	    			// console.log("background:editBookmark");
 	    		})
 	    		.catch((e) => {
-	    			_errorLog("background:addBookmark",e);
+	    			_errorLog("background:editBookmark",e);
 	    		});
 	    	break;
 	    }

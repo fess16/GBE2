@@ -208,8 +208,13 @@ ul.fancytree-container {
 	width: 250px;
 }
 
-ui-menu-item-wrapper, ui-menu {
+.ui-menu-item-wrapper, .ui-menu {
 	border-radius: 6px;
+}
+
+#editBkmkDlg-url[readonly="readonly"] {
+	background-color: rgb(227, 227, 227);
+	color: rgb(109, 109, 109);
 }
 
 /*#bkmk-tree.ui-widget-content .ui-state-active:hover, .ui-state-active:hover{*/

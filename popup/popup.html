@@ -54,34 +54,41 @@
       <div id="bkmk-tree"></div>
 <!--       </div> -->
     </div>
-      <div id="editBkmkDialog" title="Редактирование закладки" class="dialog">
-        <input type="hidden" name="editBkmkDialog-id" id="editBkmkDialog-id" value="">
-        <input type="hidden" name="editBkmkDialog-oldUrl" id="editBkmkDialog-oldUrl" value="">
-        <label for="editBkmkDialog-name">Название:</label><br/>
-        <input type="text" name="editBkmkDialog-name" id="editBkmkDialog-name"><br/>
+      <!-- add/edit bookmark dialog -->
+      <div id="editBkmkDlg" title="Редактирование закладки" class="dialog">
+        <input type="hidden" name="editBkmkDlg-id" id="editBkmkDlg-id" value="">
+        <input type="hidden" name="editBkmkDlg-oldUrl" id="editBkmkDlg-oldUrl" value="">
+        <label for="editBkmkDlg-name">Название:</label><br/>
+        <input type="text" name="editBkmkDlg-name" id="editBkmkDlg-name"><br/>
         <span>
-        <label for="editBkmkDialog-url">URL:</label><!-- <br/> -->
-          <input id="editBkmkDialog-enableUrlEdit" type="checkbox"><!-- <br/> -->
+        <label for="editBkmkDlg-url">URL:</label><!-- <br/> -->
+          <input id="editBkmkDlg-enableUrlEdit" type="checkbox"><!-- <br/> -->
         </span>
-          <input type="text" name="editBkmkDialog-url" id="editBkmkDialog-url">
-        <label for="editBkmkDialog-labels">!Метки:</label><br/>
-        <input type="text" name="editBkmkDialog-labels" id="editBkmkDialog-labels"><br/>
-        <label for="editBkmkDialog-notes">!Заметки:</label><br/>
-        <textarea rows="3" name="editBkmkDialog-notes" id="editBkmkDialog-notes"></textarea> 
-
+          <input type="text" name="editBkmkDlg-url" id="editBkmkDlg-url">
+        <label for="editBkmkDlg-labels">!Метки:</label><br/>
+        <input type="text" name="editBkmkDlg-labels" id="editBkmkDlg-labels"><br/>
+        <label for="editBkmkDlg-notes">!Заметки:</label><br/>
+        <textarea rows="3" name="editBkmkDlg-notes" id="editBkmkDlg-notes"></textarea> 
       </div>
-      <div id="delBkmkDialog" class="dialog">
+
+      <!-- delete bookmark dialog -->
+      <div id="delBkmkDlg" class="dialog">
+        <input type="hidden" name="delBkmkDlg-id" id="delBkmkDlg-id" value="">
         <label>!Вы действительно хотите удалить закладку?</label>
       </div>
 
-      <div id="QRdialog" title="QR-code for bookmark" class="dialog">
-      <a href=""><img id="qr_dialog_image"  src=""></a>
+      <!-- edit label dialog -->
+      <div id="editLblDlg" class="dialog">
+        <input type="hidden" name="editLblDlg-id" id="editLblDlg-id" value="">
+        <label for="editLblDlg-name">Название:</label><br/>
+        <input type="text" name="editLblDlg-name" id="editLblDlg-name"><br/>
       </div>
-<!-- 
-    <p>I am popup.html</p>
-    <button id="btn">hello</button>
-    <br>msg from background.js: 
-    <div id="div"></div> -->
-</div>
+
+      <!-- QR-code dialog -->
+      <div id="QRdialog" title="QR-code for bookmark" class="dialog">
+        <a href=""><img id="qr_dialog_image"  src=""></a>
+      </div>
+
+    </div>
   </body>
 </html>

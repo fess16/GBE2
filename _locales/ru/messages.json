@@ -62,25 +62,34 @@
   },
 
 
-  "editBkmkDialog_title": {
+  "editBkmkDlg_title": {
     "message": "Добавление/редактирование закладки",
     "description": "Заголовок диалога редактирования закладки"
   },
-  "editBkmkDialog_name": {
+  "editBkmkDlg_name": {
     "message": "Название:",
     "description": "Надпись поля с названием закладки"
   },
-  "editBkmkDialog_url": {
+  "editBkmkDlg_url": {
     "message": "Адрес (URL):",
     "description": "Надпись поля с URL закладки"
   },
-  "editBkmkDialog_labels": {
+  "editBkmkDlg_labels": {
     "message": "Метки:",
     "description": "Надпись поля с метками закладки"
   },
-  "editBkmkDialog_notes": {
+  "editBkmkDlg_notes": {
     "message": "Заметки:",
     "description": "Надпись поля с заметками закладки"
+  },
+
+  "editLblDlg_title": {
+    "message": "Редактирование метки",
+    "description": "Заголовок диалога редактирования метки"
+  },
+  "editLblDlg_name": {
+    "message": "Название:",
+    "description": "Надпись поля с названием метки"
   },
 
 
@@ -97,11 +106,11 @@
     "description": "Надпись кнопки удаления в диалогах"
   },
 
-  "delBkmkDialog_title": {
+  "delBkmkDlg_title": {
     "message": "Удаление закладки",
     "description": "Заголовок диалога удаления закладки"
   },
-  "delBkmkDialog_label": {
+  "delBkmkDlg_label": {
     "message": "Вы действительно ходите удалить закладку ($bkmkTitle$)?",
     "description": "Надпись в диалоге удаления закладки",
     "placeholders": {

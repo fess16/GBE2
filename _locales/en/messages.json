@@ -64,25 +64,34 @@
 
 
 
-  "editBkmkDialog_title": {
+  "editBkmkDlg_title": {
     "message": "Add/Edit Bookmark",
     "description": "Заголовок диалога редактирования закладки"
   },
-  "editBkmkDialog_name": {
+  "editBkmkDlg_name": {
     "message": "Name:",
     "description": "Надпись поля с названием закладки"
   },
-  "editBkmkDialog_url": {
+  "editBkmkDlg_url": {
     "message": "Location (URL):",
     "description": "Надпись поля с URL закладки"
   },
-  "editBkmkDialog_labels": {
+  "editBkmkDlg_labels": {
     "message": "Labels:",
     "description": "Надпись поля с метками закладки"
   },
-  "editBkmkDialog_notes": {
+  "editBkmkDlg_notes": {
     "message": "Notes:",
     "description": "Надпись поля с заметками закладки"
+  },
+
+  "editLblDlg_title": {
+    "message": "Edit Label",
+    "description": "Заголовок диалога редактирования метки"
+  },
+  "editLblDlg_name": {
+    "message": "Name:",
+    "description": "Надпись поля с названием метки"
   },
 
   "btn_Save": {
@@ -98,11 +107,11 @@
     "description": "Надпись кнопки удаления в диалогах"
   },
 
-  "delBkmkDialog_title": {
+  "delBkmkDlg_title": {
     "message": "Delete Bookmark",
     "description": "Заголовок диалога удаления закладки"
   },
-  "delBkmkDialog_label": {
+  "delBkmkDlg_label": {
     "message": "Are you sure you want to delete bookmark ($bkmkTitle$)?",
     "description": "Надпись в диалоге удаления закладки",
     "placeholders": {

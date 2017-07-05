@@ -20,7 +20,7 @@ function Options () {
 	// включить добавление метки к закладкам без метки
 	this.enableLabelUnlabeled =  false;
 	// режим без примечаний - формат получения закладок-  rss or xml
-	this.enableNotes =  true;
+	this.enableNotes =  false;
 	// метка для скрытых закладок
 	this.hiddenLabelsTitle =  "_hidden_";
 	// добавляемая метка к закладкам без метки
