@@ -64,6 +64,26 @@ function removeClickHandlers () {
 	$(".hmenuAdd a, .hmenuEdit a").off( "click", "**" );
 }
 
+function showURL (url, newTab = true, activate = true)
+{
+	if (url.length) {
+		let SearchString = new RegExp("^chrome:|^javascript:|^data:|^about:|^file:.*" );
+		if (SearchString.test(url)) {
+			console.log("You are trying open url: " + url);
+			console.log("But in Firefox Webextension, you can't open or navigate to privileged URLs: chrome:, javascript:, data:, about:");
+			console.log("https://developer.mozilla.org/ru/Add-ons/WebExtensions/Chrome_incompatibilities");
+		}
+		else {
+			if (newTab)
+			{
+				browser.tabs.create({active: activate, url: url});
+			}
+			else {
+				browser.tabs.update(aTab.id,{url: url});
+			}
+		}
+	}
+}
 
 $(document).ready(function(){
 
@@ -77,7 +97,33 @@ $(document).ready(function(){
     selectMode: 1, // 1:single, 2:multi, 3:multi-hier
     tabindex: "0", // Whole tree behaves as one single control
     tooltip: true, // Use title as tooltip (also a callback could be specified)
-  	source: bg.GBE2.m_treeSource
+  	source: bg.GBE2.m_treeSource,
+  	// обработчик кликов по закладкам и меткам
+  	click: function(event, data) {
+	    let node = data.node,
+        // Only for click and dblclick events:
+        // 'title' | 'prefix' | 'expander' | 'checkbox' | 'icon'
+        targetType = data.targetType;
+      if (targetType == "title" || targetType == "icon") {
+      	// левый клик по закладкам - открываем в новой вкладке (по-умолчанию), если reverseLeftClick = false
+      	// which: left button - 1, middle button - 2
+      	if (event.originalEvent.which == 1 && !node.isFolder())	{
+      		showURL(node.data.url, !bg.GBE2.opt.reverseLeftClick, true);
+      		// return false;
+      		window.close();
+      	}
+      	// клик колесиком (средней кнопкой)
+      	if (event.originalEvent.which == 2) {
+      		if (node.isFolder())
+      			// по метке - открываем вложенные закладки
+      			labelMenuOpenAll({id: node.key, name: node.data.path});
+    			else
+    				// по закладке - открываем в той же вкладке (по-умолчанию), если reverseLeftClick = false
+      			showURL(node.data.url, bg.GBE2.opt.reverseLeftClick);
+      		window.close();
+      	}
+      }
+	  },
   });
 
 
@@ -246,13 +292,15 @@ $(document).ready(function(){
 	});
 	
 	$(".hmenuGBs a").click(function(event) {
-		chrome.tabs.create({active: true, url: "https://www.google.com/bookmarks/"});
+		showURL("https://www.google.com/bookmarks/");
+		// chrome.tabs.create({active: true, url: "https://www.google.com/bookmarks/"});
 		window.close();
 	});
 
 	// клик на QR-коде - открываем его в новой вкладке 
 	$("#qr_dialog_image").on("click", function () {
-		chrome.tabs.create({active: true, url: $(this).attr("src")});
+		showURL($(this).attr("src"));
+		// chrome.tabs.create({active: true, url: $(this).attr("src")});
 		window.close();
 	});
 
@@ -578,7 +626,8 @@ function contextMenuShareBookmark (bkmk, mode) {
          + "&subject=" + bkmk.title
          + "&body=" + bkmk.title + "%0D%0A" + escape(bkmk.url);
 		}
-		if (link.length > 0) chrome.tabs.create({active: true, url: link});
+		if (link.length > 0) showURL(link);
+		// if (link.length > 0) chrome.tabs.create({active: true, url: link});
 		window.close();
 	}
 }
@@ -586,8 +635,9 @@ function contextMenuShareBookmark (bkmk, mode) {
 function labelMenuOpenAll(lbl){
 	bg.GBE2.m_bookmarkList.forEach((bkmk) => {
 		if (bkmk.labels.length && bkmk.labels.indexOf(lbl.name) >=0){
-			browser.tabs.create({active: false, url: bkmk.url})
-				.catch((e) => {_errorLog("labelMenuOpenAll", e)});
+			showURL(bkmk.url, true, false);
+			// browser.tabs.create({active: false, url: bkmk.url})
+			// 	.catch((e) => {_errorLog("labelMenuOpenAll", e)});
 		}
 	});
 }
@@ -618,14 +668,15 @@ function handleContextMenuClick(event, ui) {
   	// bookmark
   	case "page-go":
   			if (node.data.url.length) {
-  				let SearchString = new RegExp("^chrome:|^javascript:|^data:|^about:.*" );
-  				if (SearchString.test(node.data.url)) {
-  					console.log("In Firefox, you can't open, or navigate to privileged URLs: chrome:, javascript:, data:, about:");
-  					console.log("https://developer.mozilla.org/ru/Add-ons/WebExtensions/Chrome_incompatibilities");
-  				}
-  				else {
-  					chrome.tabs.update(aTab.id,{url: node.data.url});
-  				}
+  				showURL(node.data.url, false);
+  				// let SearchString = new RegExp("^chrome:|^javascript:|^data:|^about:.*" );
+  				// if (SearchString.test(node.data.url)) {
+  				// 	console.log("In Firefox, you can't open, or navigate to privileged URLs: chrome:, javascript:, data:, about:");
+  				// 	console.log("https://developer.mozilla.org/ru/Add-ons/WebExtensions/Chrome_incompatibilities");
+  				// }
+  				// else {
+   			// 		chrome.tabs.update(aTab.id,{url: node.data.url});
+  				// }
   				//$("#bkmk-tree").contextmenu("close");
   				window.close();
   			}

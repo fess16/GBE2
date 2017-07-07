@@ -17,6 +17,7 @@ function setTexts()
 	$("label[for=nestedLabelSep]").text(browser.i18n.getMessage("options_nestedLabelSep"));
 	$("label[for=enableNotes]").text(browser.i18n.getMessage("options_enableNotes"));
 	$("label[for=enableLabelUnlabeled]").text(browser.i18n.getMessage("options_enableLabelUnlabeled"));
+	$("label[for=reverseLeftClick]").text(browser.i18n.getMessage("options_reverseLeftClick"));
 }
 
 // var options1  = {};
@@ -31,6 +32,7 @@ function restoreOptions()
   	$("#enableNotes").prop("checked", r.enableNotes);
   	$("#enableLabelUnlabeled").prop("checked", r.enableLabelUnlabeled);
   	$("#labelUnlabeledName").val(r.labelUnlabeledName).attr('disabled', !$("#enableLabelUnlabeled").prop("checked"));
+  	$("#reverseLeftClick").prop("checked", r.reverseLeftClick);
   });
   // var item = browser.storage.local.get();
   // item.then((res) => {
@@ -55,6 +57,7 @@ function saveOptions(e)
 	opt.enableNotes = $("#enableNotes").prop("checked");
 	opt.enableLabelUnlabeled = $("#enableLabelUnlabeled").prop("checked");
 	opt.labelUnlabeledName = ($("#labelUnlabeledName").val().length == 1) ? $("#labelUnlabeledName").val() : "Unlabeled";
+	opt.reverseLeftClick = $("#reverseLeftClick").prop("checked");
 	opt.write().then();
 }
 

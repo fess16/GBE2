@@ -18,22 +18,33 @@
         <label for="nestedLabelSep">Nested labels separator:</label>
         <input type="text" id="nestedLabelSep" name="nestedLabelSep">
       </div>
+
       <div class="fRow">
-        <label for="enableNotes">Show bookmarks notes:</label>
         <!-- <input id="enableNotes" type="checkbox" name="enableNotes"> -->
         <label class="switch">
           <input id="enableNotes" type="checkbox">
           <div class="slider round"></div>
         </label>
+        <label for="enableNotes">Show bookmarks notes</label>
       </div>
+
       <div class="fRow">
-        <label for="enableLabelUnlabeled">enableLabelUnlabeled:</label>
         <label class="switch">
           <input id="enableLabelUnlabeled" type="checkbox">
           <div class="slider round"></div>
         </label>
+        <label for="enableLabelUnlabeled">enableLabelUnlabeled:</label>
         <input type="text" name="labelUnlabeledName" id="labelUnlabeledName">
       </div>
+
+      <div class="fRow">
+        <label class="switch">
+          <input id="reverseLeftClick" type="checkbox">
+          <div class="slider round"></div>
+        </label>
+        <label for="reverseLeftClick">Открывать закладки в той же вкладке</label>
+      </div>
+
       <button type="submit">Save</button>
     </form>
   </body>

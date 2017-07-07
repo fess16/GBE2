@@ -150,7 +150,11 @@
     "description": ""
   },
   "options_enableLabelUnlabeled": {
-  	"message": "Метка для закладок без метки:",
+    "message": "Метка для закладок без метки:",
+    "description": ""
+  },
+  "options_reverseLeftClick": {
+  	"message": "Открывать закладки в той же вкладке",
   	"description": ""
   }
 }

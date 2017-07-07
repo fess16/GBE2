@@ -155,6 +155,10 @@
    "options_enableLabelUnlabeled": {
     "message": "Label Unlabeled Bookmarks:",
     "description": ""
+  },
+  "options_reverseLeftClick": {
+    "message": "Открывать закладки в той же вкладке",
+    "description": ""
   }
 
 

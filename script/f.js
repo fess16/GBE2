@@ -36,6 +36,8 @@ function Options () {
 	// тип сортировки 
   this.sortType =  "name";
   // console.log ("f.js constructor " + JSON.stringify(this));
+  // Открывать закладки в той же вкладке
+  this.reverseLeftClick = false;
 }
 
 Options.prototype.read = function() {
@@ -51,6 +53,7 @@ Options.prototype.read = function() {
 		this.timeout = (r.hasOwnProperty('timeout')) ? r.timeout : 10000;
 		this.sortOrder = (r.hasOwnProperty('sortOrder')) ? r.sortOrder : "asc";
 		this.sortType = (r.hasOwnProperty('sortType')) ? r.sortType : "name";
+		this.reverseLeftClick = (r.hasOwnProperty('reverseLeftClick')) ? r.reverseLeftClick : false;
 		// console.log ("f.js read" + JSON.stringify(r));
 		// console.log ("f.js read" + JSON.stringify(this));
 		return this;
