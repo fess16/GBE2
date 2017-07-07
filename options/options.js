@@ -4,6 +4,10 @@ $(document).ready(function()
 	restoreOptions();
 	$("form").submit(saveOptions);
 
+	$("#enableLabelUnlabeled").change(function(event) {
+    $("#labelUnlabeledName").attr('disabled', !$(this).prop('checked'));
+	});
+
 });
 
 
@@ -12,6 +16,7 @@ function setTexts()
 	$(":submit").text(browser.i18n.getMessage("options_saveBtn"));
 	$("label[for=nestedLabelSep]").text(browser.i18n.getMessage("options_nestedLabelSep"));
 	$("label[for=enableNotes]").text(browser.i18n.getMessage("options_enableNotes"));
+	$("label[for=enableLabelUnlabeled]").text(browser.i18n.getMessage("options_enableLabelUnlabeled"));
 }
 
 // var options1  = {};
@@ -24,6 +29,8 @@ function restoreOptions()
   	// console.log (JSON.stringify(opt));
   	$("#nestedLabelSep").val(r.nestedLabelSep);
   	$("#enableNotes").prop("checked", r.enableNotes);
+  	$("#enableLabelUnlabeled").prop("checked", r.enableLabelUnlabeled);
+  	$("#labelUnlabeledName").val(r.labelUnlabeledName).attr('disabled', !$("#enableLabelUnlabeled").prop("checked"));
   });
   // var item = browser.storage.local.get();
   // item.then((res) => {
@@ -44,7 +51,10 @@ function saveOptions(e)
 	// options1.enableNotes = $("#enableNotes").prop("checked");
 	// options1.nestedLabelSep = ($("#nestedLabelSep").val().length == 1) ? $("#nestedLabelSep").val() : "/";
 	// browser.storage.local.set(options1);
-	opt.enableNotes = $("#enableNotes").prop("checked");
 	opt.nestedLabelSep = ($("#nestedLabelSep").val().length == 1) ? $("#nestedLabelSep").val() : "/";
+	opt.enableNotes = $("#enableNotes").prop("checked");
+	opt.enableLabelUnlabeled = $("#enableLabelUnlabeled").prop("checked");
+	opt.labelUnlabeledName = ($("#labelUnlabeledName").val().length == 1) ? $("#labelUnlabeledName").val() : "Unlabeled";
 	opt.write().then();
 }
+

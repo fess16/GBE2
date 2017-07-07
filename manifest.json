@@ -19,15 +19,15 @@
     "http://www.google.com/bookmarks/", "https://www.google.com/bookmarks/", "http://*/*", "https://*/*" ,
     "bookmarks",
     "tabs",
-    "activeTab","contextMenus","cookies","notifications","storage","webNavigation","webRequest", "history"
+    "activeTab","contextMenus","cookies","notifications","storage", "history"
 
   ],
 
   "optional_permissions": [
-    "http://www.google.com/bookmarks/", "https://www.google.com/bookmarks/",  "http://*/*", "https://*/*" ,
+    "http://www.google.com/bookmarks/", "https://www.google.com/bookmarks/", "http://*/*", "https://*/*" ,
     "bookmarks",
     "tabs",
-    "activeTab","cookies","notifications","webNavigation","webRequest", "history"
+    "activeTab","cookies","notifications", "history"
 
   ],
 

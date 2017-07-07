@@ -20,9 +20,9 @@
 	'p_enableNotes' : true,
 
 	// включить добавление метки к закладкам без метки
-	'p_enableLabelUnlabeled' : false,
+	//'p_enableLabelUnlabeled' : false,
 	// добавляемая метка
-	'p_labelUnlabeledName' : "Unlabeled",
+	//'p_labelUnlabeledName' : "Unlabeled",
 	'p_enable10recentBookmark' :true,
 	'p_enable10visitedBookmark' :true,
 	'm_recent10bkmrk' : [],
@@ -266,14 +266,13 @@
 			  	lbs.push({"title" : labelVal, "timestamp" : null, "id" : this.genereteLabelId(labelVal)});
 			  }
 			}
-
 			// добавляем labelUnlabeledName метку в массив меток
-			if (this.p_enableLabelUnlabeled)
+			if (this.opt.enableLabelUnlabeled)
 			{
 				lbs.push({
-					"title" : this.p_labelUnlabeledName, 
+					"title" : this.opt.labelUnlabeledName, 
 					"timestamp" : null, 
-					"id" : this.genereteLabelId(this.p_labelUnlabeledName)});
+					"id" : this.genereteLabelId(this.opt.labelUnlabeledName)});
 			}
 
 			// список закладок\
@@ -338,7 +337,7 @@
 					// определяем timestamp для закладок без метки
 					if (this.enableLabelUnlabeled)
 					{
-						let lbl = lbs.filter(function(val, i, ar){ return ar[i].title == self.p_labelUnlabeledName});
+						let lbl = lbs.filter(function(val, i, ar){ return ar[i].title == self.opt.labelUnlabeledName});
 						if (lbl.length)
 						{
 							if (lbl[0].timestamp == null || lbl[0].timestamp < this.m_bookmarkList[i].timestamp)
@@ -564,9 +563,9 @@
     	    		pKey = "";
     	    		parentContainer = treeSource;
     	    		// если включено p_enableLabelUnlabeled - в метку p_labelUnlabeledName
-    	    		if (this.p_enableLabelUnlabeled)
+    	    		if (this.opt.enableLabelUnlabeled)
     	    		{
-    	    			pKey = this.genereteLabelId(this.p_labelUnlabeledName);
+    	    			pKey = this.genereteLabelId(this.opt.labelUnlabeledName);
     	    			parentContainer = this.searchLabel(treeSource, {key : pKey}).children;
     	    		}
     	    		this.appendBkmkToBkmksList(parentContainer, bkmk, pKey)
@@ -584,9 +583,9 @@
     	// в конце — выводим результаты
     	return chain.then(() => {
     		// удаляем метку labelUnlabeledName из массива меток
-    		if (this.p_enableLabelUnlabeled)
+    		if (this.opt.enableLabelUnlabeled)
     		{
-    			this._M.m_labelsArr = this.m_labelsArr.filter((val, i, ar) => { return val != this.p_labelUnlabeledName});
+    			this.m_labelsArr = this.m_labelsArr.filter((val, i, ar) => { return val != this.opt.labelUnlabeledName});
     		}
 
     		// вставляем 10 последних добавленных закладок 
@@ -1194,6 +1193,7 @@ chrome.runtime.onMessage.addListener(
 	    case "editBookmark" :
 	    {
 	    	// console.log("background.js " + JSON.stringify(request.data));
+	    	// console.log("|"+request.data.oldUrl+"|");
 	    	GBE2.doChangeBookmark(request.data)
 	    		.then(() => {
 	    			browser.runtime.sendMessage({type: "needRefresh"});
@@ -1269,6 +1269,7 @@ chrome.runtime.onMessage.addListener(
 	    }
 	    case "test1" :
 	    {
+	    	// browser.tabs.create({active: false, url: "about:blank"});
 	    	let bkmks = [
 	    		{"id" : "2014929379963161864", title : "МІНІСТЕРСТВО ЕНЕРГЕТИКИ...", url: ""},
 	    		{"id" : "6780747876076445387", title : "Google", url: ""},

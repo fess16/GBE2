@@ -352,7 +352,7 @@ function openBkmkDialog (bkmk)
 	          	labels: $("#editBkmkDlg-labels").val().trim(),
 	          	notes: $("#editBkmkDlg-notes").val().trim()
           	}
-          	console.log ("|" + result.oldUrl + "|");
+          	// console.log ("|" + result.oldUrl + "|");
           	browser.runtime.sendMessage({
 		      		"type": "editBookmark",
 		      		"data": result
@@ -365,6 +365,7 @@ function openBkmkDialog (bkmk)
         {
           text: browser.i18n.getMessage("btn_Cancel"),
           click: function() {
+          	setBkmkControls({id: null, title: "", url: "", labels: "", notes: ""});
             $(this).dialog("close");
           }
         },
@@ -582,6 +583,33 @@ function contextMenuShareBookmark (bkmk, mode) {
 	}
 }
 
+function labelMenuOpenAll(lbl){
+	bg.GBE2.m_bookmarkList.forEach((bkmk) => {
+		if (bkmk.labels.length && bkmk.labels.indexOf(lbl.name) >=0){
+			browser.tabs.create({active: false, url: bkmk.url})
+				.catch((e) => {_errorLog("labelMenuOpenAll", e)});
+		}
+	});
+}
+
+function labelMenuAddHere(lbl) {
+	browser.tabs.query({active: true, currentWindow: true})
+		.then((tabs) => {
+			let tab = tabs[0];
+			let bkmk = bg.GBE2.getBookmark({ url : tab.url});
+			if (bkmk == null) 
+				openBkmkDialog ({id: null, title: aTab.title, url: aTab.url, labels: lbl.name, notes: ""});
+			else {
+				let tbkmk = {
+					id: bkmk.id, title: bkmk.title, url: bkmk.url, 
+					labels: (bkmk.labels.length>0 ? (bkmk.labels+","+lbl.name):lbl.name), 
+					notes: bkmk.notes
+				};
+				openBkmkDialog (tbkmk);
+			}
+		});
+}
+
 function handleContextMenuClick(event, ui) {
   var node = $.ui.fancytree.getNode(ui.target);
   console.log("select " + ui.cmd + " on " + node);
@@ -637,6 +665,14 @@ function handleContextMenuClick(event, ui) {
   		lbl = {id: node.key, name: node.data.path};
   		// console.log(lbl);
   		openDelLblDlg(lbl);
+  		break;
+  	case "menuOpenAll":
+  		lbl = {id: node.key, name: node.data.path};
+  		labelMenuOpenAll(lbl);
+  		break;
+  	case "menuAddHere":
+  		lbl = {id: node.key, name: node.data.path};
+  		labelMenuAddHere(lbl);
   		break;
   }
 }

@@ -203,9 +203,9 @@ ul.fancytree-container {
 }
 
 .ui-menu {
-	font-size: 0.8em;
+	font-size: 0.75em;
 	border-radius: 6px;
-	width: 250px;
+	width: 270px;
 }
 
 .ui-menu-item-wrapper, .ui-menu {

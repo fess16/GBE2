@@ -151,5 +151,11 @@
   "options_enableNotes": {
     "message": "Show bookmarks notes (Warning: local URLs in bookmarks will be empty)",
     "description": ""
+  },
+   "options_enableLabelUnlabeled": {
+    "message": "Label Unlabeled Bookmarks:",
+    "description": ""
   }
+
+
 }
