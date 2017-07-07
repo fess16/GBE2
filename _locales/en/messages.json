@@ -85,6 +85,7 @@
     "description": "Надпись поля с заметками закладки"
   },
 
+
   "editLblDlg_title": {
     "message": "Edit Label",
     "description": "Заголовок диалога редактирования метки"
@@ -92,6 +93,23 @@
   "editLblDlg_name": {
     "message": "Name:",
     "description": "Надпись поля с названием метки"
+  },
+
+  "delLblkDlg_title": {
+    "message": "Delete Label",
+    "description": "Заголовок диалога удаления метки"
+  },
+  "delLblkDlg_lblChildren": {
+    "message": "Delete all children?"
+  },
+  "delLblkDlg_lblInfo": {
+    "message": "Are you sure you want to delete label: <strong>$lblTitle$</strong>?",
+    "description": "Надпись в диалоге удаления метки",
+    "placeholders": {
+      "lblTitle" : {
+        "content" : "$1"
+      }
+    }
   },
 
   "btn_Save": {
@@ -112,7 +130,7 @@
     "description": "Заголовок диалога удаления закладки"
   },
   "delBkmkDlg_label": {
-    "message": "Are you sure you want to delete bookmark ($bkmkTitle$)?",
+    "message": "Are you sure you want to delete bookmark (<strong>$bkmkTitle$</strong>)?",
     "description": "Надпись в диалоге удаления закладки",
     "placeholders": {
       "bkmkTitle" : {

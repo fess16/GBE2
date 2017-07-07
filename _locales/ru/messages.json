@@ -92,6 +92,22 @@
     "description": "Надпись поля с названием метки"
   },
 
+  "delLblkDlg_title": {
+    "message": "Удаление метки",
+    "description": "Заголовок диалога удаления метки"
+  },
+  "delLblkDlg_lblChildren": {
+    "message": "Удалить вложенные закладки?"
+  },
+  "delLblkDlg_lblInfo": {
+    "message": "Вы действительно хотите удалить метку: <strong>$bkmkTitle$</strong>?",
+    "description": "Надпись в диалоге удаления метки",
+    "placeholders": {
+      "bkmkTitle" : {
+        "content" : "$1"
+      }
+    }
+  },
 
   "btn_Save": {
     "message": "Сохранить",
@@ -111,10 +127,10 @@
     "description": "Заголовок диалога удаления закладки"
   },
   "delBkmkDlg_label": {
-    "message": "Вы действительно ходите удалить закладку ($bkmkTitle$)?",
+    "message": "Вы действительно ходите удалить закладку (<strong>$lblTitle$</strong>)?",
     "description": "Надпись в диалоге удаления закладки",
     "placeholders": {
-      "bkmkTitle" : {
+      "lblTitle" : {
         "content" : "$1"
       }
     }

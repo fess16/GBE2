@@ -84,6 +84,14 @@
         <input type="text" name="editLblDlg-name" id="editLblDlg-name"><br/>
       </div>
 
+      <!-- delete label dialog -->
+      <div id="delLblkDlg" class="dialog">
+        <input type="hidden" name="delLblkDlg-name" id="delLblkDlg-name" value="">
+        <label id="delLblkDlg-lblInfo">!Вы действительно хотите удалить метку:</label><br/><br/>
+        <input id="delLblkDlg-deleteChildren" type="checkbox">
+        <label id="delLblkDlg-lblChildren">!Удалить вложенные закладки?</label>
+      </div>
+
       <!-- QR-code dialog -->
       <div id="QRdialog" title="QR-code for bookmark" class="dialog">
         <a href=""><img id="qr_dialog_image"  src=""></a>

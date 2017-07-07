@@ -878,7 +878,7 @@
 					timeout : this.p_timeout,
 				})
 				.then( (response, status, xhr) => {
-			    	if (bkmk.oldURL !== "" && bkmk.oldUrl !== bkmk.url) {
+			    	if (bkmk.oldUrl.trim() !== "" && bkmk.oldUrl.trim() !== bkmk.url.trim()) {
 			    		_consoleLog ("Changing bookmarks URL from ", bkmk.oldUrl, "to", bkmk.url);
 			    		return this.doDeleteBookmark(bkmk);
 			    	}
@@ -896,7 +896,6 @@
 	doChangeLabel : function (lbl) {
 		return Promise.resolve()
 			.then(() => {
-				// console.log("doChangeBookmark:m_signature");
 				if (this.m_signature) 
 					{return this.m_signature;}
 				else
@@ -904,11 +903,11 @@
 			})
 			.catch((e) => {
 				_errorLog("doChangeLabel", e);
-				// _consoleLog ("GBE2:doChangeBookmark", "Obtain signature - error!");
 				throw new Error("doChangeLabel : Obtain signature - error!");
 			})
 			.then(() => {
 				// console.log("doChangeBookmark:ajax");
+				// console.log(lbl.oldName + ", " + lbl.name);
 				return $.ajax({
 					url: this.m_baseUrl2,
 					method: "GET",
@@ -921,7 +920,7 @@
 					timeout : this.p_timeout,
 				})
 				.then( (response, status, xhr) => {
-						 console.log("doChangeLabel : Ok");
+						 // console.log("doChangeLabel : Ok");
 					},
 					function (jqXHR, textStatus)
 					{
@@ -933,9 +932,45 @@
 			});
 	},
 
-		// 	request.open("POST", this.baseUrl2, true);
-		// let data = 	"op=modlabel&zx="+((new Date()).getTime() + Math.random() * (99) + 1) + "&labels=" + 
-		// 						encodeURIComponent(oldLabel + "," + label) + "&sig=" + (signature ? signature : this.m_signature);
+	doDeleteLabel : function (lbl) {
+		return Promise.resolve()
+			.then(() => {
+				if (this.m_signature) 
+					{return this.m_signature;}
+				else
+					{return this.doRequestSignature();}
+			})
+			.catch((e) => {
+				_errorLog("doDeleteLabel", e);
+				throw new Error("doDeleteLabel : Obtain signature - error!");
+			})
+			.then(() => {
+				console.log("doDeleteLabel:ajax");
+				console.log(lbl.name);
+				return $.ajax({
+					url: this.m_baseUrl2,
+					method: "GET",
+					data: { 
+						op : "modlabel",
+						zx : ((new Date()).getTime() + Math.random() * (99) + 1),
+						labels : lbl.name,
+						sig : this.m_signature
+					},
+					timeout : this.p_timeout,
+				})
+				.then( (response, status, xhr) => {
+						console.log("doDeleteLabel : Ok");
+					},
+					function (jqXHR, textStatus)
+					{
+						_consoleLog ("GBE2:doDeleteLabel", "Deleting label ", JSON.stringify(lbl), " - error!");
+						_consoleLog ("GBE2:doDeleteLabel - Request failed: ", textStatus);
+						_consoleLog (jqXHR.responseText);
+					}
+				);
+			});
+	},
+
 	doDeleteBookmark : function (bkmk)
 	{
 		let result = bkmk;
@@ -1179,17 +1214,59 @@ chrome.runtime.onMessage.addListener(
 	    			_errorLog("background:deleteBookmark", e);
 	    		});
 	    	break;
-	    case "editLabel":
-	    	GBE2.doChangeLabel(request.data)
-	    		.then(() => {
+	    case "editLabel": {
+	    	let chain = Promise.resolve();
+	    	GBE2.m_labelsArr.forEach(function(lbl) {
+	    		if (lbl == request.data.oldName || lbl.indexOf(request.data.oldName+GBE2.opt.nestedLabelSep) == 0) {
+	    			chain = chain.then(() => {
+	    				return GBE2.doChangeLabel({
+	    					oldName: lbl, name: lbl.replace(request.data.oldName, request.data.name)
+	    				});
+	    			});
+	    		}
+	    	});
+	    	chain.then(() => {
+	    	// GBE2.doChangeLabel(request.data)
+	    	// 	.then(() => {
 	    			browser.runtime.sendMessage({type: "needRefresh"});
-	    			console.log("background:doChangeLabel");
+	    			// console.log("background:doChangeLabel");
 	    		})
 	    		.catch((e) => {
-	    			_errorLog("background:doChangeLabel", e);
+	    			_errorLog("background:editLabel", e);
 	    		});
 	    	break;
-
+	    }
+	    case "deleteLabel": {
+	    	if (!request.data.delChildren)
+	    	{
+	    		GBE2.doDeleteLabel(request.data)
+	    			.then(() => {
+	    				browser.runtime.sendMessage({type: "needRefresh"});
+	    			})
+	    			.catch((e) => {
+	    				_errorLog("background:deleteLabel", e);
+	    			});
+	    	}
+	    	else
+	    	{
+	    		let chain = Promise.resolve();
+	    		GBE2.m_bookmarkList.forEach(function(bkmk) {
+	    			if ((bkmk.labels.length) && (bkmk.labels.indexOf(request.data.name) >= 0)) {
+	    				chain = chain.then(() => {
+	    					// console.log(bkmk.title);
+	    					return GBE2.doDeleteBookmark(bkmk);
+	    				});
+	    			}
+	    		});
+	    		chain.then(() => {
+	    				browser.runtime.sendMessage({type: "needRefresh"});
+	    			})
+	    			.catch((e) => {
+	    				_errorLog("background:editLabel", e);
+	    			});		
+	    	}
+	    	break;
+	    }
 	    case "test1" :
 	    {
 	    	let bkmks = [

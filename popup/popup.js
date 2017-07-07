@@ -82,7 +82,7 @@ $(document).ready(function(){
 
 
   $("#bkmk-tree").contextmenu({
-    delegate: "span.fancytree-title",
+    delegate: "span.fancytree-title, img.fancytree-icon, span.fancytree-expander",
     addClass : "GBE-ui-contextmenu",
     autoFocus: true,
     // hide : "fast",
@@ -278,6 +278,9 @@ function setBkmkControls (bkmk)
 {
 	$("#editBkmkDlg-name").val(bkmk.title);
 	$("#editBkmkDlg-url").val(bkmk.url);
+	$("#editBkmkDlg-labels").val(bkmk.labels);
+	$("#editBkmkDlg-notes").val(bkmk.notes);
+	$("#editBkmkDlg-id").val(bkmk.id);
 	if (bkmk.labels.length > 0) 
 	{
 		$("#editBkmkDlg-labels").val(bkmk.labels + ",");
@@ -288,7 +291,7 @@ function setBkmkControls (bkmk)
 		$("#editBkmkDlg-enableUrlEdit").attr("disabled",true);
 	}
 	else {
-		$("#editBkmkDlg-id").val(bkmk.id);
+		// $("#editBkmkDlg-id").val(bkmk.id);
 		$("#editBkmkDlg-oldUrl").val(bkmk.url);
 		$("#editBkmkDlg-enableUrlEdit").prop("checked", false).attr("disabled",false);
 		$("#editBkmkDlg-url").attr("readonly",true);
@@ -318,6 +321,7 @@ function setBkmkControls (bkmk)
 var editBkmkDlg = null;
 var delBkmkDlg = null;
 var editLblDlg = null;
+var delLblkDlg = null;
 
 // function openBkmkDialog (dlgName)
 function openBkmkDialog (bkmk)
@@ -341,17 +345,19 @@ function openBkmkDialog (bkmk)
           text: browser.i18n.getMessage("btn_Save"),
           click: function() {
           	let result = {
-	          	id: $("#editBkmkDlg-id").val(),
-	          	oldUrl: $("#editBkmkDlg-oldUrl").val(),
-	          	title: $("#editBkmkDlg-name").val(),
-	          	url: $("#editBkmkDlg-url").val(),
-	          	labels: $("#editBkmkDlg-labels").val(),
-	          	notes: $("#editBkmkDlg-notes").val()
+	          	id: $("#editBkmkDlg-id").val().trim(),
+	          	oldUrl: $("#editBkmkDlg-oldUrl").val().trim(),
+	          	title: $("#editBkmkDlg-name").val().trim(),
+	          	url: $("#editBkmkDlg-url").val().trim(),
+	          	labels: $("#editBkmkDlg-labels").val().trim(),
+	          	notes: $("#editBkmkDlg-notes").val().trim()
           	}
+          	console.log ("|" + result.oldUrl + "|");
           	browser.runtime.sendMessage({
 		      		"type": "editBookmark",
 		      		"data": result
 	      		}).then((result) => {
+	      			setBkmkControls({id: null, title: "", url: "", labels: "", notes: ""});
             	$(this).dialog("close");
 	      		});
           }
@@ -444,7 +450,7 @@ function openDelBkmkDlg (aBkmk){
 	    ]
 		});
 	}
-	$("#delBkmkDlg label").text(browser.i18n.getMessage("delBkmkDlg_label", aBkmk.title));
+	$("#delBkmkDlg label").html(browser.i18n.getMessage("delBkmkDlg_label", aBkmk.title));
 	$("#delBkmkDlg-id").val(aBkmk.id);
 
 	delBkmkDlg.dialog("open");
@@ -491,6 +497,49 @@ function openEditLblDlg (aLbl) {
 	$("#editLblDlg-name").val(aLbl.name),
 
 	editLblDlg.dialog("open");
+}
+
+function openDelLblDlg (aLbl){
+	if (delLblkDlg == null) {
+		delLblkDlg = $("#delLblkDlg");
+		delLblkDlg.dialog({
+			dialogClass: "no-close",
+	    autoOpen: false,
+	    modal: true,
+	    draggable: false,
+	    resizable: false,
+	     width: 320,
+	    position: { my: "center", at: "center", of: "#wrapper" },
+	    title: 	browser.i18n.getMessage("delLblkDlg_title"),
+	    buttons: [
+	      {
+	        text: browser.i18n.getMessage("btn_Delete"),
+	        click: function() {
+	        	browser.runtime.sendMessage({
+		      		"type": "deleteLabel",
+		      		"data": { 
+		      			name: $("#delLblkDlg-name").val(), 
+		      			delChildren: $("#delLblkDlg-deleteChildren").prop("checked")
+		      		}
+	      		}).then((result) => {
+	          	$(this).dialog("close");
+	      		});
+	        }
+	      },
+	      {
+	        text: browser.i18n.getMessage("btn_Cancel"),
+	        click: function() {
+	          $(this).dialog("close");
+	        }
+	      },
+	    ]
+		});
+	}
+	$("#delLblkDlg-lblChildren").text(browser.i18n.getMessage("delLblkDlg_lblChildren"));
+	$("#delLblkDlg-lblInfo").html(browser.i18n.getMessage("delLblkDlg_lblInfo", aLbl.name));
+	$("#delLblkDlg-name").val(aLbl.name);
+
+	delLblkDlg.dialog("open");
 }
 
 
@@ -583,6 +632,11 @@ function handleContextMenuClick(event, ui) {
   		lbl = {id: node.key, name: node.data.path};
   		// console.log(lbl);
   		openEditLblDlg(lbl);
+  		break;
+  	case "menuRemove":
+  		lbl = {id: node.key, name: node.data.path};
+  		// console.log(lbl);
+  		openDelLblDlg(lbl);
   		break;
   }
 }
