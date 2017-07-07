@@ -52,6 +52,9 @@
   "cntx-page-go": {
     "message": "Open in current Tab"
   },
+  "cntx-page-inNewTab": {
+    "message": "Open bookmark in new Tab"
+  },
   "cntx-page-edit": {
     "message": "Edit"
   },

@@ -51,6 +51,9 @@
   "cntx-page-go": {
     "message": "Открыть на месте"
   },
+  "cntx-page-inNewTab": {
+    "message": "Открыть в новой вкладке"
+  },
   "cntx-page-edit": {
     "message": "Редактировать"
   },

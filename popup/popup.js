@@ -150,7 +150,8 @@ $(document).ready(function(){
       {title: "----", cmd: "msepf"},
       {title: browser.i18n.getMessage("cntx-folder-menuExport"), cmd: "menuExport"},
       // bookmark menu
-      {title: browser.i18n.getMessage("cntx-page-go"), cmd: "page-go", uiIcon: "cntx-page-go"},
+      {title: (bg.GBE2.opt.reverseLeftClick ? browser.i18n.getMessage("cntx-page-inNewTab") : browser.i18n.getMessage("cntx-page-go")), 
+      	cmd: "page-go", uiIcon: "cntx-page-go"},
       {title: browser.i18n.getMessage("cntx-page-edit"), cmd: "page-edit", uiIcon: "cntx-page-edit"},
       {title: browser.i18n.getMessage("cntx-page-delete"), cmd: "page-delete", uiIcon: "cntx-page-delete"},
       {title: browser.i18n.getMessage("cntx-qrcode-icon"), cmd: "qrcode-icon", uiIcon: "cntx-qrcode-icon"},
@@ -668,7 +669,7 @@ function handleContextMenuClick(event, ui) {
   	// bookmark
   	case "page-go":
   			if (node.data.url.length) {
-  				showURL(node.data.url, false);
+  				showURL(node.data.url, bg.GBE2.opt.reverseLeftClick, true);
   				// let SearchString = new RegExp("^chrome:|^javascript:|^data:|^about:.*" );
   				// if (SearchString.test(node.data.url)) {
   				// 	console.log("In Firefox, you can't open, or navigate to privileged URLs: chrome:, javascript:, data:, about:");
