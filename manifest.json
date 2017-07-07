@@ -37,7 +37,8 @@
       "32" : "images/Star_empty32.png"
     },
     "default_title": "Fess GBE2",
-    "default_popup": "popup/popup.html"
+    "default_popup": "popup/popup.html",
+    "browser_style": false
   },
 
   "background": {
@@ -53,7 +54,8 @@
 
   "options_ui": {
     "page": "options/options.html",
-    "open_in_tab":true
+    "open_in_tab":true,
+    "browser_style":false
   },
   
   "default_locale": "en"

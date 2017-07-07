@@ -10,6 +10,9 @@
   'm_ganswer' : null,
   'm_signature' : null, 
 
+  'm_RecentLabel' : browser.i18n.getMessage("popup_RecentLabel"),
+  'm_VisitedLabel' : browser.i18n.getMessage("popup_VisitedLabel"),
+
   // разделитель меток при сортировке
   'm_labelSep'	: "{!|!}",
   opt : new Options(),
@@ -437,67 +440,10 @@
  							});
 						}
 					}
-
-
-					// // только одна метка - вложенных нет
-					// if (arr_nested_label.length == 1)
-					// {
-					// 	key = this.genereteLabelId(arr_nested_label[0]);
-					// 	// ищем ее - добавляем, если такой еще не было
-					// 	if (!$.grep(treeSource, function(e) {
-					// 			return (e.key == key);
-					// 		}).length)
-					// 	{
-					// 		treeSource.push({
-					// 			"title" 		: arr_nested_label[0],
-					// 			"key" 			: key,
-					// 			"folder"		: true,
-					// 			"children"	: [],
-					// 			"path"			: arr_nested_label[0]
- 				// 			});
-					// 	}
-					// }
-					// else
-					// {
-					// 	// есть вложенные метки
-					// 	// первый уровень
-					// 	let fullName = arr_nested_label[0];
-					// 	let tempKey = this.genereteLabelId(fullName);
-					// 	let tempMenu = $.grep(treeSource, function(e) {
-					// 			return (e.key == tempKey);
-					// 	});
-					// 	if (tempMenu.length == 0)
-					// 	{
-					// 		treeSource.push({
-					// 			"title" 		: fullName,
-					// 			"key" 			: tempKey,
-					// 			"folder"		: true,
-					// 			"children"	: [],
-					// 			"path"			: fullName
- 				// 			});
-					// 	}
-					// 	for (j = 1; j < arr_nested_label.length; j++)
-					// 	{
-					// 		let parentContainer = this.searchLabel(treeSource, {key : tempKey});
-					// 		fullName += this.p_nestedLabelSep + arr_nested_label[j];
-					// 		tempKey = this.genereteLabelId(fullName);
-					// 		if (!$.grep(treeSource, function(e) {return (e.key == tempKey);}).length)
-					// 		{
-					// 			parentContainer.children.push({
-					// 				"title" 		: arr_nested_label[j],
-					// 				"key" 			: tempKey,
-					// 				"folder"		: true,
-					// 				"children"	: [],
-					// 				"path"			: fullName
-	 			// 				});
-					// 		}
-					// 	}
-					// }
 				}
 			}
 
-
-			  // начало цепочки
+		  // начало цепочки
 			let chain = Promise.resolve();
 		
 			let visitsArray = [];
@@ -591,13 +537,13 @@
     		// вставляем 10 последних добавленных закладок 
 				if (this.p_enable10recentBookmark && this.m_recent10bkmrk.length)
 				{
-					let pKey = this.genereteLabelId("fessGBE.VisitedLabel");
+					let pKey = this.genereteLabelId(this.m_RecentLabel);
 					let resentLabel = {
-						"title" 		: "fessGBE.resentLabel",
+						"title" 		: this.m_RecentLabel,
 						"key" 			: pKey,
 						"folder"		: true,
 						"children"	: [],
-						"path"			: "fessGBE.resentLabel",
+						"path"			: this.m_RecentLabel,
 						"icon"			: "../images/folder_blue.png"
 					};
 					for (let i = 0; i < this.m_recent10bkmrk.length; i++)
@@ -611,13 +557,13 @@
     		if (this.p_enable10visitedBookmark && visitsArray.length)
     		{
     			visitsArray.sort((a,b) => { a.visits < b.visits ? 1 : -1; });
-    			let pKey = this.genereteLabelId("fessGBE.VisitedLabel");
+    			let pKey = this.genereteLabelId(this.m_VisitedLabel);
     			let visitsLabel = {
-						"title" 		: "fessGBE.VisitedLabel",
+						"title" 		: this.m_VisitedLabel,
 						"key" 			: pKey,
 						"folder"		: true,
 						"children"	: [],
-						"path"			: "fessGBE.VisitedLabel",
+						"path"			: this.m_VisitedLabel,
 						"icon"			: "../images/folder_blue.png"
 					};
 					let visitsCount = (visitsArray.length < 10 ? visitsArray.length : 10);

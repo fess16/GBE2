@@ -20,6 +20,14 @@
     "description": "Подсказка - Удаление закладки"
   },
 
+  "popup_RecentLabel": {
+    "message": "10 последних добавленных"
+  },
+  "popup_VisitedLabel": {
+    "message": "10 самых популярных"
+  },
+
+
   "cntx-folder-menuEdit": {
     "message": "Редактировать"
   },
@@ -33,19 +41,19 @@
     "message": "Добавить закладку здесь"
   },
   "cntx-folder-menuAddAllTabs": {
-    "message": "Добавить в закладки открытые вкладки"
+    "message": "?Добавить в закладки открытые вкладки"
   },
   "cntx-folder-menuHideFolder": {
-    "message": "Добавить в скрытые"
+    "message": "?Добавить в скрытые"
   },
   "cntx-folder-menuUnhideFolder": {
-    "message": "Убрать из скрытых"
+    "message": "?Убрать из скрытых"
   },
   "cntx-folder-menuUnhideAll": {
-    "message": "Убрать из скрытых все"
+    "message": "?Убрать из скрытых все"
   },
   "cntx-folder-menuExport": {
-    "message": "Экспорт в HTML"
+    "message": "?Экспорт в HTML"
   },
 
   "cntx-page-go": {

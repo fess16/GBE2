@@ -166,6 +166,7 @@ $(document).ready(function(){
       $("#bkmk-tree").contextmenu("enableEntry", "paste", node.isFolder());
       // Show/hide single entries
       if (node.isFolder()) {
+      	if (node.title == bg.GBE2.m_RecentLabel || node.title == bg.GBE2.m_VisitedLabel) return false;
       	$("#bkmk-tree").contextmenu("showEntry", "menuEdit", true);
       	$("#bkmk-tree").contextmenu("showEntry", "menuRemove", true);
       	$("#bkmk-tree").contextmenu("showEntry", "menuOpenAll", true);

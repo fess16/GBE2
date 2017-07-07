@@ -20,6 +20,13 @@
     "description": "Подсказка - Удаление закладки"
   },
 
+  "popup_RecentLabel": {
+    "message": "10 most recent bookmarks"
+  },
+  "popup_VisitedLabel": {
+    "message": "10 most frequent bookmarks"
+  },
+
   "cntx-folder-menuEdit": {
     "message": "Edit"
   },
