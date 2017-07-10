@@ -149,26 +149,47 @@
     }
   },
 
+  "options_mainPanel": {
+    "message": "Main"
+  },
+  "options_advPanel": {
+    "message": "Other"
+  },
+  "options_iconsPanel": {
+    "message": "Icons"
+  },
 
   "options_saveBtn": {
   	"message": "Save",
   	"description": "Надпись кнопки сохранения настроек дополнения"
   },
+  "options_fildsetShowLegend": {
+    "message": "Show:"
+  },
+
   "options_nestedLabelSep": {
-    "message": "Nested Labels Separator:",
-    "description": "Подпись поля разделителя вложенных меток"
+    "message": "Nested Labels Separator:"
   },
   "options_enableNotes": {
-    "message": "Show bookmarks notes (Warning: local URLs in bookmarks will be empty)",
-    "description": ""
+    "message": "bookmarks notes (Warning: local URLs in bookmarks will be empty)"
   },
    "options_enableLabelUnlabeled": {
-    "message": "Label Unlabeled Bookmarks:",
-    "description": ""
+    "message": "Label Unlabeled Bookmarks:"
   },
   "options_reverseLeftClick": {
-    "message": "Открывать закладки в той же вкладке",
-    "description": ""
+    "message": "Открывать закладки в той же вкладке"
+  },
+  "options_showFavicons": {
+    "message": "favicons (http://www.google.com/s2/favicons)"
+  },
+  "options_enable10recentBookmark": {
+    "message": "10 most recent bookmarks"
+  },
+  "options_enable10visitedBookmark": {
+    "message": "10 most frequent bookmarks"
+  },
+  "options_showTagsInTooltip": {
+    "message": "labels in tooltip"
   }
 
 

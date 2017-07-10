@@ -35,9 +35,12 @@ function Options () {
   this.sortOrder =  "asc";
 	// тип сортировки 
   this.sortType =  "name";
-  // console.log ("f.js constructor " + JSON.stringify(this));
   // Открывать закладки в той же вкладке
   this.reverseLeftClick = false;
+  // флаг показа иконок для закладок
+  this.showFavicons = true;
+  // показывать примечания во всплывающей подсказке
+  this.showTagsInTooltip = true;
 }
 
 Options.prototype.read = function() {
@@ -45,7 +48,7 @@ Options.prototype.read = function() {
 		this.nestedLabelSep = (r.hasOwnProperty('nestedLabelSep') && r.nestedLabelSep.length == 1) ? r.nestedLabelSep : '/';
 		this.enableNotes = (r.hasOwnProperty('enableNotes')) ? r.enableNotes : false;
 		this.enable10recentBookmark = (r.hasOwnProperty('enable10recentBookmark')) ? r.enable10recentBookmark : true;
-		this.enable10visitedBookmark = (r.hasOwnProperty('enable10visitedBookmark')) ? r.enable10visitedBookmark : true;
+		this.enable10visitedBookmark = (r.hasOwnProperty('enable10visitedBookmark')) ? r.enable10visitedBookmark : false;
 		this.enableLabelUnlabeled = (r.hasOwnProperty('enableLabelUnlabeled')) ? r.enableLabelUnlabeled : false;
 		this.hiddenLabelsTitle = (r.hasOwnProperty('hiddenLabelsTitle')) ? r.hiddenLabelsTitle : "_hidden_";
 		this.labelUnlabeledName = (r.hasOwnProperty('labelUnlabeledName')) ? r.labelUnlabeledName : "Unlabeled";
@@ -54,6 +57,8 @@ Options.prototype.read = function() {
 		this.sortOrder = (r.hasOwnProperty('sortOrder')) ? r.sortOrder : "asc";
 		this.sortType = (r.hasOwnProperty('sortType')) ? r.sortType : "name";
 		this.reverseLeftClick = (r.hasOwnProperty('reverseLeftClick')) ? r.reverseLeftClick : false;
+		this.showFavicons = (r.hasOwnProperty('showFavicons')) ? r.showFavicons : true;
+		this.showTagsInTooltip = (r.hasOwnProperty('showTagsInTooltip')) ? r.showTagsInTooltip : true;
 		// console.log ("f.js read" + JSON.stringify(r));
 		// console.log ("f.js read" + JSON.stringify(this));
 		return this;

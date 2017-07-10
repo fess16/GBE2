@@ -3,8 +3,10 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <link rel="stylesheet" href="../lib/jquery-ui.min.css" type="text/css">
     <link rel="stylesheet" type="text/css" href="options.css" />
     <script type="text/javascript" src="../lib/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../lib/jquery-ui.min.js"></script>
     <!-- <script type="text/javascript" src="../lib/jquery-ui.min.js"></script> -->
     <script type="text/javascript" src="../script/f.js"></script>
     <script type="text/javascript" src="options.js"></script>
@@ -12,40 +14,94 @@
   </head>
 
   <body>
+    <form id="optForm" class="ui-widget">
+      <div id="tabs">
+        <ul>
+          <li><a href="#mainPanel">Nunc tincidunt</a></li>
+          <li><a href="#advPanel">Proin dolor</a></li>
+          <li><a href="#iconsPanel">Aenean lacinia</a></li>
+        </ul>
+        <div id="mainPanel">
+          <div class="fRow">
+            <label class="switch">
+              <input id="reverseLeftClick" type="checkbox">
+              <div class="slider round"></div>
+            </label>
+            <label for="reverseLeftClick">Открывать закладки в той же вкладке</label>
+          </div>
+          <div class="fRow">
+            <label for="sortType"">Сортировка по: </label>
+            <select id="sortType">
+              <option value="name">Назаванию</option>
+              <option value="timestamp">Дате</option>
+            </select>
+            <select id="sortOrder">
+              <option value="asc">Возрастанию</option>
+              <option value="desc">Убыванию</option>
+            </select>
+          </div>
+          <fieldset id="fsShow">
+            <legend>Order a T-Shirt</legend>
+            <div class="fRow">
+              <label class="switch">
+                <input id="showFavicons" type="checkbox">
+                <div class="slider round"></div>
+              </label>
+              <label for="showFavicons">Показывать иконки сайтов</label>
+            </div>
+            <div class="fRow">
+              <label class="switch">
+                <input id="enableNotes" type="checkbox">
+                <div class="slider round"></div>
+              </label>
+              <label for="enableNotes">Show bookmarks notes</label>
+            </div>
+            <div class="fRow">
+              <label class="switch">
+                <input id="enable10recentBookmark" type="checkbox">
+                <div class="slider round"></div>
+              </label>
+              <label for="enable10recentBookmark"></label>
+            </div>
+            <div class="fRow">
+              <label class="switch">
+                <input id="enable10visitedBookmark" type="checkbox">
+                <div class="slider round"></div>
+              </label>
+              <label for="enable10visitedBookmark"></label>
+            </div>
+            <div class="fRow">
+              <label class="switch">
+                <input id="showTagsInTooltip" type="checkbox">
+                <div class="slider round"></div>
+              </label>
+              <label for="showTagsInTooltip"></label>
+            </div>
+          </fieldset>
 
-    <form>
-      <div class="fRow">
-        <label for="nestedLabelSep">Nested labels separator:</label>
-        <input type="text" id="nestedLabelSep" name="nestedLabelSep">
+        </div>
+        <div id="advPanel">
+          <div class="fRow">
+            <label for="nestedLabelSep">Nested labels separator:</label>
+            <input type="text" id="nestedLabelSep" name="nestedLabelSep">
+          </div>
+          <div class="fRow">
+            <label class="switch">
+              <input id="enableLabelUnlabeled" type="checkbox">
+              <div class="slider round"></div>
+            </label>
+            <label for="enableLabelUnlabeled">enableLabelUnlabeled:</label>
+            <input type="text" name="labelUnlabeledName" id="labelUnlabeledName">
+          </div>
+
+        </div>
+        <div id="iconsPanel">
+
+        </div>
       </div>
-
-      <div class="fRow">
-        <!-- <input id="enableNotes" type="checkbox" name="enableNotes"> -->
-        <label class="switch">
-          <input id="enableNotes" type="checkbox">
-          <div class="slider round"></div>
-        </label>
-        <label for="enableNotes">Show bookmarks notes</label>
+      <div id="buttons">
+        <button type="submit">Save</button>
       </div>
-
-      <div class="fRow">
-        <label class="switch">
-          <input id="enableLabelUnlabeled" type="checkbox">
-          <div class="slider round"></div>
-        </label>
-        <label for="enableLabelUnlabeled">enableLabelUnlabeled:</label>
-        <input type="text" name="labelUnlabeledName" id="labelUnlabeledName">
-      </div>
-
-      <div class="fRow">
-        <label class="switch">
-          <input id="reverseLeftClick" type="checkbox">
-          <div class="slider round"></div>
-        </label>
-        <label for="reverseLeftClick">Открывать закладки в той же вкладке</label>
-      </div>
-
-      <button type="submit">Save</button>
     </form>
   </body>
 

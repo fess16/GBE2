@@ -55,3 +55,40 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 } 
+
+#optForm  {
+  width: 800px;
+  font-size: 0.9em;
+  margin: 0 auto;
+}
+
+#tabs .ui-tabs-panel {
+    height: 300px;
+    overflow: auto;
+}
+
+#buttons {
+  margin-top: 10px;
+  margin-bottom: auto;
+  text-align: center;
+}
+
+fieldset legend{
+  font-size: 0.9em;
+} 
+
+.fRow {
+  display: flex;
+  height: 2.5em;
+  align-items: center;
+  font-size: 0.9em;
+  
+}
+
+#optForm label, select {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+
+

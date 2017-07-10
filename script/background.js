@@ -20,30 +20,32 @@
 	// тайм-аут ответа сервера при получении закладок и сигнатуры
 	'p_timeout' : 10000,
 	// режим без примечаний - формат получения закладок: rss or xml
-	'p_enableNotes' : true,
+	// 'p_enableNotes' : true,
 
 	// включить добавление метки к закладкам без метки
 	//'p_enableLabelUnlabeled' : false,
 	// добавляемая метка
 	//'p_labelUnlabeledName' : "Unlabeled",
-	'p_enable10recentBookmark' :true,
-	'p_enable10visitedBookmark' :true,
+	// 'p_enable10recentBookmark' :true,
+	// 'p_enable10visitedBookmark' :true,
 	'm_recent10bkmrk' : [],
 	'p_hiddenLabelsTitle' : "_hidden_",
 	'p_showHiddenLabels' : false,
 
-	 // тип сортировки 
-  'p_sortType' : "name",
-  // направление сортировки
-  'p_sortOrder' : "asc",
+	 // // тип сортировки 
+  // 'p_sortType' : "name",
+  // // направление сортировки
+  // 'p_sortOrder' : "asc",
 
    // список всех меток (папок)
   'm_labelsArr' : null,
 
   /* ------Свойства------*/
   // разделитель вложенных меток
-  'p_nestedLabelSep' : '/',
+  //'p_nestedLabelSep' : '/',
   'm_dlgInfo' : null,
+
+  'm_needRefresh' : false,
 
 		/**
 	 * функция сравнения закладок и меток по имени
@@ -52,7 +54,7 @@
 	compareByName : function (a, b) {
 		if (a instanceof Array && b instanceof Array) 
 		{
-			if (GBE2.p_sortOrder == "asc") 
+			if (GBE2.opt.sortOrder == "asc") 
 			{
 				return String(a[0]).toLowerCase() < String(b[0]).toLowerCase() ? -1 : 1;
 			}
@@ -63,7 +65,7 @@
 		}
 		if (a instanceof Object && b instanceof Object) 
 		{
-			if (GBE2.p_sortOrder == "asc") 
+			if (GBE2.opt.sortOrder == "asc") 
 			{
 				return String(a.title).toLowerCase() < String(b.title).toLowerCase() ? -1 : 1;
 			}
@@ -80,7 +82,7 @@
 	compareByDate : function (a, b) {		
 		if (a instanceof Array && b instanceof Array) 
 		{
-			if (this.p_sortOrder == "asc") 
+			if (GBE2.opt.sortOrder == "asc") 
 			{
 				return new Date(a[5]) < new Date(b[5]) ? -1 : 1;
 			}
@@ -91,7 +93,7 @@
 		}
 		if (a instanceof Object && b instanceof Object) 
 		{
-			if (this.p_sortOrder == "asc") 
+			if (GBE2.opt.sortOrder == "asc") 
 			{
 				return new Date(a.timestamp) < new Date(b.timestamp) ? -1 : 1;
 			}
@@ -173,14 +175,23 @@
 	 * @param {string} parentKey - Ключ родительской метки
 	 *
 	 */
-	appendBkmkToBkmksList : (parent, bkmk, parentKey) => {
+	appendBkmkToBkmksList : function (parent, bkmk, parentKey)  {
 			let item = {
 				"title" : bkmk.title, 
 				"key" : (bkmk.id + "|" + parentKey), 
 				"refKey": bkmk.id, 
 				"url": bkmk.url,
-				"icon": "../images/bkmrk.png"
+				"icon": "../images/bkmrk.png",
+				"tooltip" : bkmk.title + "\n" + bkmk.url
 			};
+			if (this.opt.enableNotes && bkmk.notes !== "")
+			{
+				item.tooltip += "\n" + browser.i18n.getMessage("editBkmkDlg_notes") + "\n" + bkmk.notes;
+			}
+			if (this.opt.showTagsInTooltip && bkmk.labels != "")
+			{
+				item.tooltip += "\n" + browser.i18n.getMessage("editBkmkDlg_labels") + "\n" + bkmk.labels;
+			}
 			parent.push (item);
 	},
 
@@ -372,17 +383,19 @@
 
 			// запоминаем 10 последних добавленных закладок
 			// (они идут всегда первыми в ответе сервера)
-			if (this.p_enable10recentBookmark)
+			if (this.opt.enable10recentBookmark)
 			{
 				let sliceLength = (this.m_bookmarkList.length < 10 ? this.m_bookmarkList.length : 10);
 				this.m_recent10bkmrk = this.m_bookmarkList.slice(0,sliceLength);
 			}
 
+			// console.log(this.opt.sortType);
+			// console.log(this.opt.sortOrder);
 			// сортируем массив закладок
-			this.m_bookmarkList.sort((this.p_sortType == "timestamp")? this.compareByDate : this.compareByName);	
+			this.m_bookmarkList.sort((this.opt.sortType == "timestamp")? this.compareByDate : this.compareByName);	
 
 			// сортируем массив меток
-			lbs.sort((this.p_sortType == "timestamp") ? this.compareByDate : this.compareByName);	
+			lbs.sort((this.opt.sortType == "timestamp") ? this.compareByDate : this.compareByName);	
 			// Возможно перенести ниже
 			this.m_labelsList = lbs;
 
@@ -404,7 +417,7 @@
 					// пропускаем пустые метки
 					if (lbs[i].title == "") continue;
 					// разбиваем на вложенные метки по разделителю
-					let arr_nested_label = lbs[i].title.split(this.p_nestedLabelSep);
+					let arr_nested_label = lbs[i].title.split(this.opt.nestedLabelSep);
 					// let key = "";
 					
 					// первый уровень
@@ -426,7 +439,7 @@
 					for (j = 1; j < arr_nested_label.length; j++)
 					{
 						let parentContainer = this.searchLabel(treeSource, {key : tempKey});
-						fullName += this.p_nestedLabelSep + arr_nested_label[j];
+						fullName += this.opt.nestedLabelSep + arr_nested_label[j];
 						tempKey = this.genereteLabelId(fullName);
 						if (!$.grep(treeSource, function(e) {return (e.key == tempKey);}).length)
 						{
@@ -535,7 +548,7 @@
     		}
 
     		// вставляем 10 последних добавленных закладок 
-				if (this.p_enable10recentBookmark && this.m_recent10bkmrk.length)
+				if (this.opt.enable10recentBookmark && this.m_recent10bkmrk.length)
 				{
 					let pKey = this.genereteLabelId(this.m_RecentLabel);
 					let resentLabel = {
@@ -554,7 +567,7 @@
 				}
 
     		// вставляем 10 самых популярных закладок 
-    		if (this.p_enable10visitedBookmark && visitsArray.length)
+    		if (this.opt.enable10visitedBookmark && visitsArray.length)
     		{
     			visitsArray.sort((a,b) => { a.visits < b.visits ? 1 : -1; });
     			let pKey = this.genereteLabelId(this.m_VisitedLabel);
@@ -1088,7 +1101,7 @@ browser.contextMenus.onClicked.addListener(function(info, tab) {
 // при изменении параметров дополнения - перечитываем их
 browser.storage.onChanged.addListener((changes) => {
 	// console.log(JSON.stringify(changes));
-	GBE2.opt.read().then();
+	GBE2.opt.read().then(() => { GBE2.m_needRefresh = true;});
 });
 
 // при изменении адреса вкладки - меняем значок на панели,

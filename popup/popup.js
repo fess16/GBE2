@@ -64,11 +64,15 @@ function removeClickHandlers () {
 	$(".hmenuAdd a, .hmenuEdit a").off( "click", "**" );
 }
 
+function isSpecialUrl (url) {
+	let SearchString = new RegExp("^chrome:|^javascript:|^data:|^about:|^file:.*" );
+	return SearchString.test(url);
+}
+
 function showURL (url, newTab = true, activate = true)
 {
 	if (url.length) {
-		let SearchString = new RegExp("^chrome:|^javascript:|^data:|^about:|^file:.*" );
-		if (SearchString.test(url)) {
+		if (isSpecialUrl(url)) {
 			console.log("You are trying open url: " + url);
 			console.log("But in Firefox Webextension, you can't open or navigate to privileged URLs: chrome:, javascript:, data:, about:");
 			console.log("https://developer.mozilla.org/ru/Add-ons/WebExtensions/Chrome_incompatibilities");
@@ -123,6 +127,23 @@ $(document).ready(function(){
       		window.close();
       	}
       }
+	  },
+	  enhanceTitle: function(event, data) {
+	  	if (bg.GBE2.opt.showFavicons) {
+		  	let node = data.node;
+				let img = $(node.span).find("img.fancytree-icon");
+		    if( !node.isFolder() && node.data.url.length && !isSpecialUrl(node.data.url)) { 
+		    	// let favicon = "https://icons.better-idea.org/icon?url=" + encodeURIComponent(node.data.url) +"&size=32";
+		    	let favicon = "http://www.google.com/s2/favicons?domain_url=" + encodeURIComponent(node.data.url);
+		    	$.ajax({
+						url: "http://www.google.com/s2/favicons",
+						method: "GET",
+						data: { domain_url : node.data.url }
+					})
+					.then(() => { img.attr('src', favicon);})
+					.catch(() => { img.attr('src', "../images/bkmrk.png");} );
+		    }
+	  	}
 	  },
   });
 
@@ -242,9 +263,14 @@ $(document).ready(function(){
 
 	console.log("I am popup.js");
 
+	if (bg.GBE2.m_needRefresh) {
+		bg.GBE2.m_needRefresh = false;
+		refresh();
+	}
+
 	// если m_dlgInfo.needOpen == true, то необходимо открыть диалог редактирования закладки
 	// с параметрами из m_dlgInfo
-	if (bg.GBE2.m_dlgInfo !== null && bg.GBE2.m_dlgInfo.needOpen)
+	if (bg.GBE2.m_dlgInfo !== null && bg.GBE2.m_dlgInfo.needOpen && !bg.GBE2.m_needRefresh)
 	{
 		// $("#editBkmkDlg-name").val(bg.GBE2.m_dlgInfo.title);
 		// $("#editBkmkDlg-url").val(bg.GBE2.m_dlgInfo.url);
