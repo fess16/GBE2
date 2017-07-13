@@ -182,7 +182,8 @@
 				"refKey": bkmk.id, 
 				"url": bkmk.url,
 				"icon": "../images/bkmrk.png",
-				"tooltip" : bkmk.title + "\n" + bkmk.url
+				"tooltip" : bkmk.title + "\n" + bkmk.url,
+				"notes" : bkmk.notes
 			};
 			if (this.opt.enableNotes && bkmk.notes !== "")
 			{
@@ -557,11 +558,14 @@
 						"folder"		: true,
 						"children"	: [],
 						"path"			: this.m_RecentLabel,
-						"icon"			: "../images/folder_blue.png"
+						"icon"			: "../images/folder_blue.png",
+						"ignoreMe"	: true
 					};
 					for (let i = 0; i < this.m_recent10bkmrk.length; i++)
 					{
-						this.appendBkmkToBkmksList(resentLabel.children, this.m_recent10bkmrk[i], pKey);
+						let bkmk = this.m_recent10bkmrk[i];
+						bkmk["ignoreMe"] = true;
+						this.appendBkmkToBkmksList(resentLabel.children, bkmk, pKey);
 					}
 					treeSource.unshift(resentLabel);
 				}
@@ -577,12 +581,14 @@
 						"folder"		: true,
 						"children"	: [],
 						"path"			: this.m_VisitedLabel,
-						"icon"			: "../images/folder_blue.png"
+						"icon"			: "../images/folder_blue.png",
+						"ignoreMe"	: true
 					};
 					let visitsCount = (visitsArray.length < 10 ? visitsArray.length : 10);
 					for (let i = 0; i < visitsCount; i++)
 					{
 						let bkmk = this.m_bookmarkList.filter( val => {return val.id ==  visitsArray[i].bkmsrkId})[0];
+						bkmk["ignoreMe"] = true;
 						this.appendBkmkToBkmksList(visitsLabel.children, bkmk, pKey);
 					}
 					treeSource.unshift(visitsLabel); 

@@ -282,3 +282,25 @@ ul.fancytree-container {
 	margin-left: -1px;
   margin-top: 6px;
 }
+
+mark {
+	background-color: #BCF270;
+	/*background-color: #40D8F9;*/
+}
+
+mark.markNote, mark.markUrl {
+	padding: 0 3px;
+	margin: 0 3px;
+	border-radius: 4px;
+	font-size: 0.75em;
+	padding-bottom: 1px;
+}
+
+mark.markNote {
+	background-color: #FEFEA9;
+	/*background-color: #4BF867;*/
+}
+mark.markUrl {
+	background-color: #28D9C2;
+	/*background-color: #8BA2F7;*/
+}

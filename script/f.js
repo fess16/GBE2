@@ -12,6 +12,10 @@ function _errorLog (f, e) {
 	console.log ("GBE-" + f + " : " + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName + ")");
 }
 
+function _escape(s) {
+    return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+};
+
 function Options () {
 	// включить 10 последний закладок
 	this.enable10recentBookmark = true;
