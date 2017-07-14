@@ -413,7 +413,7 @@ $(document).ready(function(){
 		}
 	}).focus();
 
-
+	setTimeout (() => {$("#filterTextbox").focus();}, 100);
 }); // document ready
 
 function resetFilter(){
