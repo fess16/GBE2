@@ -375,158 +375,44 @@ $(document).ready(function(){
 		let n,
 				tree = $.ui.fancytree.getTree(),
 				match = $(this).val();
+		clearTimeout($.data(this, 'timer'));
+
 		if(e && e.which === $.ui.keyCode.ESCAPE || $.trim(match) === "" || $.trim(match) === '"'){
 			// console.log("filter 2 " + e.which);
-			//tree.clearFilter();
 			resetFilter();
 			return false;
 		}
-		n = tree.filterNodes(function(node) {
-			if( node.data.ignoreMe ) {
-			    return "skip";  // don't match anythin inside this branch
-			}
-			let bkmk = {
-				title : node.title,
-				notes : node.data.notes ? node.data.notes : "",
-				url : node.data.url ? node.data.url : ""
-			}
-			let replacement = '<mark>$&</mark>';
-			let check = checkBookmark(bkmk, match);
-			if (check.isMatch && node.isFolder()) 
-			{
-				node.titleWithHighlight = node.title.replace(check.search, replacement);
-				return "branch";  // match the whole 'Foo' branch, if it's a folder
-			}
-			else {
-				if (check.search !== "") 
+		var wait = setTimeout(filter, 200);
+		$(this).data('timer', wait);
+		function filter() {
+			n = tree.filterNodes(function(node) {
+				if( node.data.ignoreMe ) {
+				    return "skip";  // don't match anythin inside this branch
+				}
+				let bkmk = {
+					title : node.title,
+					notes : node.data.notes ? node.data.notes : "",
+					url : node.data.url ? node.data.url : ""
+				}
+				let replacement = '<mark>$&</mark>';
+				let check = checkBookmark(bkmk, match);
+				if (check.isMatch && node.isFolder()) 
+				{
 					node.titleWithHighlight = node.title.replace(check.search, replacement);
-				else
-					node.titleWithHighlight = check.extra + node.title;
-				return check.isMatch;
-			}
+					return "branch";  // match the whole 'Foo' branch, if it's a folder
+				}
+				else {
+					if (check.search !== "") 
+						node.titleWithHighlight = node.title.replace(check.search, replacement);
+					else
+						node.titleWithHighlight = check.extra + node.title;
+					return check.isMatch;
+				}
 
-		});
+			});
+		}
 	}).focus();
 
-
-// 	$("#filterTextbox").keyup(function(e){
-// 				let n,
-// 						tree = $.ui.fancytree.getTree(),
-// 						//args = "autoApply autoExpand fuzzy hideExpanders highlight leavesOnly nodata".split(" "),
-// 						//opts = {},
-// 						//filterFunc = /*$("#branchMode").is(":checked") ? tree.filterBranches :*/ tree.filterNodes,
-// 						match = $(this).val();
-// 				// console.log(match);
-// 				// $.each(args, function(i, o) {
-// 				// 	opts[o] = $("#" + o).is(":checked");
-// 				// });
-// 				// opts.mode = $("#hideMode").is(":checked") ? "hide" : "dimm";
-// 				if(e && e.which === $.ui.keyCode.ESCAPE || $.trim(match) === ""){
-// 					// console.log("filter 2 " + e.which);
-// 					tree.clearFilter();
-// 					return false;
-// 				}
-// 				// if($("#regex").is(":checked")) {
-// 				// 	// Pass function to perform match
-// 					// n = filterFunc.call(tree, function(node) {
-// 					// 	return new RegExp(match, "i").test(node.title);
-// 					// }, opts);
-// 				//
-// 					n = tree.filterNodes(function(node) { 
-// 						let words = match.split(/\s+/);
-// 						let wordsCount = words.length;
-// 						if( node.data.ignoreMe ) {
-// 						    return "skip";  // don't match anythin inside this branch
-// 						}
-// 						let bkmk = null;
-// 						// if (node.isFolder())
-// 						// {
-// 						// 	bkmk = {
-// 						// 		title : node.title,
-// 						// 		notes : "",
-// 						// 		url : ""
-// 						// 	}
-// 						// }
-// 						// else {
-// 							bkmk = {
-// 								title : node.title,
-// 								notes : node.data.notes ? node.data.notes : "",
-// 								url : node.data.url ? node.data.url : ""
-// 							}
-// 						// }
-
-// 						let hit = false;
-// 						// значение фильтра по метке установлено и таких меток у закладки нет - пропускаем ее
-// 						// if (labelFilter != "" && this._M.m_bookmarkList[i].labels.indexOf(labelFilter) == -1)
-// 						// 	continue;
-// 						let replacement = '<mark>$&</mark>';
-// 						let check = checkBookmark(bkmk, match);
-// 						if (check.match)
-// 						{
-// 							hit = true;							
-// 						}
-// 						else
-// 						{
-// 							let hitCount = 0;
-// 							for (let j = 0; j < wordsCount; j++)
-// 							{
-// 								check = checkBookmark(bkmk, words[j])
-// 								if (check.match) 
-// 								{
-// 									hitCount++;
-// 								}
-// 							}
-// 							if (hitCount == wordsCount) hit = true;
-// 						}
-// 						if (hit && node.isFolder()) 
-// 						{
-// 							node.titleWithHighlight = node.title.replace(check.search, replacement);
-// 							return "branch";  // match the whole 'Foo' branch, if it's a folder
-// 						}
-// 						else {
-// 							if (hit) node.titleWithHighlight = check.extra + " " + node.title.replace(check.search, replacement);
-// 							return hit;
-// 						}
-// 					});
-
-
-// /*					let rex = new RegExp(match, "i");
-// 					let replacement = '<mark>$&</mark>';
-// 					n = tree.filterNodes(function(node) {
-// 						// return new RegExp(match, "i").test(node.title);
-// 						  var match = rex.test(node.title);
-// 						  if( node.data.ignoreMe ) {
-// 						    return "skip";  // don't match anythin inside this branch
-// 						  } else if( match && node.isFolder() ) {
-// 						  	node.titleWithHighlight = node.title.replace(rex, replacement);
-// 						    return "branch";  // match the whole 'Foo' branch, if it's a folder
-// 						  } else {
-// 						  	node.titleWithHighlight = node.title.replace(rex, replacement);
-// 						  	//node.titleWithHighlight = "<mark>" + node.title + "</mark>";
-// 						    return match;  // otherwise match the nodes only
-// 						  }
-// 					});*/
-// 				// } else {
-// 					// Pass a string to perform case insensitive matching
-// 					// n = filterFunc.call(fTree, match, opts);
-// 				//n = tree.filterNodes(match);
-// 					// n = filterFunc.call(tree, match);
-// 				// }
-// 			}).focus();
-
-	// var rex = new RegExp("foo", "i");
-
-	// $("#tree").fancytree("getTree").filterNodes(function(node) {
-	//   var match = rex.test(node.title);
-
-	//   if( match && node.isFolder() ) {
-	//     return "branch";  // match the whole 'Foo' branch, if it's a folder
-	//   } else if( node.data.ignoreMe ) {
-	//     return "skip";  // don't match anythin inside this branch
-	//   } else {
-	//     return match;  // otherwise match the nodes only
-	//   }
-	// });
 
 }); // document ready
 
@@ -534,25 +420,40 @@ function resetFilter(){
 	fTree.clearFilter();
 }
 
-function checkBookmark (bkmk, search) {
+/**
+ * проверяет закладку/метку на соответствие значению фильтра
+ *
+ * @param      {object}  bkmk    информация о закладке в виде bkmk = {	title, notes, url }
+ * @param      {string}  search  строка поиска
+ * 
+ * возвращает result = {
+ * 	isMatch: false,  - совпадает или нет
+ * 	search: "", - регулярка для выделения найденого в заголовке закладки
+ * 	extra: [] - добавляется в начало заголовка (для url и notes)
+ * }
+ */
+ function checkBookmark (bkmk, search) {
 	let result = {isMatch: false, search: "", extra: []};
-	//TODO !!!!!!!!!!!!!!!!!!!!!!!!!! enableFilterByUrl enableFilterByNotes !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	let enableFilterByUrl = true;
-	let enableFilterByNotes = true;
+	let enableFilterByUrl = bg.GBE2.opt.enableFilterByUrl;
+	let enableFilterByNotes = bg.GBE2.opt.enableFilterByNotes;
 
-	// console.log(search);
-
+	// если в строке нечетное число кавычек, например
+	// "
+	// "значение
+	// знач1 "знач2
+	// "знач1" знач2 "знач3
 	if (Math.abs((search.match(/"/g) || []).length % 2) == 1) {
 		var pos = search.lastIndexOf('"');
+		// удаляем последнюю кавычку
 	  search = search.substring(0,pos) + "" + search.substring(pos+1)
 		if (search.length == 0) {
 			result.isMatch = true; 
 			return result;
-			// (temp.match(/is/g) || []).length
-			// Math.abs(n % 2) == 1
 		}
 	}
 
+	// проверка на "значение поиска с пробелами"
+	// учитывается только одно вхождение
 	let result0 = /"(.*?\s.*?)"/i.exec(search);
 	if (result0 && Array.isArray(result0) && result0.length == 2){
     let search = _escape(result0[1]);
@@ -564,22 +465,24 @@ function checkBookmark (bkmk, search) {
        return result;
     }    
 	}
-
+	// делим значение поиска по пробелам
 	var words = search.split(/\s+/);
-
+	// формируем регулярки для поиска и выделения
+	// если слов несколько - должны встречаться все слова
 	var tSearch = "(?:";
 	var tMark = "";
 	words.forEach((elem) => {
     if (elem.length == 0) return;
+    // вариант для слова в кавычках - ищем целое слово
     if (/"\S*?"/ig.test(elem))
     {
-      //(?=.*(vba)) (?=.*\b(JS)(?:\s|$|[,.:;])) (?=.*(C\+\+)).+
       var elem = _escape(elem.replace(/"/g,""));
       // tSearch += '(?=.*\\b(' + elem + ')(?=\\s|$|[,.:;]))';
       tSearch += '(?=.*([^0-9a-zA-Zа-яёА-ЯЁ]|\\b)(' + elem + ')(?=\\s|$|[,.:;]))';
       // tMark += '(?=([^0-9a-zA-Zа-яёА-ЯЁ]+|\\b)(' + elem + ')(?=\\s|$|[,.:;]))|';
       tMark += '(?:([^0-9a-zA-Zа-яёА-ЯЁ]{0}|\\b)(' + elem + ')(?=\\s|$|[,.:;]))|';
     }
+    // без кавычек - любое соответствие
     else {
       var elem = _escape(elem);
       tSearch += '(?=.*(' + elem + '))';
@@ -593,6 +496,7 @@ function checkBookmark (bkmk, search) {
 	var reMark = new RegExp(tMark, "ig");
 	// console.log (reMark);
 
+	// поиск в заголовке закладки
 	let match = reSearch.exec(bkmk.title);
 	if (match) {
 		result.isMatch = true; 
@@ -601,18 +505,16 @@ function checkBookmark (bkmk, search) {
 	}
 
 	result.search = "";
+	// поиск в примечании
 	if (enableFilterByNotes && bkmk.notes.length > 0) {
-		// console.log(bkmk.notes);
-		// console.log(reSearch);
 		match = (new RegExp(tSearch, "ig")).exec(bkmk.notes);
-		// console.log(match);
 		if (match) {
 			result.isMatch = true; 
 			result.extra = "<mark class='markNote'>NOTE</mark>";
 			return result;
 		}
 	}
-
+	// поиск в Url
 	if (enableFilterByUrl && bkmk.url.length > 0) {
 		match = (new RegExp(tSearch, "ig")).exec(bkmk.url);
 		if (match) {
@@ -624,54 +526,6 @@ function checkBookmark (bkmk, search) {
 	return result;
 }
 
-// function checkBookmark1 (bkmk, search) 
-// {
-// 	let result = {match: false, search: "", extra: []};
-// 	//TODO !!!!!!!!!!!!!!!!!!!!!!!!!! enableFilterByUrl !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// 	let enableFilterByUrl = true
-
-// 	let re0 = search.match(/"(.*?\s.*?)"/ig);
-// 	// let re0 = search.match(/"(.*?)"/ig);
-// 	if (re0 && Array.isArray(re0) && re0.length == 1) {
-// 		if (re0[0] == search.trim()) {
-// 			let search = re0[0].trim().replace(/"/g,"").toLowerCase();
-// 			if (bkmk.title.toLowerCase().indexOf(search) !== -1) {
-// 				result.match = true; 
-// 				result.search = new RegExp(search, "i");
-// 				return result;
-// 			}
-// 	}
-
-// 	let re1 = search.match(/^"\S+"$/ig);
-// 	if (re1 && Array.isArray(re1) && re1.length == 1)
-// 	{
-// 		re2 = new RegExp('(?:^|\\s)(' + search.trim().replace(/"/g,"") + ')(?:\\s|$|[,.:;])',"ig");
-// 		result.search = re2;
-// 		let hit = false;
-// 		if (re2.test(bkmk.title))  { hit = true; }
-// 		if (!hit && re2.test(bkmk.notes))  { hit = true; result.extra.push("notes"); }
-// 		if (!hit && enableFilterByUrl && re2.test(bkmk.url)) { hit = true; result.extra.push("url"); }
-// 		if (hit) {
-// 			result.match = true;
-// 			return result;
-// 		};
-// 	}
-// 	else
-// 	{
-// 		let search = search.toLowerCase();
-// 		result.search = new RegExp(search, "i");
-// 		if (bkmk.title.toLowerCase().indexOf(search) !== -1) { hit = true; }
-// 		if (bkmk.notes.toLowerCase().indexOf(search) !== -1) { hit = true; result.extra.push("notes"); }
-// 		// if (bkmk.title.toLowerCase().indexOf(search.toLowerCase()) !== -1) return true;
-// 		// if (bkmk.notes.toLowerCase().indexOf(search.toLowerCase()) !== -1) return true;
-// 		if (enableFilterByUrl && bkmk.url.toLowerCase().indexOf(search) !== -1)  { hit = true; result.extra.push("url"); }
-// 		if (hit) {
-// 			result.match = true;
-// 			return result;
-// 		};
-// 	}
-// 	return result;
-// };
 
 function setBkmkControls (bkmk)
 {

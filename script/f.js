@@ -45,6 +45,12 @@ function Options () {
   this.showFavicons = true;
   // показывать примечания во всплывающей подсказке
   this.showTagsInTooltip = true;
+  // включить фильтр по URL
+  this.enableFilterByUrl = false;
+  // включить фильтр по примечаниям
+  this.enableFilterByNotes = true;
+  // задержка фильтра (мс)
+  this.filterDelay = 200;
 }
 
 Options.prototype.read = function() {
@@ -63,6 +69,9 @@ Options.prototype.read = function() {
 		this.reverseLeftClick = (r.hasOwnProperty('reverseLeftClick')) ? r.reverseLeftClick : false;
 		this.showFavicons = (r.hasOwnProperty('showFavicons')) ? r.showFavicons : true;
 		this.showTagsInTooltip = (r.hasOwnProperty('showTagsInTooltip')) ? r.showTagsInTooltip : true;
+		this.enableFilterByUrl = (r.hasOwnProperty('enableFilterByUrl')) ? r.enableFilterByUrl : false;
+		this.enableFilterByNotes = (r.hasOwnProperty('enableFilterByNotes')) ? r.enableFilterByNotes : true;
+		this.filterDelay = (r.hasOwnProperty('filterDelay')) ? r.filterDelay : 200;
 		// console.log ("f.js read" + JSON.stringify(r));
 		// console.log ("f.js read" + JSON.stringify(this));
 		return this;

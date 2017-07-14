@@ -122,18 +122,20 @@
 	 * @return {object} ссылка на найденную метку
 	 */
 	searchLabel : function (array, keyvalue){
-		var found = false;
+		var found = [];
 		// поле поиска
 		let key = Object.keys(keyvalue)[0];
 		// ищем на текущем уровне
 		let elem = array.filter(x => (x.hasOwnProperty("folder") && x[key] === keyvalue[key]));
 		if (elem.length)
 		{
+			//console.log("1.1 searchLabel " + elem[0]);
 			// нашли - возвращаем
 			return elem[0];
 		}
 		else
 		{
+			//console.log("1.2 searchLabel");
 			// не нашли - просматриваем вложенные метки
 			// отбираем метки
 			let folders = array.filter(x => (x.hasOwnProperty("folder")));
@@ -143,13 +145,37 @@
 	  		// если у метки есть вложенные - ищем среди них
 	  		if (item.children.length)
 	  		{
+	  			//console.log("2.2 searchLabel ");// + JSON.stringify(item));
 	  			found = this.searchLabel(item["children"], keyvalue);
-	  			if (found)
+	  			if (found.hasOwnProperty("key"))
 	  			  return found;
 	  		}
 	  	}
 		}
+		return found;
+	},
 
+	searchLabelByPath : function (array, path) {
+		var found = [];
+		let indexSep = path.indexOf(this.opt.nestedLabelSep);
+		if (indexSep > 0) {
+			let start = path.slice(0, indexSep);
+			let end = path.slice(indexSep+1);
+			let elem = array.filter(x => (x.hasOwnProperty("folder") && x["title"] === start));
+			if (elem.length && elem[0].children.length) {
+				found = this.searchLabelByPath(elem[0].children, end);
+				if (found.hasOwnProperty("key"))
+	  			  return found;
+			}
+		}
+		else {
+			let elem = array.filter(x => (x.hasOwnProperty("folder") && x["title"] === path));
+			if (elem.length)
+			{
+				return elem[0];
+			}
+		}
+		return found;
 	},
 
 	isBookmarked : function (tUrl) {
@@ -423,6 +449,7 @@
 					
 					// первый уровень
 					let fullName = arr_nested_label[0];
+					//console.log("1 " + fullName);
 					let tempKey = this.genereteLabelId(fullName);
 					if (!$.grep(treeSource, function(e) {
 								return (e.key == tempKey);
@@ -440,10 +467,25 @@
 					for (j = 1; j < arr_nested_label.length; j++)
 					{
 						let parentContainer = this.searchLabel(treeSource, {key : tempKey});
+						// console.log(JSON.stringify(parentContainer));
 						fullName += this.opt.nestedLabelSep + arr_nested_label[j];
+						//console.log(j + " " + fullName);
 						tempKey = this.genereteLabelId(fullName);
-						if (!$.grep(treeSource, function(e) {return (e.key == tempKey);}).length)
+						// if (!$.grep(treeSource, function(e) {return (e.key == tempKey);}).length)
+						//if (!$.grep(parentContainer, function(e) {return (e.key == tempKey);}).length)
+						let notExist = true;
+						if (parentContainer.children.length > 0) {
+							let res = this.searchLabel(parentContainer.children, {key : tempKey});
+							if (res.hasOwnProperty("key") )
+								notExist = false;
+							// console.log(res);
+						}
+
+						if (notExist)
+						// if ( parentContainer.children //&& parentContainer.children.length > 0 
+						// 	&& this.searchLabel(parentContainer.children, {key : tempKey}).length == 0)
 						{
+							//console.log("insert " + fullName);
 							parentContainer.children.push({
 								"title" 		: arr_nested_label[j],
 								"key" 			: tempKey,
@@ -513,7 +555,9 @@
     	    		// добавляем ее в каждую из меток
     	    		bkmk.labels.forEach( (label) => {
     	    			pKey = this.genereteLabelId(label);
-    	    			parentContainer = this.searchLabel(treeSource, {key : pKey});
+    	    			//console.log(label);
+    	    			// parentContainer = this.searchLabel(treeSource, {key : pKey});
+    	    			parentContainer = this.searchLabelByPath(treeSource, label);
     	    			this.appendBkmkToBkmksList(parentContainer.children, bkmk, pKey);
     	    		});
     	    	}
@@ -630,11 +674,15 @@
 	 */
 	doRequestBookmarks : function ()
 	{
+		let debug = false;		
+		debug = true;
+		let output = this.opt.enableNotes ? "rss" : "xml";
 		return $.ajax({
-			url: this.m_baseUrl + "lookup",
+			url: (debug ? ("lookupFess"+output+".xml") : (this.m_baseUrl + "lookup")),
 			type: 'GET',
 			data: {
-				output : (this.opt.enableNotes ? "rss" : "xml"),
+				output : output,
+				// output : (this.opt.enableNotes ? "rss" : "xml"),
 				num : 10000
 			},
 			timeout : this.p_timeout

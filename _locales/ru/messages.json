@@ -204,6 +204,15 @@
   },
   "options_showTagsInTooltip": {
     "message": "метки во всплывающей подсказке"
+  },
+  "options_enableFilterByUrl": {
+    "message": "Включить фильтр по URL"
+  },
+  "options_enableFilterByNotes": {
+    "message": "Включить фильтр по примечаниям"
+  },
+  "options_filterDelay": {
+    "message": "Задержка фильтра, мс (1с = 1000мс)"
   }
 
 }

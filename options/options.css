@@ -90,5 +90,9 @@ fieldset legend{
   margin-right: 5px;
 }
 
+fieldset {
+  border-radius: 8px;
+}
+
 
 

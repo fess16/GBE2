@@ -29,6 +29,9 @@ function setTexts()
 	$("label[for=enable10recentBookmark]").text(browser.i18n.getMessage("options_enable10recentBookmark"));
 	$("label[for=enable10visitedBookmark]").text(browser.i18n.getMessage("options_enable10visitedBookmark"));
 	$("label[for=showTagsInTooltip]").text(browser.i18n.getMessage("options_showTagsInTooltip"));
+	$("label[for=enableFilterByUrl]").text(browser.i18n.getMessage("options_enableFilterByUrl"));
+	$("label[for=enableFilterByNotes]").text(browser.i18n.getMessage("options_enableFilterByNotes"));
+	$("label[for=filterDelay]").text(browser.i18n.getMessage("options_filterDelay"));
 	
 	$("label[for=sortType]").text(browser.i18n.getMessage("options_sortType"));
 	$('#sortType option[value="name"]').text(browser.i18n.getMessage("options_sortType_name"));
@@ -58,6 +61,9 @@ function restoreOptions()
   	$("#enable10recentBookmark").prop("checked", r.enable10recentBookmark);
   	$("#enable10visitedBookmark").prop("checked", r.enable10visitedBookmark);
   	$("#showTagsInTooltip").prop("checked", r.showTagsInTooltip);
+  	$("#enableFilterByUrl").prop("checked", r.enableFilterByUrl);
+  	$("#enableFilterByNotes").prop("checked", r.enableFilterByNotes);
+  	$("#filterDelay").val(r.filterDelay);
   });
 }
 
@@ -75,6 +81,10 @@ function saveOptions(e)
 	opt.enable10recentBookmark = $("#enable10recentBookmark").prop("checked");
 	opt.enable10visitedBookmark = $("#enable10visitedBookmark").prop("checked");
 	opt.showTagsInTooltip = $("#showTagsInTooltip").prop("checked");
+	opt.enableFilterByUrl = $("#enableFilterByUrl").prop("checked");
+	opt.enableFilterByNotes = $("#enableFilterByNotes").prop("checked");
+	//TODO проверка ввода
+	opt.filterDelay = $("#filterDelay").val();
 	opt.write().then();
 }
 

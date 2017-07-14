@@ -190,6 +190,15 @@
   },
   "options_showTagsInTooltip": {
     "message": "labels in tooltip"
+  },
+  "options_enableFilterByUrl": {
+    "message": "Enable filter by URL"
+  },
+  "options_enableFilterByNotes": {
+    "message": "Enable filter by Notes"
+  },
+  "options_filterDelay": {
+    "message": "Filter delay, ms (1s = 1000ms)"
   }
 
 
