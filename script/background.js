@@ -675,7 +675,7 @@
 	doRequestBookmarks : function ()
 	{
 		let debug = false;		
-		debug = true;
+		//debug = true;
 		let output = this.opt.enableNotes ? "rss" : "xml";
 		return $.ajax({
 			url: (debug ? ("lookupFess"+output+".xml") : (this.m_baseUrl + "lookup")),

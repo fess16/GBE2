@@ -33,6 +33,13 @@ function setTexts()
 	$("label[for=enableFilterByNotes]").text(browser.i18n.getMessage("options_enableFilterByNotes"));
 	$("label[for=filterDelay]").text(browser.i18n.getMessage("options_filterDelay"));
 	
+	$("label[for=enableLabelHiding]").text(browser.i18n.getMessage("options_enableLabelHiding"));
+	$("label[for=showHiddenLabels]").text(browser.i18n.getMessage("options_showHiddenLabels"));
+	$("label[for=hiddenLabelsTitle]").text(browser.i18n.getMessage("options_hiddenLabelsTitle"));
+
+	$("#fsFilter legend").text(browser.i18n.getMessage("options_fsFilter_legend"));
+	$("#fsLabelHiding legend").text(browser.i18n.getMessage("options_fsLabelHiding_legend"));
+
 	$("label[for=sortType]").text(browser.i18n.getMessage("options_sortType"));
 	$('#sortType option[value="name"]').text(browser.i18n.getMessage("options_sortType_name"));
 	$('#sortType option[value="timestamp"]').text(browser.i18n.getMessage("options_sortType_timestamp"));
@@ -64,6 +71,9 @@ function restoreOptions()
   	$("#enableFilterByUrl").prop("checked", r.enableFilterByUrl);
   	$("#enableFilterByNotes").prop("checked", r.enableFilterByNotes);
   	$("#filterDelay").val(r.filterDelay);
+  	$("#enableLabelHiding").prop("checked", r.enableLabelHiding);
+  	$("#showHiddenLabels").prop("checked", r.showHiddenLabels);
+  	$("#hiddenLabelsTitle").val(r.hiddenLabelsTitle);
   });
 }
 
@@ -85,6 +95,10 @@ function saveOptions(e)
 	opt.enableFilterByNotes = $("#enableFilterByNotes").prop("checked");
 	//TODO проверка ввода
 	opt.filterDelay = $("#filterDelay").val();
+	opt.enableLabelHiding = $("#enableLabelHiding").prop("checked");
+	opt.showHiddenLabels = $("#showHiddenLabels").prop("checked");
+	//TODO проверка ввода
+	opt.hiddenLabelsTitle = $("#hiddenLabelsTitle").val();
 	opt.write().then();
 }
 

@@ -213,6 +213,21 @@
   },
   "options_filterDelay": {
     "message": "Задержка фильтра, мс (1с = 1000мс)"
+  },
+  "options_enableLabelHiding": {
+    "message": "Включить скрытие меток"
+  },
+  "options_showHiddenLabels": {
+    "message": "Показывать скрытые метки"
+  },
+  "options_hiddenLabelsTitle": {
+    "message": "Заголовок для скрытых меток"
+  },
+  "options_fsFilter_legend": {
+    "message": "Настройки фильтра"
+  },
+  "options_fsLabelHiding_legend": {
+    "message": "Скрытие меток"
   }
 
 }

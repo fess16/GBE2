@@ -51,6 +51,12 @@ function Options () {
   this.enableFilterByNotes = true;
   // задержка фильтра (мс)
   this.filterDelay = 200;
+  // включить скрытие меток
+  this.enableLabelHiding = true;
+  // показывать скрытые метки
+  this.showHiddenLabels = false;
+  // название для скрытых меток
+  this.hiddenLabelsTitle = "_hidden_";
 }
 
 Options.prototype.read = function() {
@@ -72,8 +78,9 @@ Options.prototype.read = function() {
 		this.enableFilterByUrl = (r.hasOwnProperty('enableFilterByUrl')) ? r.enableFilterByUrl : false;
 		this.enableFilterByNotes = (r.hasOwnProperty('enableFilterByNotes')) ? r.enableFilterByNotes : true;
 		this.filterDelay = (r.hasOwnProperty('filterDelay')) ? r.filterDelay : 200;
-		// console.log ("f.js read" + JSON.stringify(r));
-		// console.log ("f.js read" + JSON.stringify(this));
+		this.enableLabelHiding = (r.hasOwnProperty('enableLabelHiding')) ? r.enableLabelHiding : true;
+		this.showHiddenLabels = (r.hasOwnProperty('showHiddenLabels')) ? r.showHiddenLabels : false;
+		this.hiddenLabelsTitle = (r.hasOwnProperty('hiddenLabelsTitle')) ? r.hiddenLabelsTitle : "_hidden_";
 		return this;
 	});
 }

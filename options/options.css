@@ -58,12 +58,12 @@ input:checked + .slider:before {
 
 #optForm  {
   width: 800px;
-  font-size: 0.9em;
+  font-size: 0.83em;
   margin: 0 auto;
 }
 
 #tabs .ui-tabs-panel {
-    height: 300px;
+    height: 400px;
     overflow: auto;
 }
 
@@ -74,14 +74,14 @@ input:checked + .slider:before {
 }
 
 fieldset legend{
-  font-size: 0.9em;
+  font-size: 0.83em;
 } 
 
 .fRow {
   display: flex;
   height: 2.5em;
   align-items: center;
-  font-size: 0.9em;
+  font-size: 0.83em;
   
 }
 
@@ -92,6 +92,7 @@ fieldset legend{
 
 fieldset {
   border-radius: 8px;
+  margin-bottom: 5px;
 }
 
 
