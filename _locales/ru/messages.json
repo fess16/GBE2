@@ -44,13 +44,13 @@
     "message": "?Добавить в закладки открытые вкладки"
   },
   "cntx-folder-menuHideFolder": {
-    "message": "?Добавить в скрытые"
+    "message": "Добавить в скрытые"
   },
   "cntx-folder-menuUnhideFolder": {
-    "message": "?Убрать из скрытых"
+    "message": "Убрать из скрытых"
   },
   "cntx-folder-menuUnhideAll": {
-    "message": "?Убрать из скрытых все"
+    "message": "Убрать из скрытых все"
   },
   "cntx-folder-menuExport": {
     "message": "?Экспорт в HTML"
@@ -120,6 +120,29 @@
     }
   },
 
+  "confirmDlg_title": {
+    "message": "Подтверждение действия"
+  },
+  "confirmDlg_HideFolder_msg": {
+    "message": "Вы действительно хотите скрыть метку: <strong>$label$</strong>?",
+    "placeholders": {
+      "label" : { "content" : "$1" }
+    }
+  },
+  "confirmDlg_UnhideFolder_msg": {
+    "message": "Вы действительно хотите убрать из скрытых метку: <strong>$label$</strong>?",
+    "placeholders": {
+      "label" : { "content" : "$1" }
+    }
+  },
+  "confirmDlg_UnhideAll_msg": {
+    "message": "Вы действительно хотите убрать из скрытых все метки?"
+  },
+  
+  "btn_Confirm": {
+    "message": "Подтвердить",
+    "description": "Надпись кнопки подтверждения в диалогах"
+  },
   "btn_Save": {
     "message": "Сохранить",
     "description": "Надпись кнопки сохранения в диалогах"

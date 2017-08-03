@@ -18,6 +18,7 @@
   opt : new Options(),
 	
 	// тайм-аут ответа сервера при получении закладок и сигнатуры
+	// TODO: change to opt.timeout
 	'p_timeout' : 10000,
 	// режим без примечаний - формат получения закладок: rss or xml
 	// 'p_enableNotes' : true,
@@ -29,8 +30,8 @@
 	// 'p_enable10recentBookmark' :true,
 	// 'p_enable10visitedBookmark' :true,
 	'm_recent10bkmrk' : [],
-	'p_hiddenLabelsTitle' : "_hidden_",
-	'p_showHiddenLabels' : false,
+	// 'p_hiddenLabelsTitle' : "_hidden_",
+	// 'p_showHiddenLabels' : false,
 
 	 // // тип сортировки 
   // 'p_sortType' : "name",
@@ -184,6 +185,12 @@
 		return false;
 	},
 
+	isHiddenLabel : function (path) {
+		let re = new RegExp(this.opt.hiddenLabelsTitle + "$");
+		if (path.search(re) !== -1 || path.indexOf(this.opt.hiddenLabelsTitle+this.opt.nestedLabelSep) == 0) return true;
+		return false;
+	},
+
 	getBookmark : function (keyvalue) {
 		if (this.m_bookmarkList.length){
 			let key = Object.keys(keyvalue)[0];
@@ -209,7 +216,8 @@
 				"url": bkmk.url,
 				"icon": "../images/bkmrk.png",
 				"tooltip" : bkmk.title + "\n" + bkmk.url,
-				"notes" : bkmk.notes
+				"notes" : bkmk.notes,
+				"hidden" : bkmk.hidden
 			};
 			if (this.opt.enableNotes && bkmk.notes !== "")
 			{
@@ -219,6 +227,7 @@
 			{
 				item.tooltip += "\n" + browser.i18n.getMessage("editBkmkDlg_labels") + "\n" + bkmk.labels;
 			}
+			// console.log(JSON.stringify(bkmk));
 			parent.push (item);
 	},
 
@@ -300,11 +309,16 @@
 			{
 			  // название метки
 			  let labelVal = $(labels[i]).text();
+			  let flagHidden = false;
+			  if (this.opt.enableLabelHiding &&  this.isHiddenLabel(labelVal)) {
+			  	flagHidden = true;
+			  	if (!this.opt.showHiddenLabels) continue;
+			  }
 			  // если такой метки во временной строке еще нет - добавляем ее (с разделителем)
 			  if (allLabelsStr.indexOf(this.m_labelSep + labelVal + this.m_labelSep) === -1)
 			  {
 			  	allLabelsStr += (labelVal + this.m_labelSep);
-			  	lbs.push({"title" : labelVal, "timestamp" : null, "id" : this.genereteLabelId(labelVal)});
+			  	lbs.push({"title" : labelVal, "timestamp" : null, "id" : this.genereteLabelId(labelVal), "hidden" : flagHidden});
 			  }
 			}
 			// добавляем labelUnlabeledName метку в массив меток
@@ -313,7 +327,9 @@
 				lbs.push({
 					"title" : this.opt.labelUnlabeledName, 
 					"timestamp" : null, 
-					"id" : this.genereteLabelId(this.opt.labelUnlabeledName)});
+					"id" : this.genereteLabelId(this.opt.labelUnlabeledName),
+					"hidden" : false
+				});
 			}
 
 			// список закладок\
@@ -335,7 +351,13 @@
 					// read timestamp field
 					this.m_bookmarkList[i].timestamp = bookmark.find(bkmkFN[oType].date).text() || "";
 					// read label field
+					this.m_bookmarkList[i].hidden = false;
+					let self = this;
 					bookmark.find(bkmkFN[oType].label).each(function() {
+						if (self.opt.enableLabelHiding && self.isHiddenLabel($(this).text())) {
+							self.m_bookmarkList[i].hidden = true;
+							if (!self.opt.showHiddenLabels) return true;
+						}
 						bookmark_labels.push($(this).text());
 					});
 					if (this.m_bookmarkList[i].title == "" && this.m_bookmarkList[i].url !== "")
@@ -351,6 +373,7 @@
 					// 	JSON.stringify(this.m_bookmarkList[i]));
 					// // this._M.refreshInProgress = false;
 					// throw e1;
+					console.log(e1);
 					let reason = new Error("doProcessBookmarks - Parse bookmark params - error. Last processing bookmark - " + 
 					 	JSON.stringify(this.m_bookmarkList[i]));
 					return Promise.reject(reason);
@@ -445,6 +468,7 @@
 					if (lbs[i].title == "") continue;
 					// разбиваем на вложенные метки по разделителю
 					let arr_nested_label = lbs[i].title.split(this.opt.nestedLabelSep);
+					let flagHidden = lbs[i].hidden;
 					// let key = "";
 					
 					// первый уровень
@@ -453,16 +477,17 @@
 					let tempKey = this.genereteLabelId(fullName);
 					if (!$.grep(treeSource, function(e) {
 								return (e.key == tempKey);
-							}).length)
-					{
-						treeSource.push({
-							"title" 		: fullName,
-							"key" 			: tempKey,
-							"folder"		: true,
-							"children"	: [],
-							"path"			: fullName,
-							"icon"			: "../images/folder_blue.png"
-						});
+							}).length){
+								// let flagHidden = (this.opt.enableLabelHiding && this.isHiddenLabel(fullName));
+								treeSource.push({
+									"title" 		: fullName,
+									"key" 			: tempKey,
+									"folder"		: true,
+									"children"	: [],
+									"path"			: fullName,
+									"hidden"		: flagHidden,
+									"icon"			: flagHidden ? "../images/folder.png" : "../images/folder_blue.png"
+								});
 					}
 					for (j = 1; j < arr_nested_label.length; j++)
 					{
@@ -486,13 +511,15 @@
 						// 	&& this.searchLabel(parentContainer.children, {key : tempKey}).length == 0)
 						{
 							//console.log("insert " + fullName);
+							// let flagHidden = (this.opt.enableLabelHiding && this.isHiddenLabel(fullName));
 							parentContainer.children.push({
 								"title" 		: arr_nested_label[j],
 								"key" 			: tempKey,
 								"folder"		: true,
 								"children"	: [],
 								"path"			: fullName,
-								"icon"			: "../images/folder_blue.png"
+								"hidden"		: flagHidden,
+								"icon"			: flagHidden ? "../images/folder.png" : "../images/folder_blue.png"
  							});
 						}
 					}
@@ -505,6 +532,10 @@
 			let visitsArray = [];
     	// в цикле добавляем задачи в цепочку
     	this.m_bookmarkList.forEach((bkmk) => {
+    		if (!this.opt.showHiddenLabels && bkmk.hidden) {
+    			console.log(JSON.stringify(bkmk));
+    			return;
+    		}
     	  chain = chain
     	  	// получаем URL закладки, если поле пустое
     	    .then(() => {
@@ -639,14 +670,15 @@
     		}
     		visitsArray = [];
 
-    		if (!this.p_showHiddenLabels)
-    		{
-    			let hiddenLabel = this.searchLabel(treeSource, {key : this.genereteLabelId(this.p_hiddenLabelsTitle)});
-    			if (hiddenLabel instanceof Object)
-    			{
-    				hiddenLabel.hidden = "true";
-    			}
-    		}
+    		// if (!this.opt.showHiddenLabels)
+    		// {
+    		// 	let hiddenLabel = this.searchLabel(treeSource, {key : this.genereteLabelId(this.opt.hiddenLabelsTitle)});
+    		// 	if (hiddenLabel instanceof Object)
+    		// 	{
+    		// 		hiddenLabel.hidden = "true";
+    		// 		//console.log("hidden");
+    		// 	}
+    		// }
     	  // console.log(JSON.stringify(this.m_labelsArr));
 				// получаем массив меток
 				// console.log (JSON.stringify(treeSource));
@@ -1232,17 +1264,17 @@ chrome.runtime.onMessage.addListener(
 	    	GBE2.m_labelsArr.forEach(function(lbl) {
 	    		if (lbl == request.data.oldName || lbl.indexOf(request.data.oldName+GBE2.opt.nestedLabelSep) == 0) {
 	    			chain = chain.then(() => {
+	    				let re = request.data.oldName;
+	    				if (GBE2.opt.showHiddenLabels && request.data.oldName == GBE2.opt.hiddenLabelsTitle && lbl !== GBE2.opt.hiddenLabelsTitle)
+	    						re += GBE2.opt.nestedLabelSep;
 	    				return GBE2.doChangeLabel({
-	    					oldName: lbl, name: lbl.replace(request.data.oldName, request.data.name)
+	    					oldName: lbl, name: lbl.replace(re, request.data.name)
 	    				});
 	    			});
 	    		}
 	    	});
 	    	chain.then(() => {
-	    	// GBE2.doChangeLabel(request.data)
-	    	// 	.then(() => {
 	    			browser.runtime.sendMessage({type: "needRefresh"});
-	    			// console.log("background:doChangeLabel");
 	    		})
 	    		.catch((e) => {
 	    			_errorLog("background:editLabel", e);

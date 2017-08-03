@@ -4,8 +4,14 @@ var getting = browser.runtime.getBackgroundPage();
 var bg, aTab, aBkmk = null;
 var popup = window;
 var fTree = null;
+var editBkmkDlg = null;
+var delBkmkDlg = null;
+var editLblDlg = null;
+var delLblkDlg = null;
+var confirmDlg = null;
 getting.then((page) => {bg = page}, (error) => {_errorLog ("Popup-getBackgroundPage", error)});
 browser.tabs.query({active: true, currentWindow: true}).then((tabs) => {aTab = tabs[0]});
+
 
 function split(val) {
     return val.split(/,\s*/);
@@ -172,7 +178,7 @@ $(document).ready(function(){
 
   fTree = $("#bkmk-tree").fancytree("getTree");
 
-
+  let hiddenPKey  = bg.GBE2.genereteLabelId(bg.GBE2.opt.hiddenLabelsTitle);
   $("#bkmk-tree").contextmenu({
     delegate: "span.fancytree-title, img.fancytree-icon, span.fancytree-expander",
     addClass : "GBE-ui-contextmenu",
@@ -218,11 +224,22 @@ $(document).ready(function(){
       	$("#bkmk-tree").contextmenu("showEntry", "menuOpenAll", true);
       	$("#bkmk-tree").contextmenu("showEntry", "menuAddHere", true);
       	$("#bkmk-tree").contextmenu("showEntry", "menuAddAllTabs", true);
-      	$("#bkmk-tree").contextmenu("showEntry", "menuHideFolder", true);
-      	$("#bkmk-tree").contextmenu("showEntry", "menuUnhideFolder", true);
-      	$("#bkmk-tree").contextmenu("showEntry", "menuUnhideAll", true);
       	$("#bkmk-tree").contextmenu("showEntry", "menuExport", true);
       	$("#bkmk-tree").contextmenu("showEntry", "msepf", true);
+
+      	$("#bkmk-tree").contextmenu("showEntry", "menuHideFolder", false);
+      	$("#bkmk-tree").contextmenu("showEntry", "menuUnhideFolder", false);
+      	$("#bkmk-tree").contextmenu("showEntry", "menuUnhideAll", false);
+      	
+      	if (bg.GBE2.opt.enableLabelHiding) {
+      		if (hiddenPKey == node.key)
+	      		$("#bkmk-tree").contextmenu("showEntry", "menuUnhideAll", true);
+					else if (node.data.hidden)      		
+	      		$("#bkmk-tree").contextmenu("showEntry", "menuUnhideFolder", true);
+	      	else
+	      		$("#bkmk-tree").contextmenu("showEntry", "menuHideFolder", true);
+      	}
+      	//TODO: добавить скрытие/отображение для отдельных закладок
 
       	$("#bkmk-tree").contextmenu("showEntry", "page-go", false);
       	$("#bkmk-tree").contextmenu("showEntry", "page-edit", false);
@@ -571,10 +588,6 @@ function setBkmkControls (bkmk)
 	}
 }
 
-var editBkmkDlg = null;
-var delBkmkDlg = null;
-var editLblDlg = null;
-var delLblkDlg = null;
 
 // function openBkmkDialog (dlgName)
 function openBkmkDialog (bkmk)
@@ -815,6 +828,41 @@ function openQRdialog(aBkmk){
 	dlg.dialog("open");
 }
 
+function openConfirmDlg(message, callback){
+	if (confirmDlg == null) {
+		confirmDlg = $("#confirmDlg");
+		confirmDlg.dialog({
+			dialogClass: "no-close",
+	    autoOpen: false,
+	    modal: true,
+	    draggable: false,
+	    resizable: false,
+	     width: 320,
+	    position: { my: "center", at: "center", of: "#wrapper" },
+	    title: 	browser.i18n.getMessage("confirmDlg_title"),
+		});
+	}
+	confirmDlg.dialog("option", "buttons", 
+	  [
+      {
+        text: browser.i18n.getMessage("btn_Confirm"),
+        click: function() {
+        	callback();
+        }
+      },
+      {
+        text: browser.i18n.getMessage("btn_Cancel"),
+        click: function() {
+          $(this).dialog("close");
+        }
+      },
+	  ]
+	);
+	$("#confirmDlg-Info").html(message);
+
+	confirmDlg.dialog("open");
+}
+
 function contextMenuShareBookmark (bkmk, mode) {
 	if (bkmk !== null)
 	{
@@ -864,6 +912,63 @@ function labelMenuAddHere(lbl) {
 			}
 		});
 }
+
+function folderMenuHideFolder(lbl) {
+	let msg = browser.i18n.getMessage("confirmDlg_HideFolder_msg", lbl.name);
+	let hideFolder = () => {
+		let result = {
+    	oldName: lbl.name,
+    	name: bg.GBE2.opt.hiddenLabelsTitle + bg.GBE2.opt.nestedLabelSep + lbl.name
+  	}
+  	browser.runtime.sendMessage({
+  		"type": "editLabel",
+  		"data": result
+		}).then(() => {
+    	$("#confirmDlg").dialog("close");
+		});
+	};
+	openConfirmDlg(msg, hideFolder);
+}
+
+function folderMenuUnhideFolder (lbl) {
+	let msg = browser.i18n.getMessage("confirmDlg_UnhideFolder_msg", lbl.name);
+	let re = new RegExp ("^" + bg.GBE2.opt.hiddenLabelsTitle + bg.GBE2.opt.nestedLabelSep, "i");
+	if (lbl.name.search(re) == 0) {
+		let UnhideFolder = () => {
+			let result = {
+	    	oldName: lbl.name,
+	    	name: lbl.name.replace(re, '')
+	  	}
+	  	browser.runtime.sendMessage({
+	  		"type": "editLabel",
+	  		"data": result
+			}).then(() => {
+	    	$("#confirmDlg").dialog("close");
+			});
+		};
+		openConfirmDlg(msg, UnhideFolder);
+	}
+}
+
+function folderMenuUnhideAll (lbl) {
+	let msg = browser.i18n.getMessage("confirmDlg_UnhideAll_msg");
+	if (lbl.name == bg.GBE2.opt.hiddenLabelsTitle) {
+		let UnhideAll = () => {
+			let result = {
+	    	oldName: bg.GBE2.opt.hiddenLabelsTitle,
+	    	name: ''
+	  	}
+	  	browser.runtime.sendMessage({
+	  		"type": "editLabel",
+	  		"data": result
+			}).then(() => {
+	    	$("#confirmDlg").dialog("close");
+			});
+		};
+		openConfirmDlg(msg, UnhideAll);
+	}
+}
+
 
 function handleContextMenuClick(event, ui) {
   var node = $.ui.fancytree.getNode(ui.target);
@@ -929,6 +1034,18 @@ function handleContextMenuClick(event, ui) {
   	case "menuAddHere":
   		lbl = {id: node.key, name: node.data.path};
   		labelMenuAddHere(lbl);
+  		break;
+  	case "menuUnhideAll":
+  		lbl = {id: node.key, name: node.data.path};
+  		folderMenuUnhideAll(lbl);
+  		break;
+  	case "menuUnhideFolder":
+  		lbl = {id: node.key, name: node.data.path};
+  		folderMenuUnhideFolder(lbl);
+  		break;
+  	case "menuHideFolder":
+  		lbl = {id: node.key, name: node.data.path};
+  		folderMenuHideFolder(lbl);
   		break;
   }
 }

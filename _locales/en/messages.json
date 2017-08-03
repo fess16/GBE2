@@ -122,6 +122,29 @@
     }
   },
 
+  "confirmDlg_title": {
+    "message": "Action confirmation"
+  },
+  "confirmDlg_HideFolder_msg": {
+    "message": "Would you like to hide label:<br><strong>$label$</strong>?",
+    "placeholders": {
+      "label" : { "content" : "$1" }
+    }
+  },
+  "confirmDlg_UnhideFolder_msg": {
+    "message": "Would you like to unhide label:<br><strong>$label$</strong>?",
+    "placeholders": {
+      "label" : { "content" : "$1" }
+    }
+  },
+  "confirmDlg_UnhideAll_msg": {
+    "message": "Would you like to unhide all labels?"
+  },
+
+  "btn_Confirm": {
+    "message": "Confirm",
+    "description": "Надпись кнопки подтверждения в диалогах"
+  },
   "btn_Save": {
     "message": "Save",
     "description": "Надпись кнопки сохранения в диалогах"
