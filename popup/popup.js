@@ -96,6 +96,16 @@ function showURL (url, newTab = true, activate = true)
 	}
 }
 
+function showURLinNewWindow(url, private = false)
+{
+	if (private) {
+		browser.windows.create({url: url, incognito: true})
+	}
+	else {
+		browser.windows.create({url: url})
+	}
+}
+
 $(document).ready(function(){
 
 
@@ -204,10 +214,13 @@ $(document).ready(function(){
       // bookmark menu
       {title: (bg.GBE2.opt.reverseLeftClick ? _getMsg("cntx-page-inNewTab") : _getMsg("cntx-page-go")), 
       	cmd: "page-go", uiIcon: "cntx-page-go"},
+      {title: _getMsg("cntx-page-newWidow"), cmd: "page-newWidow"},
+      {title: _getMsg("cntx-page-newPrivate"), cmd: "page-newPrivate"},
+      {title: "----", cmd: "msepp"},
       {title: _getMsg("cntx-page-edit"), cmd: "page-edit", uiIcon: "cntx-page-edit"},
       {title: _getMsg("cntx-page-delete"), cmd: "page-delete", uiIcon: "cntx-page-delete"},
-      {title: _getMsg("cntx-qrcode-icon"), cmd: "qrcode-icon", uiIcon: "cntx-qrcode-icon"},
       {title: "----", cmd: "msepp"},
+      {title: _getMsg("cntx-qrcode-icon"), cmd: "qrcode-icon", uiIcon: "cntx-qrcode-icon"},
       {title: "E-mail...", cmd: "bookmark-emai", uiIcon: "cntx-bookmark-emai"},
       {title: "Facebook...", cmd: "bookmark-fbshare", uiIcon: "cntx-bookmark-fbshare"},
       {title: "Twitter...", cmd: "bookmark-twshare", uiIcon: "cntx-bookmark-twshare"},
@@ -242,6 +255,8 @@ $(document).ready(function(){
       	//TODO: добавить скрытие/отображение для отдельных закладок
 
       	$("#bkmk-tree").contextmenu("showEntry", "page-go", false);
+      	$("#bkmk-tree").contextmenu("showEntry", "page-newWidow", false);
+      	$("#bkmk-tree").contextmenu("showEntry", "page-newPrivate", false);
       	$("#bkmk-tree").contextmenu("showEntry", "page-edit", false);
       	$("#bkmk-tree").contextmenu("showEntry", "page-delete", false);
       	$("#bkmk-tree").contextmenu("showEntry", "qrcode-icon", false);
@@ -252,6 +267,8 @@ $(document).ready(function(){
 			}
       else {
       	$("#bkmk-tree").contextmenu("showEntry", "page-go", true);
+      	$("#bkmk-tree").contextmenu("showEntry", "page-newWidow", true);
+      	$("#bkmk-tree").contextmenu("showEntry", "page-newPrivate", true);
       	$("#bkmk-tree").contextmenu("showEntry", "page-edit", true);
       	$("#bkmk-tree").contextmenu("showEntry", "page-delete", true);
       	$("#bkmk-tree").contextmenu("showEntry", "qrcode-icon", true);
@@ -1067,6 +1084,16 @@ function handleContextMenuClick(event, ui) {
   		bkmk = bg.GBE2.getBookmark({id: node.refKey});
   		// $("#delBkmkDlg label").text(_getMsg("delBkmkDlg_label", bkmk.title));
   		openDelBkmkDlg(bkmk);
+  		break;
+  	case "page-newWidow":
+  		if (node.data.url.length) {
+  			showURLinNewWindow(node.data.url);
+  		}
+  		break;
+  	case "page-newPrivate":
+  		if (node.data.url.length) {
+  			showURLinNewWindow(node.data.url, true);
+  		}
   		break;
   	case "qrcode-icon":
   		bkmk = bg.GBE2.getBookmark({id: node.refKey});

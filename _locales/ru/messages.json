@@ -68,6 +68,12 @@
   "cntx-page-go": {
     "message": "Открыть на месте"
   },
+  "cntx-page-newWidow": {
+    "message": "Открыть в новом окне"
+  },
+  "cntx-page-newPrivate": {
+    "message": "Открыть в приватном окне"
+  },
   "cntx-page-inNewTab": {
     "message": "Открыть в новой вкладке"
   },

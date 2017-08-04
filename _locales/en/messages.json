@@ -44,7 +44,7 @@
     "message": "Delete"
   },
   "cntx-folder-menuOpenAll": {
-    "message": "Open all"
+    "message": "Open All"
   },
   "cntx-folder-menuAddHere": {
     "message": "Add Bookmark Here"
@@ -59,7 +59,7 @@
     "message": "Unhide"
   },
   "cntx-folder-menuUnhideAll": {
-    "message": "Unhide all"
+    "message": "Unhide All"
   },
   "cntx-folder-menuExport": {
     "message": "Export to HTML"
@@ -68,6 +68,12 @@
   
   "cntx-page-go": {
     "message": "Open in current Tab"
+  },
+  "cntx-page-newWidow": {
+    "message": "Open in New Window"
+  },
+  "cntx-page-newPrivate": {
+    "message": "Open in Private Window"
   },
   "cntx-page-inNewTab": {
     "message": "Open bookmark in new Tab"
