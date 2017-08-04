@@ -969,6 +969,60 @@ function folderMenuUnhideAll (lbl) {
 	}
 }
 
+function folderMenuExport(lbl) {
+	if (bg.GBE2.m_treeSource && bg.GBE2.m_treeSource.length)
+	{
+		let tree = bg.GBE2.m_treeSource;
+		let enableNotes = bg.GBE2.opt.enableNotes;
+		let exportLabel = bg.GBE2.searchLabelByPath(tree, lbl.name);
+		if (exportLabel.hasOwnProperty("key")) {
+			var html = "<!DOCTYPE NETSCAPE-Bookmark-file-1>\n";
+			html += "<META HTTP-EQUIV='Content-Type' CONTENT=text/html; charset=UTF-8'>\n";
+			html += "<TITLE>Bookmarks</TITLE>\n";
+			html += "<H1>Bookmarks</H1>\n";
+			html += "<DL><p>\n";
+
+			let export_folder = function(node)
+			{
+				html += "<DT><H3>" + node.path + "</H3>\n";
+				html += "<DL><p>\n";
+				if (node.children.length) {
+					for (let i = 0; i < node.children.length; i++)
+					{
+						if (node.children[i].hasOwnProperty("folder"))
+						{
+							export_folder(node.children[i]);
+						}
+						else
+						{
+							let bkmk = bg.GBE2.getBookmark({id: node.children[i].refKey});
+							html += "\t<DT><A HREF=" + '"' + bkmk.url + ' "ADD_DATE="' 
+								+ (enableNotes ? Date.parse(bkmk.timestamp)/1000 : bkmk.timestamp) 
+								+ '">' + bkmk.title 
+								+ "</A>\n";
+							if (bkmk.notes.length)
+								html += "\t<DD>" + bkmk.notes + "\n";
+						}
+				}
+				}
+				html += "</DL><p>\n";
+			};
+			export_folder(exportLabel);
+
+			var blobUrl = URL.createObjectURL(new Blob([html], {type: 'text/plain;charset=utf-8'}));
+		  // var downloadUrl = "http://10.115.161.12/mediawiki/index.php/%D0%97%D0%B0%D0%B3%D0%BB%D0%B0%D0%B2%D0%BD%D0%B0%D1%8F_%D1%81%D1%82%D1%80%D0%B0%D0%BD%D0%B8%D1%86%D0%B0";
+		  var downloading = browser.downloads.download({
+		    url : blobUrl,
+		    //saveAs: true,
+		    filename : encodeURI('bookmarks_' + lbl.id) + '.html',
+		    conflictAction : 'overwrite'
+		  });
+		  downloading.then().catch((e) => {_errorLog("folderMenuExport",e)});
+
+		}
+	}
+}
+
 
 function handleContextMenuClick(event, ui) {
   var node = $.ui.fancytree.getNode(ui.target);
@@ -1046,6 +1100,10 @@ function handleContextMenuClick(event, ui) {
   	case "menuHideFolder":
   		lbl = {id: node.key, name: node.data.path};
   		folderMenuHideFolder(lbl);
+  		break;
+  	case "menuExport":
+  		lbl = {id: node.key, name: node.data.path, title: node.title};
+  		folderMenuExport(lbl);
   		break;
   }
 }
