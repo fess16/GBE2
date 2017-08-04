@@ -9,6 +9,11 @@ $(document).ready(function()
     $("#labelUnlabeledName").attr('disabled', !$(this).prop('checked'));
 	});
 
+	$("#enableLabelHiding").change(function(event) {
+    $("#showHiddenLabels").attr('disabled', !$(this).prop('checked'));
+    $("#hiddenLabelsTitle").attr('disabled', !$(this).prop('checked'));
+	});
+
 });
 
 
