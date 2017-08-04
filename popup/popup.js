@@ -98,11 +98,13 @@ function showURL (url, newTab = true, activate = true)
 
 function showURLinNewWindow(url, private = false)
 {
-	if (private) {
-		browser.windows.create({url: url, incognito: true})
-	}
-	else {
-		browser.windows.create({url: url})
+	if (url.length) {
+		if (private) {
+			browser.windows.create({url: url, incognito: true})
+		}
+		else {
+			browser.windows.create({url: url})
+		}
 	}
 }
 
@@ -154,6 +156,13 @@ $(document).ready(function(){
       		window.close();
       	}
       }
+	  },
+	  keydown: function(event, data) {
+	  	let node = data.node;
+	  	if (event.which == 13 && !node.isFolder()) {
+	  		showURL(node.data.url, !bg.GBE2.opt.reverseLeftClick, true);
+	  		window.close();
+	  	}
 	  },
 	  enhanceTitle: function(event, data) {
 	  	if (bg.GBE2.opt.showFavicons) {
