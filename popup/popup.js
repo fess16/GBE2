@@ -25,9 +25,9 @@ function extractLast(term) {
 function setClickHandlers (aBkmk)
 {
 	removeClickHandlers();
-	$(".hmenuAdd a").attr('title', browser.i18n.getMessage("popup_hmenuAdd"));
-	$(".hmenuEdit a").attr('title', browser.i18n.getMessage("popup_hmenuEdit"))
-	$(".hmenuDel a").attr('title', browser.i18n.getMessage("popup_hmenuDel"))
+	$(".hmenuAdd a").attr('title', _getMsg("popup_hmenuAdd"));
+	$(".hmenuEdit a").attr('title', _getMsg("popup_hmenuEdit"))
+	$(".hmenuDel a").attr('title', _getMsg("popup_hmenuDel"))
 	
 	if (aBkmk !== null) {
 		$(".hmenuAdd a")
@@ -43,7 +43,7 @@ function setClickHandlers (aBkmk)
 		$(".hmenuDel a")
 			.removeClass('disabled-link')
 			.click(function(event) {
-				// $("#delBkmkDlg label").text(browser.i18n.getMessage("delBkmkDlg_label", aBkmk.title));
+				// $("#delBkmkDlg label").text(_getMsg("delBkmkDlg_label", aBkmk.title));
 				openDelBkmkDlg(aBkmk);
 		});
 	}
@@ -188,25 +188,25 @@ $(document).ready(function(){
 //      menu: "#options",
     menu: [
     	// folder (label) menu
-      {title: browser.i18n.getMessage("cntx-folder-menuEdit"), cmd: "menuEdit", uiIcon: "cntx-folder-menuEdit"},
-      {title: browser.i18n.getMessage("cntx-folder-menuRemove"), cmd: "menuRemove", uiIcon: "cntx-folder-menuRemove"},
+      {title: _getMsg("cntx-folder-menuEdit"), cmd: "menuEdit", uiIcon: "cntx-folder-menuEdit"},
+      {title: _getMsg("cntx-folder-menuRemove"), cmd: "menuRemove", uiIcon: "cntx-folder-menuRemove"},
       {title: "----", cmd: "msepf"},
-      {title: browser.i18n.getMessage("cntx-folder-menuOpenAll"), cmd: "menuOpenAll", uiIcon: "cntx-folder-menuOpenAll"},
+      {title: _getMsg("cntx-folder-menuOpenAll"), cmd: "menuOpenAll", uiIcon: "cntx-folder-menuOpenAll"},
       {title: "----", cmd: "msepf"},
-      {title: browser.i18n.getMessage("cntx-folder-menuAddHere"), cmd: "menuAddHere", uiIcon: "cntx-folder-menuAddHere"},
-      {title: browser.i18n.getMessage("cntx-folder-menuAddAllTabs"), cmd: "menuAddAllTabs", uiIcon: "cntx-folder-menuAddAllTabs"},
+      {title: _getMsg("cntx-folder-menuAddHere"), cmd: "menuAddHere", uiIcon: "cntx-folder-menuAddHere"},
+      {title: _getMsg("cntx-folder-menuAddAllTabs"), cmd: "menuAddAllTabs", uiIcon: "cntx-folder-menuAddAllTabs"},
       {title: "----", cmd: "msepf"},
-      {title: browser.i18n.getMessage("cntx-folder-menuHideFolder"), cmd: "menuHideFolder", uiIcon: "cntx-folder-menuHideFolder"},
-      {title: browser.i18n.getMessage("cntx-folder-menuUnhideFolder"), cmd: "menuUnhideFolder", uiIcon: "cntx-folder-menuUnhideFolder"},
-      {title: browser.i18n.getMessage("cntx-folder-menuUnhideAll"), cmd: "menuUnhideAll", uiIcon: "cntx-folder-menuUnhideAll"},
+      {title: _getMsg("cntx-folder-menuHideFolder"), cmd: "menuHideFolder", uiIcon: "cntx-folder-menuHideFolder"},
+      {title: _getMsg("cntx-folder-menuUnhideFolder"), cmd: "menuUnhideFolder", uiIcon: "cntx-folder-menuUnhideFolder"},
+      {title: _getMsg("cntx-folder-menuUnhideAll"), cmd: "menuUnhideAll", uiIcon: "cntx-folder-menuUnhideAll"},
       {title: "----", cmd: "msepf"},
-      {title: browser.i18n.getMessage("cntx-folder-menuExport"), cmd: "menuExport"},
+      {title: _getMsg("cntx-folder-menuExport"), cmd: "menuExport"},
       // bookmark menu
-      {title: (bg.GBE2.opt.reverseLeftClick ? browser.i18n.getMessage("cntx-page-inNewTab") : browser.i18n.getMessage("cntx-page-go")), 
+      {title: (bg.GBE2.opt.reverseLeftClick ? _getMsg("cntx-page-inNewTab") : _getMsg("cntx-page-go")), 
       	cmd: "page-go", uiIcon: "cntx-page-go"},
-      {title: browser.i18n.getMessage("cntx-page-edit"), cmd: "page-edit", uiIcon: "cntx-page-edit"},
-      {title: browser.i18n.getMessage("cntx-page-delete"), cmd: "page-delete", uiIcon: "cntx-page-delete"},
-      {title: browser.i18n.getMessage("cntx-qrcode-icon"), cmd: "qrcode-icon", uiIcon: "cntx-qrcode-icon"},
+      {title: _getMsg("cntx-page-edit"), cmd: "page-edit", uiIcon: "cntx-page-edit"},
+      {title: _getMsg("cntx-page-delete"), cmd: "page-delete", uiIcon: "cntx-page-delete"},
+      {title: _getMsg("cntx-qrcode-icon"), cmd: "qrcode-icon", uiIcon: "cntx-qrcode-icon"},
       {title: "----", cmd: "msepp"},
       {title: "E-mail...", cmd: "bookmark-emai", uiIcon: "cntx-bookmark-emai"},
       {title: "Facebook...", cmd: "bookmark-fbshare", uiIcon: "cntx-bookmark-fbshare"},
@@ -290,13 +290,13 @@ $(document).ready(function(){
     select: handleContextMenuClick
   });
 
-	$(".filterHBox label").text(browser.i18n.getMessage("popup_filterLabel"));
+	$(".filterHBox label").text(_getMsg("popup_filterLabel"));
 
-	$("#editBkmkDlg").attr("title", browser.i18n.getMessage("editBkmkDlg_title"));
-	$("label[for='editBkmkDlg-name']").text(browser.i18n.getMessage("editBkmkDlg_name"));
-	$("label[for='editBkmkDlg-url']").text(browser.i18n.getMessage("editBkmkDlg_url"));
-	$("label[for='editBkmkDlg-labels']").text(browser.i18n.getMessage("editBkmkDlg_labels"));
-	$("label[for='editBkmkDlg-notes']").text(browser.i18n.getMessage("editBkmkDlg_notes"));
+	$("#editBkmkDlg").attr("title", _getMsg("editBkmkDlg_title"));
+	$("label[for='editBkmkDlg-name']").text(_getMsg("editBkmkDlg_name"));
+	$("label[for='editBkmkDlg-url']").text(_getMsg("editBkmkDlg_url"));
+	$("label[for='editBkmkDlg-labels']").text(_getMsg("editBkmkDlg_labels"));
+	$("label[for='editBkmkDlg-notes']").text(_getMsg("editBkmkDlg_notes"));
 	
 	// отключаем контекстное меню на кнопках дополнения
 	$(".nav-bar li").on("contextmenu",function(){
@@ -329,13 +329,15 @@ $(document).ready(function(){
 	// 
 	// обновление списка закладок
 	$(".hmenuRefresh a")
-		.attr('title', browser.i18n.getMessage("popup_hmenuRefresh"))
+		.attr('title', _getMsg("popup_hmenuRefresh"))
 		.click(function(event) { 
 			refresh();	
 	});
 
-	$(".hmenuOpt a").click(function(event) {
-		openOptionsPage();
+	$(".hmenuOpt a")
+		.attr('title', _getMsg("popup_hmenuOpt"))
+		.click(function(event) {
+			openOptionsPage();
 	});
 
 /*	$(".hmenuDel a").click(function(event) {
@@ -357,14 +359,17 @@ $(document).ready(function(){
 	});*/
 
 
-	$(".hmenuAddOpenTabs a").click(function(event) {
-		test1();
+	$(".hmenuAddOpenTabs a")
+		.attr('title', _getMsg("popup_hmenuAddOpenTabs"))
+		.click(function(event) {
+			test1();
 	});
 	
-	$(".hmenuGBs a").click(function(event) {
-		showURL("https://www.google.com/bookmarks/");
-		// chrome.tabs.create({active: true, url: "https://www.google.com/bookmarks/"});
-		window.close();
+	$(".hmenuGBs a")
+		.attr('title', _getMsg("popup_hmenuGBs"))
+		.click(function(event) {
+			showURL("https://www.google.com/bookmarks/");
+			window.close();
 	});
 
 	// клик на QR-коде - открываем его в новой вкладке 
@@ -388,6 +393,13 @@ $(document).ready(function(){
 		}
 	});
 
+	$("a.clrBtn").on("keypress click", (e) => {
+		if (e.type = "click" && (e.which == 1 || e.which == 13 || e.which == 32)) {
+			$("#filterTextbox").val('').focus();
+			resetFilter();
+    }
+	});
+
 	$("#filterTextbox").keyup(function(e){
 		let n,
 				tree = $.ui.fancytree.getTree(),
@@ -399,6 +411,7 @@ $(document).ready(function(){
 			resetFilter();
 			return false;
 		}
+		$("a.clrBtn").css({display: 'inline'});
 		var wait = setTimeout(filter, 200);
 		$(this).data('timer', wait);
 		function filter() {
@@ -434,6 +447,7 @@ $(document).ready(function(){
 }); // document ready
 
 function resetFilter(){
+	$("a.clrBtn").css({display: 'none'})
 	fTree.clearFilter();
 }
 
@@ -608,7 +622,7 @@ function openBkmkDialog (bkmk)
       width: 500,
       buttons: [
         {
-          text: browser.i18n.getMessage("btn_Save"),
+          text: _getMsg("btn_Save"),
           click: function() {
           	let result = {
 	          	id: $("#editBkmkDlg-id").val().trim(),
@@ -629,7 +643,7 @@ function openBkmkDialog (bkmk)
           }
         },
         {
-          text: browser.i18n.getMessage("btn_Cancel"),
+          text: _getMsg("btn_Cancel"),
           click: function() {
           	setBkmkControls({id: null, title: "", url: "", labels: "", notes: ""});
             $(this).dialog("close");
@@ -693,10 +707,10 @@ function openDelBkmkDlg (aBkmk){
 	    resizable: false,
 	    // width: 500,
 	    position: { my: "center", at: "center", of: "#wrapper" },
-	    title: 	browser.i18n.getMessage("delBkmkDlg_title"),
+	    title: 	_getMsg("delBkmkDlg_title"),
 	    buttons: [
 	      {
-	        text: browser.i18n.getMessage("btn_Delete"),
+	        text: _getMsg("btn_Delete"),
 	        click: function() {
 	        	browser.runtime.sendMessage({
 		      		"type": "deleteBookmark",
@@ -707,7 +721,7 @@ function openDelBkmkDlg (aBkmk){
 	        }
 	      },
 	      {
-	        text: browser.i18n.getMessage("btn_Cancel"),
+	        text: _getMsg("btn_Cancel"),
 	        click: function() {
 	        	// $("#delBkmkDlg label").text("");
 	        	// $("#delBkmkDlg-id").val("");
@@ -717,7 +731,7 @@ function openDelBkmkDlg (aBkmk){
 	    ]
 		});
 	}
-	$("#delBkmkDlg label").html(browser.i18n.getMessage("delBkmkDlg_label", aBkmk.title));
+	$("#delBkmkDlg label").html(_getMsg("delBkmkDlg_label", aBkmk.title));
 	$("#delBkmkDlg-id").val(aBkmk.id);
 
 	delBkmkDlg.dialog("open");
@@ -734,10 +748,10 @@ function openEditLblDlg (aLbl) {
 	    resizable: false,
 	    width: 320,
 	    position: { my: "center", at: "center", of: "#wrapper" },
-	    title: 	browser.i18n.getMessage("editLblDlg_title"),
+	    title: 	_getMsg("editLblDlg_title"),
       buttons: [
         {
-          text: browser.i18n.getMessage("btn_Save"),
+          text: _getMsg("btn_Save"),
           click: function() {
           	let result = {
 	          	oldName: $("#editLblDlg-oldName").val(),
@@ -752,7 +766,7 @@ function openEditLblDlg (aLbl) {
           }
         },
         {
-          text: browser.i18n.getMessage("btn_Cancel"),
+          text: _getMsg("btn_Cancel"),
           click: function() {
             $(this).dialog("close");
           }
@@ -777,10 +791,10 @@ function openDelLblDlg (aLbl){
 	    resizable: false,
 	     width: 320,
 	    position: { my: "center", at: "center", of: "#wrapper" },
-	    title: 	browser.i18n.getMessage("delLblkDlg_title"),
+	    title: 	_getMsg("delLblkDlg_title"),
 	    buttons: [
 	      {
-	        text: browser.i18n.getMessage("btn_Delete"),
+	        text: _getMsg("btn_Delete"),
 	        click: function() {
 	        	browser.runtime.sendMessage({
 		      		"type": "deleteLabel",
@@ -794,7 +808,7 @@ function openDelLblDlg (aLbl){
 	        }
 	      },
 	      {
-	        text: browser.i18n.getMessage("btn_Cancel"),
+	        text: _getMsg("btn_Cancel"),
 	        click: function() {
 	          $(this).dialog("close");
 	        }
@@ -802,8 +816,8 @@ function openDelLblDlg (aLbl){
 	    ]
 		});
 	}
-	$("#delLblkDlg-lblChildren").text(browser.i18n.getMessage("delLblkDlg_lblChildren"));
-	$("#delLblkDlg-lblInfo").html(browser.i18n.getMessage("delLblkDlg_lblInfo", aLbl.name));
+	$("#delLblkDlg-lblChildren").text(_getMsg("delLblkDlg_lblChildren"));
+	$("#delLblkDlg-lblInfo").html(_getMsg("delLblkDlg_lblInfo", aLbl.name));
 	$("#delLblkDlg-name").val(aLbl.name);
 
 	delLblkDlg.dialog("open");
@@ -839,19 +853,19 @@ function openConfirmDlg(message, callback){
 	    resizable: false,
 	     width: 320,
 	    position: { my: "center", at: "center", of: "#wrapper" },
-	    title: 	browser.i18n.getMessage("confirmDlg_title"),
+	    title: 	_getMsg("confirmDlg_title"),
 		});
 	}
 	confirmDlg.dialog("option", "buttons", 
 	  [
       {
-        text: browser.i18n.getMessage("btn_Confirm"),
+        text: _getMsg("btn_Confirm"),
         click: function() {
         	callback();
         }
       },
       {
-        text: browser.i18n.getMessage("btn_Cancel"),
+        text: _getMsg("btn_Cancel"),
         click: function() {
           $(this).dialog("close");
         }
@@ -914,7 +928,7 @@ function labelMenuAddHere(lbl) {
 }
 
 function folderMenuHideFolder(lbl) {
-	let msg = browser.i18n.getMessage("confirmDlg_HideFolder_msg", lbl.name);
+	let msg = _getMsg("confirmDlg_HideFolder_msg", lbl.name);
 	let hideFolder = () => {
 		let result = {
     	oldName: lbl.name,
@@ -931,7 +945,7 @@ function folderMenuHideFolder(lbl) {
 }
 
 function folderMenuUnhideFolder (lbl) {
-	let msg = browser.i18n.getMessage("confirmDlg_UnhideFolder_msg", lbl.name);
+	let msg = _getMsg("confirmDlg_UnhideFolder_msg", lbl.name);
 	let re = new RegExp ("^" + bg.GBE2.opt.hiddenLabelsTitle + bg.GBE2.opt.nestedLabelSep, "i");
 	if (lbl.name.search(re) == 0) {
 		let UnhideFolder = () => {
@@ -951,7 +965,7 @@ function folderMenuUnhideFolder (lbl) {
 }
 
 function folderMenuUnhideAll (lbl) {
-	let msg = browser.i18n.getMessage("confirmDlg_UnhideAll_msg");
+	let msg = _getMsg("confirmDlg_UnhideAll_msg");
 	if (lbl.name == bg.GBE2.opt.hiddenLabelsTitle) {
 		let UnhideAll = () => {
 			let result = {
@@ -1051,7 +1065,7 @@ function handleContextMenuClick(event, ui) {
   		break;
   	case "page-delete":
   		bkmk = bg.GBE2.getBookmark({id: node.refKey});
-  		// $("#delBkmkDlg label").text(browser.i18n.getMessage("delBkmkDlg_label", bkmk.title));
+  		// $("#delBkmkDlg label").text(_getMsg("delBkmkDlg_label", bkmk.title));
   		openDelBkmkDlg(bkmk);
   		break;
   	case "qrcode-icon":
@@ -1165,30 +1179,3 @@ function test1() {
     	// if (response) document.getElementById("div").textContent = response.msg;
     });
 }
-
-
-
-var tSourse = [
-	{"title": "Node 1", "key": "Node 1", "folder": true, "children" : []}, 
-	{"title": "Folder 2", "key":"Folder 2", "folder": true, "children": [ 
-		{"title": "Node 2.1", "key": "Node 2.1"},
-		{"title": "Node 2.2", "key": "Node 2.2_1", refKey: "Node 2.2"} ]
-	},
-	{"title": "Folder 3", "key":"Folder 3", "folder": true, "children": [ 
-		{"title": "Node 3.1", "key": "Node 3.1"},
-		{"title": "Node 2.2", "key": "Node 2.2_2", refKey: "Node 2.2"} ]
-	}
-]
-
-  
-// 
-/*var q = [
-{"title":"test","key":2087933171,"folder":true,"children":[],"path":"test"},
-{"title":"test21","key":3779995472,"folder":true,"children":[],"path":"test21"},
-{"title":"Work","key":2088063268,"folder":true,"children":[],"path":"Work"},
-{"title":"Графика","key":3874890736,"folder":true,"children":[
-        {"title":"все о inkscape","key":1666563759,"folder":true,"children":[],"path":"Графика/все о inkscape"}
-    ] ,"path":"Графика"}
-];
-*/
-

@@ -1,3 +1,5 @@
+var _getMsg = browser.i18n.getMessage;
+
 function _consoleLog (s) {
 	var str = "";
 	for (var i = 0; i < arguments.length; i++)

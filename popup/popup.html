@@ -22,23 +22,31 @@
     <div id="popup">
       <nav id="hmenu">
         <ul class="nav-bar">
-          <li class="hmenuRefresh"><a href="#"></a></li>
-          <li class="hmenuAdd"><a href="#"></a></li>
-          <li class="hmenuEdit"><a href="#"></a></li>
-          <li class="hmenuDel"><a href="#"></a></li>
-          <li class="hmenuAddOpenTabs"><a href="#"></a></li>
-          <li class="hmenuOpt"><a href="#"></a></li>
-          <li class="hmenuGBs"><a href="#"></a></li>
-          <li class="hmenuFFbookmark"><a href="#"></a></li>
-          <li class="menuAbout"><a href="#"></a></li>
-          <li class="hmenuLgn"><a href="#">Login</a></li>
-          <li class="hmenuLgt"><a href="#">Logout</a></li>
+          <li class="hmenuRefresh"><a class="hmenuBtn" href="#"></a></li>
+          <li class="hmenuEmpty"><a></a></li>
+          <li class="hmenuAdd"><a class="hmenuBtn" href="#"></a></li>
+          <li class="hmenuEdit"><a class="hmenuBtn" href="#"></a></li>
+          <li class="hmenuDel"><a class="hmenuBtn" href="#"></a></li>
+          <li class="hmenuEmpty"><a></a></li>
+          <li class="hmenuAddOpenTabs"><a class="hmenuBtn" href="#"></a></li>
+          <li class="hmenuEmpty"><a></a></li>
+          <li class="hmenuOpt"><a class="hmenuBtn" href="#"></a></li>
+          <li class="hmenuGBs"><a class="hmenuBtn" href="#"></a></li>
+          <!-- <li class="hmenuFFbookmark"><a href="#"></a></li> -->
+          <!-- <li class="menuAbout"><a href="#"></a></li> -->
+          <!-- <li class="hmenuLgn"><a href="#">Login</a></li> -->
+          <!-- <li class="hmenuLgt"><a href="#">Logout</a></li> -->
         </ul>
       </nav>
       <div class="filterHBox">
           <label for="filterTextbox">Search: </label>
-          <span><input type="text" name="filterTextbox" id="filterTextbox" value=""  placeholder="" /></span>
-          <div class="filterHBox-clear"></div>
+          <span class="first">
+            <input type="text" name="filterTextbox" id="filterTextbox" value=""  placeholder="" />
+          </span>
+          <span>
+            <a class="clrBtn" tabindex="0"></a>
+          </span>
+          <!-- <div class="filterHBox-clear"><a class="clrBtn" disabled="true"></a></div> -->
       </div>
       <hr>
 <!--       </div> -->

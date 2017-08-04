@@ -19,6 +19,16 @@
     "message": "Delete current page from Bookmarks",
     "description": "Подсказка - Удаление закладки"
   },
+  "popup_hmenuAddOpenTabs": {
+    "message": "Bookmark all open tabs"
+  },
+  "popup_hmenuOpt": {
+    "message": "Open settings"
+  },
+    "popup_hmenuGBs": {
+    "message": "Go to Google Bookmarks Page"
+  },
+
 
   "popup_RecentLabel": {
     "message": "10 most recent bookmarks"

@@ -19,37 +19,37 @@ $(document).ready(function()
 
 function setTexts()
 {
-	$(":submit").text(browser.i18n.getMessage("options_saveBtn"));
-	$("#fsShow legend").text(browser.i18n.getMessage("options_fildsetShowLegend"));
+	$(":submit").text(_getMsg("options_saveBtn"));
+	$("#fsShow legend").text(_getMsg("options_fildsetShowLegend"));
 
-	$("a[href='#mainPanel']").text(browser.i18n.getMessage("options_mainPanel"));
-	$("a[href='#advPanel']").text(browser.i18n.getMessage("options_advPanel"));
-	$("a[href='#iconsPanel']").text(browser.i18n.getMessage("options_iconsPanel"));
+	$("a[href='#mainPanel']").text(_getMsg("options_mainPanel"));
+	$("a[href='#advPanel']").text(_getMsg("options_advPanel"));
+	$("a[href='#iconsPanel']").text(_getMsg("options_iconsPanel"));
 
-	$("label[for=nestedLabelSep]").text(browser.i18n.getMessage("options_nestedLabelSep"));
-	$("label[for=enableNotes]").text(browser.i18n.getMessage("options_enableNotes"));
-	$("label[for=enableLabelUnlabeled]").text(browser.i18n.getMessage("options_enableLabelUnlabeled"));
-	$("label[for=reverseLeftClick]").text(browser.i18n.getMessage("options_reverseLeftClick"));
-	$("label[for=showFavicons]").text(browser.i18n.getMessage("options_showFavicons"));
-	$("label[for=enable10recentBookmark]").text(browser.i18n.getMessage("options_enable10recentBookmark"));
-	$("label[for=enable10visitedBookmark]").text(browser.i18n.getMessage("options_enable10visitedBookmark"));
-	$("label[for=showTagsInTooltip]").text(browser.i18n.getMessage("options_showTagsInTooltip"));
-	$("label[for=enableFilterByUrl]").text(browser.i18n.getMessage("options_enableFilterByUrl"));
-	$("label[for=enableFilterByNotes]").text(browser.i18n.getMessage("options_enableFilterByNotes"));
-	$("label[for=filterDelay]").text(browser.i18n.getMessage("options_filterDelay"));
+	$("label[for=nestedLabelSep]").text(_getMsg("options_nestedLabelSep"));
+	$("label[for=enableNotes]").text(_getMsg("options_enableNotes"));
+	$("label[for=enableLabelUnlabeled]").text(_getMsg("options_enableLabelUnlabeled"));
+	$("label[for=reverseLeftClick]").text(_getMsg("options_reverseLeftClick"));
+	$("label[for=showFavicons]").text(_getMsg("options_showFavicons"));
+	$("label[for=enable10recentBookmark]").text(_getMsg("options_enable10recentBookmark"));
+	$("label[for=enable10visitedBookmark]").text(_getMsg("options_enable10visitedBookmark"));
+	$("label[for=showTagsInTooltip]").text(_getMsg("options_showTagsInTooltip"));
+	$("label[for=enableFilterByUrl]").text(_getMsg("options_enableFilterByUrl"));
+	$("label[for=enableFilterByNotes]").text(_getMsg("options_enableFilterByNotes"));
+	$("label[for=filterDelay]").text(_getMsg("options_filterDelay"));
 	
-	$("label[for=enableLabelHiding]").text(browser.i18n.getMessage("options_enableLabelHiding"));
-	$("label[for=showHiddenLabels]").text(browser.i18n.getMessage("options_showHiddenLabels"));
-	$("label[for=hiddenLabelsTitle]").text(browser.i18n.getMessage("options_hiddenLabelsTitle"));
+	$("label[for=enableLabelHiding]").text(_getMsg("options_enableLabelHiding"));
+	$("label[for=showHiddenLabels]").text(_getMsg("options_showHiddenLabels"));
+	$("label[for=hiddenLabelsTitle]").text(_getMsg("options_hiddenLabelsTitle"));
 
-	$("#fsFilter legend").text(browser.i18n.getMessage("options_fsFilter_legend"));
-	$("#fsLabelHiding legend").text(browser.i18n.getMessage("options_fsLabelHiding_legend"));
+	$("#fsFilter legend").text(_getMsg("options_fsFilter_legend"));
+	$("#fsLabelHiding legend").text(_getMsg("options_fsLabelHiding_legend"));
 
-	$("label[for=sortType]").text(browser.i18n.getMessage("options_sortType"));
-	$('#sortType option[value="name"]').text(browser.i18n.getMessage("options_sortType_name"));
-	$('#sortType option[value="timestamp"]').text(browser.i18n.getMessage("options_sortType_timestamp"));
-	$('#sortOrder option[value="asc"]').text(browser.i18n.getMessage("options_sortOrder_asc"));
-	$('#sortOrder option[value="desc"]').text(browser.i18n.getMessage("options_sortOrder_desc"));
+	$("label[for=sortType]").text(_getMsg("options_sortType"));
+	$('#sortType option[value="name"]').text(_getMsg("options_sortType_name"));
+	$('#sortType option[value="timestamp"]').text(_getMsg("options_sortType_timestamp"));
+	$('#sortOrder option[value="asc"]').text(_getMsg("options_sortOrder_asc"));
+	$('#sortOrder option[value="desc"]').text(_getMsg("options_sortOrder_desc"));
 	//options_sortType
 // options_sortType_name
 // options_sortType_timestamp

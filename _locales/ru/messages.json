@@ -19,6 +19,15 @@
     "message": "Удалить текущую страницу из закладок",
     "description": "Подсказка - Удаление закладки"
   },
+  "popup_hmenuAddOpenTabs": {
+    "message": "Добавить в закладки все открытые вкладки"
+  },
+  "popup_hmenuOpt": {
+    "message": "Открыть настройки"
+  },
+  "popup_hmenuGBs": {
+    "message": "Перейти на страницу Google Bookmarks"
+  },
 
   "popup_RecentLabel": {
     "message": "10 последних добавленных"

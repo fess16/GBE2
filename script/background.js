@@ -10,8 +10,8 @@
   'm_ganswer' : null,
   'm_signature' : null, 
 
-  'm_RecentLabel' : browser.i18n.getMessage("popup_RecentLabel"),
-  'm_VisitedLabel' : browser.i18n.getMessage("popup_VisitedLabel"),
+  'm_RecentLabel' : _getMsg("popup_RecentLabel"),
+  'm_VisitedLabel' : _getMsg("popup_VisitedLabel"),
 
   // разделитель меток при сортировке
   'm_labelSep'	: "{!|!}",
@@ -221,11 +221,11 @@
 			};
 			if (this.opt.enableNotes && bkmk.notes !== "")
 			{
-				item.tooltip += "\n" + browser.i18n.getMessage("editBkmkDlg_notes") + "\n" + bkmk.notes;
+				item.tooltip += "\n" + _getMsg("editBkmkDlg_notes") + "\n" + bkmk.notes;
 			}
 			if (this.opt.showTagsInTooltip && bkmk.labels != "")
 			{
-				item.tooltip += "\n" + browser.i18n.getMessage("editBkmkDlg_labels") + "\n" + bkmk.labels;
+				item.tooltip += "\n" + _getMsg("editBkmkDlg_labels") + "\n" + bkmk.labels;
 			}
 			// console.log(JSON.stringify(bkmk));
 			parent.push (item);
