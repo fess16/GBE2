@@ -14,13 +14,40 @@ $(document).ready(function()
     $("#hiddenLabelsTitle").attr('disabled', !$(this).prop('checked'));
 	});
 
+	$("#showFavicons").change(function(event) {
+    $("#clrFavIcons").attr('disabled', !$(this).prop('checked'));
+    $("#reloadFavIcons").attr('disabled', !$(this).prop('checked'));
+	});
+
+	$("#clrFavIcons").on("click", function() {
+		opt.favIcons = {};
+		console.log("clrFavIcons:writeFavIcons");
+		opt.writeFavIcons().then();
+		return false;
+	});
+	$("#reloadFavIcons").on("click", function() {
+		chrome.runtime.sendMessage({
+		    type: "reloadFavIcons"
+		  }
+		);
+		return false;
+	});
+
+
 });
+
 
 
 function setTexts()
 {
-	$(":submit").text(_getMsg("options_saveBtn"));
+	$("#save").text(_getMsg("options_saveBtn"));
 	$("#fsShow legend").text(_getMsg("options_fildsetShowLegend"));
+	$("#fsFavIcons legend").text(_getMsg("options_fildsetFavicons"));
+	$("label[for=showFavicons]").text(_getMsg("options_showFavicons"));
+	$("label[for=clrFavIcons]").text(_getMsg("options_lbl_clrFavIcons"));
+	$("label[for=reloadFavIcons]").text(_getMsg("options_lbl_reloadFavIcons"));
+	$("#clrFavIcons").text(_getMsg("options_btn_clrFavIcons"));
+	$("#reloadFavIcons").text(_getMsg("options_btn_reloadFavIcons"));
 
 	$("a[href='#mainPanel']").text(_getMsg("options_mainPanel"));
 	$("a[href='#advPanel']").text(_getMsg("options_advPanel"));
@@ -30,7 +57,6 @@ function setTexts()
 	$("label[for=enableNotes]").text(_getMsg("options_enableNotes"));
 	$("label[for=enableLabelUnlabeled]").text(_getMsg("options_enableLabelUnlabeled"));
 	$("label[for=reverseLeftClick]").text(_getMsg("options_reverseLeftClick"));
-	$("label[for=showFavicons]").text(_getMsg("options_showFavicons"));
 	$("label[for=enable10recentBookmark]").text(_getMsg("options_enable10recentBookmark"));
 	$("label[for=enable10visitedBookmark]").text(_getMsg("options_enable10visitedBookmark"));
 	$("label[for=showTagsInTooltip]").text(_getMsg("options_showTagsInTooltip"));
@@ -79,6 +105,10 @@ function restoreOptions()
   	$("#enableLabelHiding").prop("checked", r.enableLabelHiding);
   	$("#showHiddenLabels").prop("checked", r.showHiddenLabels);
   	$("#hiddenLabelsTitle").val(r.hiddenLabelsTitle);
+
+  	$("#clrFavIcons").attr('disabled', !r.showFavicons);
+  	$("#reloadFavIcons").attr('disabled', !r.showFavicons);
+
   });
 }
 
@@ -104,6 +134,19 @@ function saveOptions(e)
 	opt.showHiddenLabels = $("#showHiddenLabels").prop("checked");
 	//TODO проверка ввода
 	opt.hiddenLabelsTitle = $("#hiddenLabelsTitle").val();
+	console.log("saveOptions:write");
 	opt.write().then();
 }
 
+browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+  switch (request.type) {
+  	case "startReloadFavicons":
+      $("#reloadFavIcons").text("0/" + request.bkmkCount);
+      break;
+    case "tickReloadFavicons":
+      $("#reloadFavIcons").text(request.counter + "/" + request.bkmkCount);
+      break;
+    case "stopReloadFavicons":
+      $("#reloadFavIcons").text(_getMsg("options_btn_reloadFavIcons"));
+  }
+})

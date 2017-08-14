@@ -11,7 +11,7 @@
   "applications": {
     "gecko": {
       "id": "GBE2@fess16.blogspot.com",
-      "strict_min_version": "53.0"
+      "strict_min_version": "55.0"
     }
   },
 
@@ -27,7 +27,7 @@
     "http://www.google.com/bookmarks/", "https://www.google.com/bookmarks/", "http://*/*", "https://*/*" ,
     "bookmarks",
     "tabs",
-    "activeTab","cookies","notifications", "history", "downloads"
+    "activeTab","cookies","notifications", "history"
 
   ],
 

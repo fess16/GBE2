@@ -37,54 +37,54 @@
     "message": "10 most frequent bookmarks"
   },
 
-  "cntx-folder-menuEdit": {
+  "cntx_folder_menuEdit": {
     "message": "Edit"
   },
-  "cntx-folder-menuRemove": {
+  "cntx_folder_menuRemove": {
     "message": "Delete"
   },
-  "cntx-folder-menuOpenAll": {
+  "cntx_folder_menuOpenAll": {
     "message": "Open All"
   },
-  "cntx-folder-menuAddHere": {
+  "cntx_folder_menuAddHere": {
     "message": "Add Bookmark Here"
   },
-  "cntx-folder-menuAddAllTabs": {
+  "cntx_folder_menuAddAllTabs": {
     "message": "Bookmark all tabs here"
   },
-  "cntx-folder-menuHideFolder": {
+  "cntx_folder_menuHideFolder": {
     "message": "Hide"
   },
-  "cntx-folder-menuUnhideFolder": {
+  "cntx_folder_menuUnhideFolder": {
     "message": "Unhide"
   },
-  "cntx-folder-menuUnhideAll": {
+  "cntx_folder_menuUnhideAll": {
     "message": "Unhide All"
   },
-  "cntx-folder-menuExport": {
+  "cntx_folder_menuExport": {
     "message": "Export to HTML"
   },
 
   
-  "cntx-page-go": {
+  "cntx_page_go": {
     "message": "Open in current Tab"
   },
-  "cntx-page-newWidow": {
+  "cntx_page_newWidow": {
     "message": "Open in New Window"
   },
-  "cntx-page-newPrivate": {
+  "cntx_page_newPrivate": {
     "message": "Open in Private Window"
   },
-  "cntx-page-inNewTab": {
+  "cntx_page_inNewTab": {
     "message": "Open bookmark in new Tab"
   },
-  "cntx-page-edit": {
+  "cntx_page_edit": {
     "message": "Edit"
   },
-  "cntx-page-delete": {
+  "cntx_page_delete": {
     "message": "Delete"
   },
-  "cntx-qrcode-icon": {
+  "cntx_qrcode_icon": {
     "message": "Obtain QR-code"
   },
 
@@ -170,7 +170,7 @@
     "description": "Надпись кнопки отмены в диалогах"
   },
   "btn_Delete": {
-    "message": "Удалить",
+    "message": "Delete",
     "description": "Надпись кнопки удаления в диалогах"
   },
 
@@ -216,11 +216,28 @@
     "message": "Label Unlabeled Bookmarks:"
   },
   "options_reverseLeftClick": {
-    "message": "Открывать закладки в той же вкладке"
+    "message": "Open bookmarks in the same Tab"
   },
+
   "options_showFavicons": {
-    "message": "favicons (http://www.google.com/s2/favicons)"
+    "message": "Show favicons"
   },
+  "options_fildsetFavicons": {
+    "message": "Favicons"
+  },
+  "options_lbl_clrFavIcons": {
+    "message": "Remove saved favicons"
+  },
+  "options_btn_clrFavIcons": {
+    "message": "Clear favicons"
+  },
+  "options_lbl_reloadFavIcons": {
+    "message": "Force reload all favicons (via http://www.google.com/s2/favicons)"
+  },
+  "options_btn_reloadFavIcons": {
+    "message": "Reload favicons"
+  },
+
   "options_enable10recentBookmark": {
     "message": "10 most recent bookmarks"
   },

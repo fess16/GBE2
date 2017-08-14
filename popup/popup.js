@@ -10,8 +10,12 @@ var editLblDlg = null;
 var delLblkDlg = null;
 var confirmDlg = null;
 getting.then((page) => {bg = page}, (error) => {_errorLog ("Popup-getBackgroundPage", error)});
-browser.tabs.query({active: true, currentWindow: true}).then((tabs) => {aTab = tabs[0]});
-
+browser.tabs.query({active: true, currentWindow: true}).then((tabs) => {
+	aTab = tabs[0];
+	console.log(aTab.url);
+	aBkmk = bg.GBE2.getBookmark({ url : aTab.url});
+	setClickHandlers (aBkmk);
+});
 
 function split(val) {
     return val.split(/,\s*/);
@@ -51,7 +55,7 @@ function setClickHandlers (aBkmk)
 		$(".hmenuAdd a")
 			.removeClass('disabled-link')
 			.click(function(event) {
-				openBkmkDialog({id: null, title: aTab.title, url: aTab.url, labels: "", notes: ""});
+				openBkmkDialog({id: null, title: aTab.title, url: aTab.url, labels: "", notes: "", favIconUrl: aTab.favIconUrl});
 		});
 		$(".hmenuEdit a")
 			.addClass('disabled-link')
@@ -107,10 +111,14 @@ function showURLinNewWindow(url, private = false)
 		}
 	}
 }
+function filteredLabelAction (node) {
+	$("#filterTextbox").val("");
+	let tree = $.ui.fancytree.getTree();
+	resetFilter();
+	node.setExpanded();//.scrollIntoView();
+}
 
 $(document).ready(function(){
-
-
   $("#bkmk-tree").fancytree({
   	extensions: ["filter"],
 		quicksearch: true,
@@ -131,10 +139,10 @@ $(document).ready(function(){
         targetType = data.targetType;
       if (targetType == "title" || targetType == "icon") {
       	if ($("#filterTextbox").val() !== "" && event.originalEvent.which == 1 && node.isFolder()) {
-      		$("#filterTextbox").val("");
-      		let tree = $.ui.fancytree.getTree();
-      		resetFilter()
-      		// tree.clearFilter();
+      		// $("#filterTextbox").val("");
+      		// let tree = $.ui.fancytree.getTree();
+      		// resetFilter();
+      		filteredLabelAction(node);
       		return true;
       	}
 
@@ -159,27 +167,53 @@ $(document).ready(function(){
 	  },
 	  keydown: function(event, data) {
 	  	let node = data.node;
-	  	if (event.which == 13 && !node.isFolder()) {
-	  		showURL(node.data.url, !bg.GBE2.opt.reverseLeftClick, true);
-	  		window.close();
-	  	}
+	  	if (event.which == 13)
+	  		if (!node.isFolder()) {
+		  		showURL(node.data.url, !bg.GBE2.opt.reverseLeftClick, true);
+		  		window.close();
+	  		}
+	  		else {
+	  			if ($("#filterTextbox").val() !== "") filteredLabelAction(node);
+	  		}
 	  },
 	  enhanceTitle: function(event, data) {
+		  
+	  // 	if( !node.isFolder() && node.data.url.length && node.data.icon == "../images/bkmrk.png" && !isSpecialUrl(node.data.url)) {
+	  // 		if (bg.GBE2.opt.favIcons.hasOwnProperty(node.data.url)) {
+	  // 			let favicon = bg.GBE2.opt.favIcons[node.data.url];
+	  // 			console.log(favicon);
+	  // 			img.attr('src', favicon);
+	  // 		}
+			// }
 	  	if (bg.GBE2.opt.showFavicons) {
-		  	let node = data.node;
+	  		let node = data.node;
 				let img = $(node.span).find("img.fancytree-icon");
-		    if( !node.isFolder() && node.data.url.length && !isSpecialUrl(node.data.url)) { 
-		    	// let favicon = "https://icons.better-idea.org/icon?url=" + encodeURIComponent(node.data.url) +"&size=32";
-		    	let favicon = "http://www.google.com/s2/favicons?domain_url=" + encodeURIComponent(node.data.url);
-		    	$.ajax({
-						url: "http://www.google.com/s2/favicons",
-						method: "GET",
-						data: { domain_url : node.data.url }
-					})
-					.then(() => { img.attr('src', favicon);})
-					.catch(() => { img.attr('src', "../images/bkmrk.png");} );
+		    if( !node.isFolder() ) { 
+	    	  img.on("error", function() {
+	    			$(this).attr("src", "../images/bkmrk.png")
+	    		});
+		    // if( !node.isFolder() && node.data.url.length && !isSpecialUrl(node.data.url)) { 
+		   //  	// let favicon = "https://icons.better-idea.org/icon?url=" + encodeURIComponent(node.data.url) +"&size=32";
+		   //  	let favicon = "http://www.google.com/s2/favicons?domain_url=" + encodeURIComponent(node.data.url);
+		   //  	$.ajax({
+					// 	url: "http://www.google.com/s2/favicons",
+					// 	method: "GET",
+					// 	data: { domain_url : node.data.url }
+					// })
+					// .then(() => { img.attr('src', favicon);})
+					// .catch(() => { img.attr('src', "../images/bkmrk.png");} );
 		    }
 	  	}
+	  },
+	  renderNode: function (event, data) {
+	  	//console.log(data.node);
+	  	// $(data.node).addEventListener('contextmenu', function(){
+			$(data.node).find("span.fancytree-title").contextmenu(function(){
+			  // Trigger popup menu on the first target element
+			  console.log("contextmenu" + data.node.data.url);
+			  // $(document).contextmenu("open", $(".hasmenu:first"), {foo: "bar"});
+			});
+
 	  },
 	  filter: {
 			autoApply: true,   // Re-apply last filter if lazy data is loaded
@@ -195,6 +229,13 @@ $(document).ready(function(){
 		},
   });
 
+
+// 	$("span.fancytree-title").on("click", function(){
+//     // Trigger popup menu on the first target element
+//     console.log("contextmenu");
+//     // $(document).contextmenu("open", $(".hasmenu:first"), {foo: "bar"});
+// });
+
   fTree = $("#bkmk-tree").fancytree("getTree");
 
   let hiddenPKey  = bg.GBE2.genereteLabelId(bg.GBE2.opt.hiddenLabelsTitle);
@@ -202,39 +243,41 @@ $(document).ready(function(){
     delegate: "span.fancytree-title, img.fancytree-icon, span.fancytree-expander",
     addClass : "GBE-ui-contextmenu",
     autoFocus: true,
+    autoTrigger : true,
     // hide : "fast",
     show : "fast",
 //      menu: "#options",
     menu: [
     	// folder (label) menu
-      {title: _getMsg("cntx-folder-menuEdit"), cmd: "menuEdit", uiIcon: "cntx-folder-menuEdit"},
-      {title: _getMsg("cntx-folder-menuRemove"), cmd: "menuRemove", uiIcon: "cntx-folder-menuRemove"},
+      {title: _getMsg("cntx_folder_menuEdit"), cmd: "menuEdit", uiIcon: "cntx-folder-menuEdit"},
+      {title: _getMsg("cntx_folder_menuRemove"), cmd: "menuRemove", uiIcon: "cntx-folder-menuRemove"},
       {title: "----", cmd: "msepf"},
-      {title: _getMsg("cntx-folder-menuOpenAll"), cmd: "menuOpenAll", uiIcon: "cntx-folder-menuOpenAll"},
+      {title: _getMsg("cntx_folder_menuOpenAll"), cmd: "menuOpenAll", uiIcon: "cntx-folder-menuOpenAll"},
       {title: "----", cmd: "msepf"},
-      {title: _getMsg("cntx-folder-menuAddHere"), cmd: "menuAddHere", uiIcon: "cntx-folder-menuAddHere"},
-      {title: _getMsg("cntx-folder-menuAddAllTabs"), cmd: "menuAddAllTabs", uiIcon: "cntx-folder-menuAddAllTabs"},
+      {title: _getMsg("cntx_folder_menuAddHere"), cmd: "menuAddHere", uiIcon: "cntx-folder-menuAddHere"},
+      {title: _getMsg("cntx_folder_menuAddAllTabs"), cmd: "menuAddAllTabs", uiIcon: "cntx-folder-menuAddAllTabs"},
       {title: "----", cmd: "msepf"},
-      {title: _getMsg("cntx-folder-menuHideFolder"), cmd: "menuHideFolder", uiIcon: "cntx-folder-menuHideFolder"},
-      {title: _getMsg("cntx-folder-menuUnhideFolder"), cmd: "menuUnhideFolder", uiIcon: "cntx-folder-menuUnhideFolder"},
-      {title: _getMsg("cntx-folder-menuUnhideAll"), cmd: "menuUnhideAll", uiIcon: "cntx-folder-menuUnhideAll"},
+      {title: _getMsg("cntx_folder_menuHideFolder"), cmd: "menuHideFolder", uiIcon: "cntx-folder-menuHideFolder"},
+      {title: _getMsg("cntx_folder_menuUnhideFolder"), cmd: "menuUnhideFolder", uiIcon: "cntx-folder-menuUnhideFolder"},
+      {title: _getMsg("cntx_folder_menuUnhideAll"), cmd: "menuUnhideAll", uiIcon: "cntx-folder-menuUnhideAll"},
       {title: "----", cmd: "msepf"},
-      {title: _getMsg("cntx-folder-menuExport"), cmd: "menuExport"},
+      {title: _getMsg("cntx_folder_menuExport"), cmd: "menuExport"},
       // bookmark menu
-      {title: (bg.GBE2.opt.reverseLeftClick ? _getMsg("cntx-page-inNewTab") : _getMsg("cntx-page-go")), 
+      {title: (bg.GBE2.opt.reverseLeftClick ? _getMsg("cntx_page_inNewTab") : _getMsg("cntx_page_go")), 
       	cmd: "page-go", uiIcon: "cntx-page-go"},
-      {title: _getMsg("cntx-page-newWidow"), cmd: "page-newWidow"},
-      {title: _getMsg("cntx-page-newPrivate"), cmd: "page-newPrivate"},
+      {title: _getMsg("cntx_page_newWidow"), cmd: "page-newWidow"},
+      {title: _getMsg("cntx_page_newPrivate"), cmd: "page-newPrivate"},
       {title: "----", cmd: "msepp"},
-      {title: _getMsg("cntx-page-edit"), cmd: "page-edit", uiIcon: "cntx-page-edit"},
-      {title: _getMsg("cntx-page-delete"), cmd: "page-delete", uiIcon: "cntx-page-delete"},
+      {title: _getMsg("cntx_page_edit"), cmd: "page-edit", uiIcon: "cntx-page-edit"},
+      {title: _getMsg("cntx_page_delete"), cmd: "page-delete", uiIcon: "cntx-page-delete"},
       {title: "----", cmd: "msepp"},
-      {title: _getMsg("cntx-qrcode-icon"), cmd: "qrcode-icon", uiIcon: "cntx-qrcode-icon"},
+      {title: _getMsg("cntx_qrcode_icon"), cmd: "qrcode-icon", uiIcon: "cntx-qrcode-icon"},
       {title: "E-mail...", cmd: "bookmark-emai", uiIcon: "cntx-bookmark-emai"},
       {title: "Facebook...", cmd: "bookmark-fbshare", uiIcon: "cntx-bookmark-fbshare"},
       {title: "Twitter...", cmd: "bookmark-twshare", uiIcon: "cntx-bookmark-twshare"},
     ],
     beforeOpen: function(event, ui) {
+    	console.log("beforeOpen");
       var node = $.ui.fancytree.getNode(ui.target);
       // Modify menu entries depending on node status
       $("#bkmk-tree").contextmenu("enableEntry", "paste", node.isFolder());
@@ -324,7 +367,7 @@ $(document).ready(function(){
 	$("label[for='editBkmkDlg-labels']").text(_getMsg("editBkmkDlg_labels"));
 	$("label[for='editBkmkDlg-notes']").text(_getMsg("editBkmkDlg_notes"));
 	
-	// отключаем контекстное меню на кнопках дополнения
+	//отключаем контекстное меню на кнопках дополнения
 	$(".nav-bar li").on("contextmenu",function(){
    return false;
 	}); 
@@ -344,13 +387,16 @@ $(document).ready(function(){
 		// $("#editBkmkDlg-url").val(bg.GBE2.m_dlgInfo.url);
 		bg.GBE2.m_dlgInfo.needOpen = false;
 		// setTimeout(() => {
-		openBkmkDialog({id: null, title: bg.GBE2.m_dlgInfo.title, url: bg.GBE2.m_dlgInfo.url, labels: "", notes: ""});
+		openBkmkDialog(
+			{id: null, title: bg.GBE2.m_dlgInfo.title, url: bg.GBE2.m_dlgInfo.url, labels: "", notes: "", favIconUrl: bg.GBE2.m_dlgInfo.favIconUrl}
+		);
 		$("#editBkmkDlg").dialog('option', 'position', { my: "center", at: "center", of: "#wrapper" })
 		// }, 100);
 	}
-
-	aBkmk = bg.GBE2.getBookmark({ url : aTab.url});
-	setClickHandlers (aBkmk);
+	if (aTab){
+		aBkmk = bg.GBE2.getBookmark({ url : aTab.url});
+		setClickHandlers (aBkmk);
+	}
 	// назначем обработчики кнопок
 	// 
 	// обновление списка закладок
@@ -597,6 +643,11 @@ function setBkmkControls (bkmk)
 	}
 	$("#editBkmkDlg-notes").val(bkmk.notes);
 
+	if (bkmk.hasOwnProperty("favIconUrl") && bkmk.favIconUrl) {
+		console.log(bkmk.favIconUrl);
+		$("#editBkmkDlg-favIconUrl").val(bkmk.favIconUrl);
+	}
+
 	if (bkmk.id == null) 	{
 		$("#editBkmkDlg-enableUrlEdit").attr("disabled",true);
 	}
@@ -656,14 +707,15 @@ function openBkmkDialog (bkmk)
 	          	title: $("#editBkmkDlg-name").val().trim(),
 	          	url: $("#editBkmkDlg-url").val().trim(),
 	          	labels: $("#editBkmkDlg-labels").val().trim(),
-	          	notes: $("#editBkmkDlg-notes").val().trim()
+	          	notes: $("#editBkmkDlg-notes").val().trim(),
+	          	favIconUrl: $("#editBkmkDlg-favIconUrl").val().trim(),
           	}
           	// console.log ("|" + result.oldUrl + "|");
           	browser.runtime.sendMessage({
 		      		"type": "editBookmark",
 		      		"data": result
 	      		}).then((result) => {
-	      			setBkmkControls({id: null, title: "", url: "", labels: "", notes: ""});
+	      			setBkmkControls({id: null, title: "", url: "", labels: "", notes: "", favIconUrl: ""});
             	$(this).dialog("close");
 	      		});
           }
@@ -941,7 +993,7 @@ function labelMenuAddHere(lbl) {
 			let tab = tabs[0];
 			let bkmk = bg.GBE2.getBookmark({ url : tab.url});
 			if (bkmk == null) 
-				openBkmkDialog ({id: null, title: aTab.title, url: aTab.url, labels: lbl.name, notes: ""});
+				openBkmkDialog ({id: null, title: aTab.title, url: aTab.url, labels: lbl.name, notes: "", favIconUrl: aTab.favIconUrl});
 			else {
 				let tbkmk = {
 					id: bkmk.id, title: bkmk.title, url: bkmk.url, 
@@ -1180,7 +1232,7 @@ function bgListener(message)
 	    $(".info-box").css({display: 'none'});
 	    break;
 		case "CntxOpenBkmkDialog":
-			openBkmkDialog({id: null, title: message.title, url: message.url, labels: "", notes: ""});
+			openBkmkDialog({id: null, title: message.title, url: message.url, labels: "", notes: "", favIconUrl: message.favIconUrl});
 			break;
 	}
 }

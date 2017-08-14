@@ -37,53 +37,53 @@
   },
 
 
-  "cntx-folder-menuEdit": {
+  "cntx_folder_menuEdit": {
     "message": "Редактировать"
   },
-  "cntx-folder-menuRemove": {
+  "cntx_folder_menuRemove": {
     "message": "Удалить"
   },
-  "cntx-folder-menuOpenAll": {
+  "cntx_folder_menuOpenAll": {
     "message": "Открыть все"
   },
-  "cntx-folder-menuAddHere": {
+  "cntx_folder_menuAddHere": {
     "message": "Добавить закладку здесь"
   },
-  "cntx-folder-menuAddAllTabs": {
+  "cntx_folder_menuAddAllTabs": {
     "message": "?Добавить в закладки открытые вкладки"
   },
-  "cntx-folder-menuHideFolder": {
+  "cntx_folder_menuHideFolder": {
     "message": "Добавить в скрытые"
   },
-  "cntx-folder-menuUnhideFolder": {
+  "cntx_folder_menuUnhideFolder": {
     "message": "Убрать из скрытых"
   },
-  "cntx-folder-menuUnhideAll": {
+  "cntx_folder_menuUnhideAll": {
     "message": "Убрать из скрытых все"
   },
-  "cntx-folder-menuExport": {
+  "cntx_folder_menuExport": {
     "message": "Экспорт в HTML"
   },
 
-  "cntx-page-go": {
+  "cntx_page_go": {
     "message": "Открыть на месте"
   },
-  "cntx-page-newWidow": {
+  "cntx_page_newWidow": {
     "message": "Открыть в новом окне"
   },
-  "cntx-page-newPrivate": {
+  "cntx_page_newPrivate": {
     "message": "Открыть в приватном окне"
   },
-  "cntx-page-inNewTab": {
+  "cntx_page_inNewTab": {
     "message": "Открыть в новой вкладке"
   },
-  "cntx-page-edit": {
+  "cntx_page_edit": {
     "message": "Редактировать"
   },
-  "cntx-page-delete": {
+  "cntx_page_delete": {
     "message": "Удалить"
   },
-  "cntx-qrcode-icon": {
+  "cntx_qrcode_icon": {
     "message": "Получить QR-код"
   },
 
@@ -215,9 +215,26 @@
   "options_reverseLeftClick": {
     "message": "Открывать закладки в той же вкладке"
   },
+  
   "options_showFavicons": {
-    "message": "иконки сайтов (http://www.google.com/s2/favicons)"
+    "message": "Показывать иконки сайтов"
   },
+  "options_fildsetFavicons": {
+    "message": "Иконки сайтов"
+  },
+  "options_lbl_clrFavIcons": {
+    "message": "Удалить сохраненные иконки"
+  },
+  "options_btn_clrFavIcons": {
+    "message": "Очистить иконки"
+  },
+  "options_lbl_reloadFavIcons": {
+    "message": "Принудительно получить иконки для закладок (через http://www.google.com/s2/favicons)"
+  },
+  "options_btn_reloadFavIcons": {
+    "message": "Загрузить иконки"
+  },
+
 
   "options_sortType": {
     "message": "Сортировать по:"

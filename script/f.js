@@ -1,3 +1,4 @@
+"use strict";
 var _getMsg = browser.i18n.getMessage;
 
 function _consoleLog (s) {
@@ -59,10 +60,16 @@ function Options () {
   this.showHiddenLabels = false;
   // название для скрытых меток
   this.hiddenLabelsTitle = "_hidden_";
+  this.favIcons = {};
 }
 
 Options.prototype.read = function() {
-	return browser.storage.local.get().then((r) => {
+	return browser.storage.local.get(["settings", "favIcons"]).then((res) => {
+		console.log("options:read");
+		console.log(res);
+		if (res.hasOwnProperty('settings')) {
+		let r = res["settings"];
+		// console.log(r);
 		this.nestedLabelSep = (r.hasOwnProperty('nestedLabelSep') && r.nestedLabelSep.length == 1) ? r.nestedLabelSep : '/';
 		this.enableNotes = (r.hasOwnProperty('enableNotes')) ? r.enableNotes : false;
 		this.enable10recentBookmark = (r.hasOwnProperty('enable10recentBookmark')) ? r.enable10recentBookmark : true;
@@ -83,19 +90,47 @@ Options.prototype.read = function() {
 		this.enableLabelHiding = (r.hasOwnProperty('enableLabelHiding')) ? r.enableLabelHiding : true;
 		this.showHiddenLabels = (r.hasOwnProperty('showHiddenLabels')) ? r.showHiddenLabels : false;
 		this.hiddenLabelsTitle = (r.hasOwnProperty('hiddenLabelsTitle')) ? r.hiddenLabelsTitle : "_hidden_";
+		
+		this.favIcons = (res.hasOwnProperty('favIcons')) ? res.favIcons : {};
+		}
 		return this;
 	});
 }
 
 
 Options.prototype.write = function() {
-	let temp = {};
+	// browser.storage.local.clear().then();
+	let temp = {settings : {}};
 	for (var name in this) {
 	  if (this.hasOwnProperty(name)) 
 	  {
-	    // console.log('f.js write  (' + name + '). Value: ' + this[name]);
-	  	temp[name] = this[name];
+	    if (name !== "favIcons")
+	  			temp.settings[name] = this[name];
 	  }
 	}
+	console.log("write");
+	console.log(temp);
+ 	return browser.storage.local.set(temp).then(null, (e) => {_errorLog("Options", e)});
+	// let temp = {settings : {}, favIcons : {}};
+	// for (var name in this) {
+	//   if (this.hasOwnProperty(name)) 
+	//   {
+	//     if (name == "favIcons" && (opt == "favicons" || opt == "all") )
+	//     	temp[name] = this[name];
+	//    	else
+	//    		if (opt =="settings" || opt == "all")
+	//   			temp.settings[name] = this[name];
+	//     // console.log('f.js write  (' + name + '). Value: ' + this[name]);
+	//   }
+	// }
+	// console.log(temp);
+ // 	return browser.storage.local.set(temp).then(null, (e) => {_errorLog("Options", e)});
+}
+
+Options.prototype.writeFavIcons = function() {
+	// browser.storage.local.clear().then();
+	let temp = {favIcons : this.favIcons};
+	console.log("writeFavIcons");
+	console.log(temp);
  	return browser.storage.local.set(temp).then(null, (e) => {_errorLog("Options", e)});
 }

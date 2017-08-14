@@ -1,4 +1,5 @@
-﻿var GBE2 = {
+﻿"use strict";
+var GBE2 = {
 	"m_bookmarkList" : [],
 	"m_treeSource" : [],
 	"m_labelsList" : null,
@@ -179,6 +180,35 @@
 		return found;
 	},
 
+	setTreeNodeField : function (array, keyvalue, fieldvalue) {
+		let searchKey = Object.keys(keyvalue)[0];
+		let field = Object.keys(fieldvalue)[0];
+		// ищем на текущем уровне
+		let elems = array.filter(x => (x[searchKey] === keyvalue[searchKey]));
+		if (elems.length)
+		{
+			elems.forEach((elem) => {
+				elem[field] = fieldvalue[field];
+			});
+		}
+		else
+		{
+			//console.log("1.2 searchLabel");
+			// не нашли - просматриваем вложенные метки
+			// отбираем метки
+			let folders = array.filter(x => (x.hasOwnProperty("folder")));
+			for (let i = folders.length - 1; i >= 0; i--)
+	  	{
+	  		let item = folders[i];
+	  		// если у метки есть вложенные - ищем среди них
+	  		if (item.children.length)
+	  		{
+	  			this.setTreeNodeField(item["children"], keyvalue, fieldvalue);
+	  		}
+	  	}
+		}
+	},
+
 	isBookmarked : function (tUrl) {
 		if (this.m_bookmarkList.length)
 			return (this.m_bookmarkList.some( item => item.url == tUrl));
@@ -219,6 +249,8 @@
 				"notes" : bkmk.notes,
 				"hidden" : bkmk.hidden
 			};
+			if (this.opt.showFavicons && this.opt.favIcons.hasOwnProperty(bkmk.url)) 
+	  			item.icon = this.opt.favIcons[bkmk.url];
 			if (this.opt.enableNotes && bkmk.notes !== "")
 			{
 				item.tooltip += "\n" + _getMsg("editBkmkDlg_notes") + "\n" + bkmk.notes;
@@ -1063,17 +1095,33 @@
 		return this.doRequestBookmarks().then((result) => {return this.doProcessBookmarks(result);});
 	},
 
-	setBrowserActionIcon : function (tUrl) {
-		if (this.isBookmarked(tUrl)) {
+	setBrowserActionIcon : function (tTab) {
+		if (this.isBookmarked(tTab.url)) {
 			browser.browserAction.setIcon({
 				path: { 18: "./images/Star_full.png", 32: "./images/Star_full32.png" }
 			});
+			if (tTab.favIconUrl) this.setFavicon(tTab);
 		}
 		else
 		{
 			browser.browserAction.setIcon({ 
 				path: { 18: "./images/Star_empty.png", 32: "./images/Star_empty32.png" }
 			});
+		}
+	}, 
+
+	setFavicon : function (tTab) {
+		if (!this.opt.showFavicons) return;
+		let flag = true;
+		if (this.opt.favIcons && this.opt.favIcons[tTab.url]) 
+			if (tTab.favIconUrl == null || this.opt.favIcons[tTab.url] == tTab.favIconUrl) 
+				flag = false;
+		if (flag) {
+			// console.log(tTab.favIconUrl);
+			this.opt.favIcons[tTab.url] = tTab.favIconUrl;
+			console.log("setFavicon:writeFavIcons");
+			this.opt.writeFavIcons().then();
+			this.setTreeNodeField(this.m_treeSource, {url: tTab.url}, {icon: tTab.favIconUrl});
 		}
 	}
 
@@ -1115,11 +1163,15 @@ browser.contextMenus.onClicked.addListener(function(info, tab) {
     case "contextMenuAddBookmark":
     case "contextMenuAddLinkToBookmark":
     	// название закладки
-    	let title = (mId == "contextMenuAddBookmark") ? tab.title : null;
+    	let title = (mId == "contextMenuAddBookmark") ? tab.title : info.linkText;
     	// адрес закладки
     	let url = (mId == "contextMenuAddBookmark") ? tab.url : info.linkUrl;
-      // console.log(JSON.stringify(info));
-      // console.log(JSON.stringify(tab));
+    	let favIconUrl = (mId == "contextMenuAddBookmark" && tab.hasOwnProperty("favIconUrl")) ? tab.favIconUrl : null;
+      // console.log(info);
+      //info.linkText
+      //linkTitle = t.attr("href").replace(/^(?:https?:\/\/)?(?:www\.)?/i, "").split('/')[0];
+      // console.log(tab);
+      // console.log(favIconUrl);
     //   {"id":6,"index":2,"windowId":3,"url":"file:///D:/my_exepr/fancytree/fancytree-master/demo/index.html#sample-source.html","title":"Fancytree - Example Browser"}
       // setTimeout(() => {
       // let popups = browser.extension.getViews({type: "popup"});
@@ -1128,36 +1180,40 @@ browser.contextMenus.onClicked.addListener(function(info, tab) {
       // 	console.log("popup is open")
     		// let chain = Promise.resolve();
     		// для страниц название уже заполнено
-    		Promise.resolve().then(() => {
-    			if (title !== null) { 
-    				return title}
-    			else {
-    				// для ссылок - запрашиваем у content.js
-    				return browser.tabs.sendMessage(
-    		      tab.id,
-    		      {type: "GetLinkTitle"}
-    		    ).then(response => {
-    		      return response.linkTitle;
-    		    }).catch(() => {
-    		    	return url.replace(/^(?:https?:\/\/)?(?:www\.)?/i, "").split('/')[0]
-    		    });
-    			}
-    		}
-    		).then((result) => {
-	      	// отправляем в popup сообщение о необходимости открыть диалог редактирования закладки 
-	      	browser.runtime.sendMessage({
-	      		"type": "CntxOpenBkmkDialog",
-	      		"title": result,
-	      		"url": url
-	      	}).catch((e) => {
-	      		// при неудаче (popup уще не открылся) - заполняем m_dlgInfo (будет прочитан при открыии popup)
-	      		GBE2.m_dlgInfo = {
-		      		"needOpen" : true,
-		      		"title": result,
-		      		"url": url
-		      	}
-	      	});
-	      });
+    		// Promise.resolve().then(() => {
+    		// 	if (title !== null) { 
+    		// 		return title}
+    		// 	else {
+    		// 		// для ссылок - запрашиваем у content.js
+    		// 		return browser.tabs.sendMessage(
+    		//       tab.id,
+    		//       {type: "GetLinkTitle"}
+    		//     ).then(response => {
+    		//       return response.linkTitle;
+    		//     }).catch(() => {
+    		//     	return url.replace(/^(?:https?:\/\/)?(?:www\.)?/i, "").split('/')[0]
+    		//     });
+    		// 	}
+    		// }
+    		// ).then((result) => {
+    		if (!info.linkText || info.linkText == url) 
+    			title = url.replace(/^(?:https?:\/\/)?(?:www\.)?/i, "").split('/')[0];
+      	// отправляем в popup сообщение о необходимости открыть диалог редактирования закладки 
+      	browser.runtime.sendMessage({
+      		"type": "CntxOpenBkmkDialog",
+      		"title": title,
+      		"url": url,
+      		"favIconUrl" : favIconUrl
+      	}).catch((e) => {
+      		// при неудаче (popup уще не открылся) - заполняем m_dlgInfo (будет прочитан при открыии popup)
+      		GBE2.m_dlgInfo = {
+	      		"needOpen" : true,
+	      		"title": title,
+	      		"url": url,
+	      		"favIconUrl" : favIconUrl
+	      	}
+      	});
+	      // });
 
      //  }
      //  else
@@ -1187,14 +1243,15 @@ browser.contextMenus.onClicked.addListener(function(info, tab) {
 // при изменении параметров дополнения - перечитываем их
 browser.storage.onChanged.addListener((changes) => {
 	// console.log(JSON.stringify(changes));
-	GBE2.opt.read().then(() => { GBE2.m_needRefresh = true;});
+	if (changes.hasOwnProperty("settings"))
+		GBE2.opt.read().then(() => { GBE2.m_needRefresh = true;});
 });
 
 // при изменении адреса вкладки - меняем значок на панели,
 // если такой адрес есть в закладках
 function handleTabUrlUpdated(tabId, changeInfo, tabInfo) {
-  if (changeInfo.url) {
-    GBE2.setBrowserActionIcon(changeInfo.url);
+  if (changeInfo.url || changeInfo.favIconUrl) {
+    GBE2.setBrowserActionIcon(tabInfo);
   }
 }
 browser.tabs.onUpdated.addListener(handleTabUrlUpdated);
@@ -1203,7 +1260,7 @@ browser.tabs.onUpdated.addListener(handleTabUrlUpdated);
 // если такой адрес есть в закладках
 function handleTabActivated(activeInfo) {
   browser.tabs.get(activeInfo.tabId).then((tabInfo) => {
-  	GBE2.setBrowserActionIcon(tabInfo.url);
+  	GBE2.setBrowserActionIcon(tabInfo);
   });
 }
 browser.tabs.onActivated.addListener(handleTabActivated);
@@ -1222,7 +1279,7 @@ chrome.runtime.onMessage.addListener(
 	    		.then((result) => {
 	    			// уведомляем popup
 	     			browser.runtime.sendMessage(result);
-	     			GBE2.setBrowserActionIcon(request.tab.url);
+	     			GBE2.setBrowserActionIcon(request.tab);
 	     		})
 	     		.catch ( (error) => {
 	  	    	_errorLog("background:refresh", error);
@@ -1242,6 +1299,11 @@ chrome.runtime.onMessage.addListener(
 	    	GBE2.doChangeBookmark(request.data)
 	    		.then(() => {
 	    			browser.runtime.sendMessage({type: "needRefresh"});
+	    			if (GBE2.opt.showFavicons && request.favIconUrl) {
+	    				console.log(request.favIconUrl);
+	    				GBE2.opt.favIcons[request.url] = request.favIconUrl;
+	    				GBE2.opt.writeFavIcons().then();
+	    			}
 	    			// console.log("background:editBookmark");
 	    		})
 	    		.catch((e) => {
@@ -1253,7 +1315,11 @@ chrome.runtime.onMessage.addListener(
 	    	GBE2.doDeleteBookmark(request.data)
 	    		.then(() => {
 	    			browser.runtime.sendMessage({type: "needRefresh"});
-	    			// console.log("background:deleteBookmark");
+	    			console.log("background:deleteBookmark");
+	    			if (GBE2.opt.showFavicons && GBE2.opt.favIcons && GBE2.opt.favIcons[request.data.url]) {
+	    				delete GBE2.opt.favIcons[request.data.url];
+	    				GBE2.opt.writeFavIcons().then();
+	    			}
 	    		})
 	    		.catch((e) => {
 	    			_errorLog("background:deleteBookmark", e);
@@ -1312,6 +1378,48 @@ chrome.runtime.onMessage.addListener(
 	    	}
 	    	break;
 	    }
+	    case "reloadFavIcons" : {
+	    	if (GBE2.m_bookmarkList.length) {
+	    		let counter = 0;
+	    		let bkmkCount = GBE2.m_bookmarkList.length;
+	    		browser.runtime.sendMessage({type: "startReloadFavicons", bkmkCount: bkmkCount});
+	    		let chain = Promise.resolve();
+	    		GBE2.opt.favIcons = {};
+	    		GBE2.opt.showFavicons = true;
+	    		let doRequestFavIcon = (url, favicon) => {
+    				return	$.ajax({
+    					url: "http://www.google.com/s2/favicons",
+    					method: "GET",
+							data: { domain_url : url }
+    				})
+    				.then( (response, status, xhr) => { 
+    					GBE2.opt.favIcons[url] = favicon; 
+    					GBE2.setTreeNodeField(GBE2.m_treeSource, {url: url}, {icon: favicon});
+    					return Promise.resolve();
+    				})
+    				.catch(() => {return Promise.resolve()});
+	    		}
+
+	    		GBE2.m_bookmarkList.forEach(function(bkmk) {
+	    			counter++;
+	    			if (bkmk.url) {
+	    				let favicon = "http://www.google.com/s2/favicons?domain_url=" + encodeURIComponent(bkmk.url);
+	    				chain = chain.then(() => {
+	    					browser.runtime.sendMessage({type: "tickReloadFavicons", counter: counter, bkmkCount: bkmkCount});
+			    			return doRequestFavIcon(bkmk.url, favicon);
+		    			})
+						}
+					});
+	    		chain.then(() => {
+	    				browser.runtime.sendMessage({type: "stopReloadFavicons"});
+	    				console.log("reloadFavIcons:writeFavIcons")
+	    				GBE2.opt.writeFavIcons().then();
+	    		})
+	    		.catch();
+				}
+      	break;
+      }	    
+
 	    case "test1" :
 	    {
 	    	// browser.tabs.create({active: false, url: "about:blank"});
