@@ -360,3 +360,77 @@ mark.markUrl {
 	background-color: #28D9C2;
 	/*background-color: #8BA2F7;*/
 }
+
+div.tabsList {
+  font-family: Arial,Helvetica,sans-serif;
+  border: 1px solid #aed0ea;
+  width: 99.9%;
+  text-align: left;
+  border-collapse: collapse;
+}
+.divTable.tabsList .divTableCell, .divTable.tabsList .divTableHead {
+  border: 1px solid #aed0ea;
+  padding: 1px 1px;
+}
+
+.divTable.tabsList .divTableBody {
+	background: #FFFFFF;
+}
+
+.divTable.tabsList .divTableBody .divTableCell {
+  font-size: 0.8em;
+}
+.divTable.tabsList .divTableHeading {
+  background: #D7EBF9;
+  background: -moz-linear-gradient(top, #e1f0fa 0%, #dbedf9 66%, #D7EBF9 100%);
+  background: -webkit-linear-gradient(top, #e1f0fa 0%, #dbedf9 66%, #D7EBF9 100%);
+  background: linear-gradient(to bottom, #e1f0fa 0%, #dbedf9 66%, #D7EBF9 100%);
+  border-bottom: 3px solid #aed0ea;
+}
+.divTable.tabsList .divTableHeading .divTableHead {
+  /*font-size: 14px;*/
+  font-weight: bold;
+  color: #222;
+  text-align: center;
+  border-left: 1px solid #aed0ea;
+}
+.divTable.tabsList .divTableHeading .divTableHead:first-child {
+  border-left: none;
+}
+
+.tabsList .tableFootStyle {
+  font-size: 14px;
+}
+/* DivTable.com */
+.divTable{ 
+	display: table; 
+}
+.divTableRow { 
+	display: table-row; 
+	height: 24px;
+}
+.divTableRow .divTableHead:first-child {
+	width: 24px;
+}
+.divTableRow .divTableHead:last-child {
+	width: 40%;
+}
+
+.divTableRow .divTableCell:first-child {
+	text-align: center;
+}
+
+.divTableHeading { 
+	display: table-header-group;
+}
+.divTableCell, .divTableHead { display: table-cell;}
+.divTableHeading { display: table-header-group;}
+.divTableFoot { display: table-footer-group;}
+.divTableBody { display: table-row-group;}
+
+.table-wraper {
+	height: 200px;
+	margin-top: 10px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}

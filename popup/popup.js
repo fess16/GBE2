@@ -9,6 +9,7 @@ var delBkmkDlg = null;
 var editLblDlg = null;
 var delLblkDlg = null;
 var confirmDlg = null;
+var addAllTabsDlg = null;
 getting.then((page) => {bg = page}, (error) => {_errorLog ("Popup-getBackgroundPage", error)});
 browser.tabs.query({active: true, currentWindow: true}).then((tabs) => {
 	aTab = tabs[0];
@@ -434,7 +435,8 @@ $(document).ready(function(){
 	$(".hmenuAddOpenTabs a")
 		.attr('title', _getMsg("popup_hmenuAddOpenTabs"))
 		.click(function(event) {
-			test1();
+			//test1();
+			openAddAllTabsDlg();
 	});
 	
 	$(".hmenuGBs a")
@@ -737,41 +739,50 @@ function openBkmkDialog (bkmk)
 	$('#editBkmkDlg-labels').autocomplete({
 	  minLength: 1,
 	  delay: 50,
-	  source: function (request, response) {
-	      let term = request.term;
-
-	      // substring of new string (only when a comma is in string)
-	      if (term.indexOf(', ') > 0) {
-	          var index = term.lastIndexOf(', ');
-	          term = term.substring(index + 2);
-	      }
-
-	      // regex to match string entered with start of suggestion strings
-	      let re = $.ui.autocomplete.escapeRegex(term);
-	      let matcher = new RegExp("(^|"+ bg.GBE2.opt.nestedLabelSep + ")"+ re, 'i');
-	      let regex_validated_array = $.grep(bg.GBE2.m_labelsArr, function (item, index) {
-	          return matcher.test(item);
-	      });
-	      // pass array `regex_validated_array ` to the response and 
-	      // `extractLast()` which takes care of the comma separation
-
-	      response($.ui.autocomplete.filter(regex_validated_array, 
-	           extractLast(term)));
-	  },
-	  focus: function () {
-	      return false;
-	  },
-	  select: function (event, ui) {
-	      let terms = split(this.value);
-	      terms.pop();
-	      terms.push(ui.item.value);
-	      terms.push('');
-	      this.value = terms.join(', ');
-	      return false;
-	  }
+	  source: labelAutocompleteSource,
+	  focus: function () {return false;},
+	  select: labelAutocompleteSelect
 	});
 
 	editBkmkDlg.dialog("open");
+}
+
+
+function labelAutocompleteSource (request, response) {
+  let term = request.term;
+
+  // substring of new string (only when a comma is in string)
+  if (term.indexOf(', ') > 0) {
+      var index = term.lastIndexOf(', ');
+      term = term.substring(index + 2);
+  }
+
+  // regex to match string entered with start of suggestion strings
+  let re = $.ui.autocomplete.escapeRegex(term);
+  let matcher = new RegExp("(^|"+ bg.GBE2.opt.nestedLabelSep + ")"+ re, 'i');
+  let regex_validated_array = $.grep(bg.GBE2.m_labelsArr, function (item, index) {
+      return matcher.test(item);
+  });
+  // pass array `regex_validated_array ` to the response and 
+  // `extractLast()` which takes care of the comma separation
+
+  response($.ui.autocomplete.filter(regex_validated_array, 
+       extractLast(term)));
+}
+
+function labelAutocompleteSelect (event, ui)
+{
+  var TABKEY = 9;
+	if (event.keyCode == TABKEY) { 
+    event.preventDefault();
+	}
+  let terms = split(this.value);
+  terms.pop();
+  terms.push(ui.item.value);
+  terms.push('');
+  this.value = terms.join(', ');
+  this.focus();
+  return false;
 }
 
 function openDelBkmkDlg (aBkmk){
@@ -929,7 +940,7 @@ function openConfirmDlg(message, callback){
 	    modal: true,
 	    draggable: false,
 	    resizable: false,
-	     width: 320,
+	    width: 320,
 	    position: { my: "center", at: "center", of: "#wrapper" },
 	    title: 	_getMsg("confirmDlg_title"),
 		});
@@ -953,6 +964,102 @@ function openConfirmDlg(message, callback){
 	$("#confirmDlg-Info").html(message);
 
 	confirmDlg.dialog("open");
+}
+
+function openAddAllTabsDlg(label="_OpenTabs") {
+	if (addAllTabsDlg == null) {
+		addAllTabsDlg = $("#addAllTabsDlg");
+		addAllTabsDlg.dialog({
+			dialogClass: "no-close",
+	    autoOpen: false,
+	    modal: true,
+	    draggable: false,
+	    resizable: false,
+	    width: 500,
+	    position: { my: "center", at: "center", of: "#wrapper" },
+	    title: "!Добавление в закладки открытых вклдадок",
+	    buttons: [
+	      {
+	        text: _getMsg("btn_Save"),
+	        click: function() {
+	        	let label = $("#addAllTabsDlg-label").val();
+	        	let result = [];
+	        	$("div.divTableCell  input:checked").each(function() {
+	          	let item = {
+		          	id: "",
+		          	oldUrl: "",
+		          	title: $(this).parent().parent().find("div:nth-child(2)").text(),
+		          	url: $(this).parent().parent().find("div:nth-child(3)").text(),
+		          	labels: label,
+		          	notes: "",
+		          	favIconUrl: $(this).parent().find("input.favIconUrl").val()
+	          	}
+	          	let bkmk = null;
+	          	bkmk = bg.GBE2.getBookmark({ url : item.url})
+	        		if (bkmk !== null) {
+	        			item.id = bkmk.id;
+	        			item.title = bkmk.title;
+	        			item.notes = bkmk.notes;
+	        			if (bkmk.labels.length) {
+	        				item.labels = bkmk.labels.slice();
+	        				item.labels.push(label);
+	        			}
+	        		}
+	        		result.push(item);
+	        		console.log(JSON.stringify(item));
+	        	});
+	        	if (result.length) {
+		        	browser.runtime.sendMessage({
+				      		"type": "addAllTabs",
+				      		"data": result
+			      		}
+		      		).then((result) => {
+		          	$(this).dialog("close");
+		      		});
+	        	}
+	        	else $(this).dialog("close");
+	        }
+	      },
+	      {
+	        text: _getMsg("btn_Cancel"),
+	        click: function() {
+	          $(this).dialog("close");
+	        }
+	      },
+	    ],
+	    beforeClose: function( event, ui ) {$("#wrapper").width("350px");}
+		});
+		$("#addAllTabsDlg-headCheckBox").on("change", function(e) {
+			$("div.divTableCell  input").prop("checked", $(this).prop('checked'));
+		})
+	}
+	$("#wrapper").width("500px");
+
+	$("#addAllTabsDlg-label").val(label);
+	$('#addAllTabsDlg-label').autocomplete({
+	  minLength: 1,
+	  delay: 50,
+	  source: labelAutocompleteSource,
+	  focus: function () {return false;},
+	  select: labelAutocompleteSelect
+	});
+
+	browser.tabs.query({currentWindow: true}).then((tabs) => {
+		let tBody = $(".divTableBody");
+		tBody.empty();
+
+		tabs.forEach((tab) => {
+			let tRow = '<div class="divTableRow">' +
+				'<div class="divTableCell"><input type="checkbox" id="addAllTabsDlg-row' + tab.id +'">' +
+				'<input type="hidden" class="favIconUrl" value="' + (tab.favIconUrl ? tab.favIconUrl : "") + '"></div>' + 
+				'<div class="divTableCell">' + tab.title +'</div>' +
+				'<div class="divTableCell">' + tab.url +'</div>' + 
+				'</div>';
+			$(tRow).appendTo(tBody);
+		});
+
+		addAllTabsDlg.dialog("open");
+	})
 }
 
 function contextMenuShareBookmark (bkmk, mode) {

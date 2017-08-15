@@ -1418,7 +1418,26 @@ chrome.runtime.onMessage.addListener(
 	    		.catch();
 				}
       	break;
-      }	    
+      }	 
+      case "addAllTabs" : {
+      	let chain = Promise.resolve();
+      	request.data.forEach(function(bkmk) {
+      			chain = chain.then(() => {
+      				// console.log(bkmk.title);
+      				return GBE2.doChangeBookmark(bkmk);
+      			});
+      			if (GBE2.opt.showFavicons && bkmk.url && bkmk.favIconUrl) 
+      				GBE2.opt.favIcons[bkmk.url] = bkmk.favIconUrl;
+      	});
+      	chain.then(() => {
+      			GBE2.opt.writeFavIcons().then();
+      			browser.runtime.sendMessage({type: "needRefresh"});
+      		})
+      		.catch((e) => {
+      			_errorLog("background:addAllTabs", e);
+      		});		
+      	break;
+      }
 
 	    case "test1" :
 	    {
