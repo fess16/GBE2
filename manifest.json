@@ -41,6 +41,16 @@
     "browser_style": false
   },
 
+  "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+F"
+      }
+    }
+  },
+
+  "omnibox": { "keyword" : "gb" },
+
   "background": {
     "page": "background.html"
   },

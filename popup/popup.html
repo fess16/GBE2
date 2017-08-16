@@ -17,7 +17,7 @@
     <script type="text/javascript" src="../script/f.js"></script>
     <script type="text/javascript" src="popup.js"></script>
   </head>
-  <body>
+  <body class="panel">
   <div id="wrapper">
     <div id="popup">
       <nav id="hmenu">
@@ -41,7 +41,7 @@
       <div class="filterHBox">
           <label for="filterTextbox">Search: </label>
           <span class="first">
-            <input type="text" name="filterTextbox" id="filterTextbox" value=""  placeholder="" />
+            <input type="text" name="filterTextbox" id="filterTextbox" value=""  placeholder="" tabindex="1"/>
           </span>
           <span>
             <a class="clrBtn" tabindex="0"></a>
@@ -59,7 +59,7 @@
         <label></label>
       </div>
  <!--      <div id="wrap"> -->
-      <div id="bkmk-tree"></div>
+      <div id="bkmk-tree" tabindex="2"></div>
 <!--       </div> -->
     </div>
       <!-- add/edit bookmark dialog -->
@@ -73,7 +73,8 @@
         <label for="editBkmkDlg-url">URL:</label><!-- <br/> -->
           <input id="editBkmkDlg-enableUrlEdit" type="checkbox"><!-- <br/> -->
         </span>
-          <input type="url" name="editBkmkDlg-url" id="editBkmkDlg-url">
+          <input type="url" name="editBkmkDlg-url" id="editBkmkDlg-url"><br/>
+
         <label for="editBkmkDlg-labels">!Метки:</label><br/>
         <input type="text" name="editBkmkDlg-labels" id="editBkmkDlg-labels"><br/>
         <label for="editBkmkDlg-notes">!Заметки:</label><br/>

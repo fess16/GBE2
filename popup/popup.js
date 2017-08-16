@@ -121,12 +121,12 @@ function filteredLabelAction (node) {
 
 $(document).ready(function(){
   $("#bkmk-tree").fancytree({
-  	extensions: ["filter"],
+  	extensions: ["filter", "dnd", "edit"],
 		quicksearch: true,
   	autoScroll: true, // Automatically scroll nodes into visible area
     clickFolderMode: 4, // 1:activate, 2:expand, 3:activate and expand, 4:activate (dblclick expands)
     debugLevel: 1, // 0:quiet, 1:normal, 2:debug
-    focusOnSelect: true, // Set focus when node is checked by a mouse click
+    focusOnSelect: false, // Set focus when node is checked by a mouse click
     quicksearch: true, // Navigate to next node by typing the first letters
     selectMode: 1, // 1:single, 2:multi, 3:multi-hier
     tabindex: "0", // Whole tree behaves as one single control
@@ -134,10 +134,12 @@ $(document).ready(function(){
   	source: bg.GBE2.m_treeSource,
   	// обработчик кликов по закладкам и меткам
   	click: function(event, data) {
+  		console.log("click " + data.node);
 	    let node = data.node,
         // Only for click and dblclick events:
         // 'title' | 'prefix' | 'expander' | 'checkbox' | 'icon'
         targetType = data.targetType;
+      // if (targetType == "title" ) {
       if (targetType == "title" || targetType == "icon") {
       	if ($("#filterTextbox").val() !== "" && event.originalEvent.which == 1 && node.isFolder()) {
       		// $("#filterTextbox").val("");
@@ -165,6 +167,10 @@ $(document).ready(function(){
       		window.close();
       	}
       }
+      // if (targetType == "icon" && event.originalEvent.which == 3) {
+      // 	console.log(node.key);
+      // 	$("#bkmk-tree").contextmenu("open", $(node));
+      // }
 	  },
 	  keydown: function(event, data) {
 	  	let node = data.node;
@@ -228,6 +234,50 @@ $(document).ready(function(){
 			nodata: true,      // Display a 'no data' status node if result is empty
 			mode: "hide"       // Grayout unmatched nodes (pass "hide" to remove unmatched node instead)
 		},
+    dnd: {
+      autoExpandMS: 400,
+      focusOnClick: true,
+      preventVoidMoves: true, // Prevent dropping nodes 'before self', etc.
+      preventRecursiveMoves: true, // Prevent dropping nodes on own descendants
+      dragStart: function(node, data) {
+      	console.log("dragStart " + data.node);
+      	if (node.data.ignoreMe) return false;
+        /** This function MUST be defined to enable dragging for the tree.
+         *  Return false to cancel dragging of node.
+         */
+        return true;
+      },
+      dragEnter: function(node, data) {
+        if (node.data.ignoreMe || !node.isFolder()) return false;
+        /** data.otherNode may be null for non-fancytree droppables.
+         *  Return false to disallow dropping on node. In this case
+         *  dragOver and dragLeave are not called.
+         *  Return 'over', 'before, or 'after' to force a hitMode.
+         *  Return ['before', 'after'] to restrict available hitModes.
+         *  Any other return value will calc the hitMode from the cursor position.
+         */
+        // Prevent dropping a parent below another parent (only sort
+        // nodes under the same parent)
+/*           if(node.parent !== data.otherNode.parent){
+          return false;
+        }
+        // Don't allow dropping *over* a node (would create a child)
+        return ["before", "after"];
+*/				
+				// return ["over"];
+        return true;
+      },
+      dragDrop: function(node, data) {
+        /** This function MUST be defined to enable dropping of items on
+         *  the tree.
+         */
+        data.otherNode.moveTo(node, data.hitMode);
+      }
+    },
+    activate: function(event, data) {
+			console.log("activate " + data.node);
+    },
+
   });
 
 
@@ -499,7 +549,7 @@ $(document).ready(function(){
 					url : node.data.url ? node.data.url : ""
 				}
 				let replacement = '<mark>$&</mark>';
-				let check = checkBookmark(bkmk, match);
+				let check = bg.GBE2.checkBookmark(bkmk, match);
 				if (check.isMatch && node.isFolder()) 
 				{
 					node.titleWithHighlight = node.title.replace(check.search, replacement);
@@ -509,7 +559,7 @@ $(document).ready(function(){
 					if (check.search !== "") 
 						node.titleWithHighlight = node.title.replace(check.search, replacement);
 					else
-						node.titleWithHighlight = check.extra + node.title;
+						node.titleWithHighlight = (check.extra == null) ? node.title : `<mark class="${check.extra.class}">${check.extra.text}</mark>` + node.title;
 					return check.isMatch;
 				}
 
@@ -517,7 +567,7 @@ $(document).ready(function(){
 		}
 	}).focus();
 
-	setTimeout (() => {$("#filterTextbox").focus();}, 100);
+	setTimeout (() => {console.log("#filterTextbox");$("#filterTextbox").focus();}, 200);
 }); // document ready
 
 function resetFilter(){
@@ -537,99 +587,99 @@ function resetFilter(){
  * 	extra: [] - добавляется в начало заголовка (для url и notes)
  * }
  */
- function checkBookmark (bkmk, search) {
-	let result = {isMatch: false, search: "", extra: []};
-	let enableFilterByUrl = bg.GBE2.opt.enableFilterByUrl;
-	let enableFilterByNotes = bg.GBE2.opt.enableFilterByNotes;
+//  function checkBookmark (bkmk, search) {
+// 	let result = {isMatch: false, search: "", extra: []};
+// 	let enableFilterByUrl = bg.GBE2.opt.enableFilterByUrl;
+// 	let enableFilterByNotes = bg.GBE2.opt.enableFilterByNotes;
 
-	// если в строке нечетное число кавычек, например
-	// "
-	// "значение
-	// знач1 "знач2
-	// "знач1" знач2 "знач3
-	if (Math.abs((search.match(/"/g) || []).length % 2) == 1) {
-		var pos = search.lastIndexOf('"');
-		// удаляем последнюю кавычку
-	  search = search.substring(0,pos) + "" + search.substring(pos+1)
-		if (search.length == 0) {
-			result.isMatch = true; 
-			return result;
-		}
-	}
+// 	// если в строке нечетное число кавычек, например
+// 	// "
+// 	// "значение
+// 	// знач1 "знач2
+// 	// "знач1" знач2 "знач3
+// 	if (Math.abs((search.match(/"/g) || []).length % 2) == 1) {
+// 		var pos = search.lastIndexOf('"');
+// 		// удаляем последнюю кавычку
+// 	  search = search.substring(0,pos) + "" + search.substring(pos+1)
+// 		if (search.length == 0) {
+// 			result.isMatch = true; 
+// 			return result;
+// 		}
+// 	}
 
-	// проверка на "значение поиска с пробелами"
-	// учитывается только одно вхождение
-	let result0 = /"(.*?\s.*?)"/i.exec(search);
-	if (result0 && Array.isArray(result0) && result0.length == 2){
-    let search = _escape(result0[1]);
-    // search1 = escape(result0[1].replace(/"/g,""));
-    let tRe = new RegExp(search, "i");
-    if (tRe.test(bkmk.title)) {
-       result.isMatch = true; 
-       result.search = tRe;
-       return result;
-    }    
-	}
-	// делим значение поиска по пробелам
-	var words = search.split(/\s+/);
-	// формируем регулярки для поиска и выделения
-	// если слов несколько - должны встречаться все слова
-	var tSearch = "(?:";
-	var tMark = "";
-	words.forEach((elem) => {
-    if (elem.length == 0) return;
-    // вариант для слова в кавычках - ищем целое слово
-    if (/"\S*?"/ig.test(elem))
-    {
-      var elem = _escape(elem.replace(/"/g,""));
-      // tSearch += '(?=.*\\b(' + elem + ')(?=\\s|$|[,.:;]))';
-      tSearch += '(?=.*([^0-9a-zA-Zа-яёА-ЯЁ]|\\b)(' + elem + ')(?=\\s|$|[,.:;]))';
-      // tMark += '(?=([^0-9a-zA-Zа-яёА-ЯЁ]+|\\b)(' + elem + ')(?=\\s|$|[,.:;]))|';
-      tMark += '(?:([^0-9a-zA-Zа-яёА-ЯЁ]{0}|\\b)(' + elem + ')(?=\\s|$|[,.:;]))|';
-    }
-    // без кавычек - любое соответствие
-    else {
-      var elem = _escape(elem);
-      tSearch += '(?=.*(' + elem + '))';
-      tMark += '(' + elem + ')|';
-    }
-	});
-	tSearch += '.+)';
-	tMark = tMark.substring(0, tMark.length - 1);
-	var reSearch = new RegExp(tSearch, "ig");
-	// console.log (reSearch);
-	var reMark = new RegExp(tMark, "ig");
-	// console.log (reMark);
+// 	// проверка на "значение поиска с пробелами"
+// 	// учитывается только одно вхождение
+// 	let result0 = /"(.*?\s.*?)"/i.exec(search);
+// 	if (result0 && Array.isArray(result0) && result0.length == 2){
+//     let search = _escape(result0[1]);
+//     // search1 = escape(result0[1].replace(/"/g,""));
+//     let tRe = new RegExp(search, "i");
+//     if (tRe.test(bkmk.title)) {
+//        result.isMatch = true; 
+//        result.search = tRe;
+//        return result;
+//     }    
+// 	}
+// 	// делим значение поиска по пробелам
+// 	var words = search.split(/\s+/);
+// 	// формируем регулярки для поиска и выделения
+// 	// если слов несколько - должны встречаться все слова
+// 	var tSearch = "(?:";
+// 	var tMark = "";
+// 	words.forEach((elem) => {
+//     if (elem.length == 0) return;
+//     // вариант для слова в кавычках - ищем целое слово
+//     if (/"\S*?"/ig.test(elem))
+//     {
+//       var elem = _escape(elem.replace(/"/g,""));
+//       // tSearch += '(?=.*\\b(' + elem + ')(?=\\s|$|[,.:;]))';
+//       tSearch += '(?=.*([^0-9a-zA-Zа-яёА-ЯЁ]|\\b)(' + elem + ')(?=\\s|$|[,.:;]))';
+//       // tMark += '(?=([^0-9a-zA-Zа-яёА-ЯЁ]+|\\b)(' + elem + ')(?=\\s|$|[,.:;]))|';
+//       tMark += '(?:([^0-9a-zA-Zа-яёА-ЯЁ]{0}|\\b)(' + elem + ')(?=\\s|$|[,.:;]))|';
+//     }
+//     // без кавычек - любое соответствие
+//     else {
+//       var elem = _escape(elem);
+//       tSearch += '(?=.*(' + elem + '))';
+//       tMark += '(' + elem + ')|';
+//     }
+// 	});
+// 	tSearch += '.+)';
+// 	tMark = tMark.substring(0, tMark.length - 1);
+// 	var reSearch = new RegExp(tSearch, "ig");
+// 	// console.log (reSearch);
+// 	var reMark = new RegExp(tMark, "ig");
+// 	// console.log (reMark);
 
-	// поиск в заголовке закладки
-	let match = reSearch.exec(bkmk.title);
-	if (match) {
-		result.isMatch = true; 
-		result.search = reMark;
-		return result;
-	}
+// 	// поиск в заголовке закладки
+// 	let match = reSearch.exec(bkmk.title);
+// 	if (match) {
+// 		result.isMatch = true; 
+// 		result.search = reMark;
+// 		return result;
+// 	}
 
-	result.search = "";
-	// поиск в примечании
-	if (enableFilterByNotes && bkmk.notes.length > 0) {
-		match = (new RegExp(tSearch, "ig")).exec(bkmk.notes);
-		if (match) {
-			result.isMatch = true; 
-			result.extra = "<mark class='markNote'>NOTE</mark>";
-			return result;
-		}
-	}
-	// поиск в Url
-	if (enableFilterByUrl && bkmk.url.length > 0) {
-		match = (new RegExp(tSearch, "ig")).exec(bkmk.url);
-		if (match) {
-			result.isMatch = true; 
-			result.extra = "<mark class='markUrl'>URL</mark>";
-			return result;
-		}
-	}
-	return result;
-}
+// 	result.search = "";
+// 	// поиск в примечании
+// 	if (enableFilterByNotes && bkmk.notes.length > 0) {
+// 		match = (new RegExp(tSearch, "ig")).exec(bkmk.notes);
+// 		if (match) {
+// 			result.isMatch = true; 
+// 			result.extra = "<mark class='markNote'>NOTE</mark>";
+// 			return result;
+// 		}
+// 	}
+// 	// поиск в Url
+// 	if (enableFilterByUrl && bkmk.url.length > 0) {
+// 		match = (new RegExp(tSearch, "ig")).exec(bkmk.url);
+// 		if (match) {
+// 			result.isMatch = true; 
+// 			result.extra = "<mark class='markUrl'>URL</mark>";
+// 			return result;
+// 		}
+// 	}
+// 	return result;
+// }
 
 
 function setBkmkControls (bkmk)

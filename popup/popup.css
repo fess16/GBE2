@@ -241,14 +241,13 @@ ul.fancytree-container {
 	display: none
 }
 
-.dialog input[type="text"], .dialog textarea 
+.dialog input[type="text"], .dialog textarea,  .dialog input[type="url"]
 {
 	width: -moz-available;
+	margin-bottom: 5px;
+	padding-top: 3px;
 }
 
-.dialog label{
-	margin-bottom: 3px;
-}
 
 .no-close .ui-dialog-titlebar-close {
   display: none;

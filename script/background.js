@@ -1123,6 +1123,112 @@ var GBE2 = {
 			this.opt.writeFavIcons().then();
 			this.setTreeNodeField(this.m_treeSource, {url: tTab.url}, {icon: tTab.favIconUrl});
 		}
+	},
+
+	/**
+	 * проверяет закладку/метку на соответствие значению фильтра
+	 *
+	 * @param      {object}  bkmk    информация о закладке в виде bkmk = {	title, notes, url }
+	 * @param      {string}  search  строка поиска
+	 * 
+	 * возвращает result = {
+	 * 	isMatch: false,  - совпадает или нет
+	 * 	search: "", - регулярка для выделения найденого в заголовке закладки
+	 * 	extra: [] - добавляется в начало заголовка (для url и notes)
+	 * }
+	 */
+	checkBookmark : function (bkmk, search) {
+		let result = {isMatch: false, search: "", extra: null};
+		let enableFilterByUrl = this.opt.enableFilterByUrl;
+		let enableFilterByNotes = this.opt.enableFilterByNotes;
+
+		// если в строке нечетное число кавычек, например
+		// "
+		// "значение
+		// знач1 "знач2
+		// "знач1" знач2 "знач3
+		if (Math.abs((search.match(/"/g) || []).length % 2) == 1) {
+			var pos = search.lastIndexOf('"');
+			// удаляем последнюю кавычку
+		  search = search.substring(0,pos) + "" + search.substring(pos+1)
+			if (search.length == 0) {
+				result.isMatch = true; 
+				return result;
+			}
+		}
+
+		// проверка на "значение поиска с пробелами"
+		// учитывается только одно вхождение
+		let result0 = /"(.*?\s.*?)"/i.exec(search);
+		if (result0 && Array.isArray(result0) && result0.length == 2){
+	    let search = _escape(result0[1]);
+	    // search1 = escape(result0[1].replace(/"/g,""));
+	    let tRe = new RegExp(search, "i");
+	    if (tRe.test(bkmk.title)) {
+	       result.isMatch = true; 
+	       result.search = tRe;
+	       return result;
+	    }    
+		}
+		// делим значение поиска по пробелам
+		var words = search.split(/\s+/);
+		// формируем регулярки для поиска и выделения
+		// если слов несколько - должны встречаться все слова
+		var tSearch = "(?:";
+		var tMark = "";
+		words.forEach((elem) => {
+	    if (elem.length == 0) return;
+	    // вариант для слова в кавычках - ищем целое слово
+	    if (/"\S*?"/ig.test(elem))
+	    {
+	      var elem = _escape(elem.replace(/"/g,""));
+	      // tSearch += '(?=.*\\b(' + elem + ')(?=\\s|$|[,.:;]))';
+	      tSearch += '(?=.*([^0-9a-zA-Zа-яёА-ЯЁ]|\\b)(' + elem + ')(?=\\s|$|[,.:;]))';
+	      // tMark += '(?=([^0-9a-zA-Zа-яёА-ЯЁ]+|\\b)(' + elem + ')(?=\\s|$|[,.:;]))|';
+	      tMark += '(?:([^0-9a-zA-Zа-яёА-ЯЁ]{0}|\\b)(' + elem + ')(?=\\s|$|[,.:;]))|';
+	    }
+	    // без кавычек - любое соответствие
+	    else {
+	      var elem = _escape(elem);
+	      tSearch += '(?=.*(' + elem + '))';
+	      tMark += '(' + elem + ')|';
+	    }
+		});
+		tSearch += '.+)';
+		tMark = tMark.substring(0, tMark.length - 1);
+		var reSearch = new RegExp(tSearch, "ig");
+		// console.log (reSearch);
+		var reMark = new RegExp(tMark, "ig");
+		// console.log (reMark);
+
+		// поиск в заголовке закладки
+		let match = reSearch.exec(bkmk.title);
+		if (match) {
+			result.isMatch = true; 
+			result.search = reMark;
+			return result;
+		}
+
+		result.search = "";
+		// поиск в примечании
+		if (enableFilterByNotes && bkmk.notes.length > 0) {
+			match = (new RegExp(tSearch, "ig")).exec(bkmk.notes);
+			if (match) {
+				result.isMatch = true; 
+				result.extra = {class : "markNote", text : "NOTE"};
+				return result;
+			}
+		}
+		// поиск в Url
+		if (enableFilterByUrl && bkmk.url.length > 0) {
+			match = (new RegExp(tSearch, "ig")).exec(bkmk.url);
+			if (match) {
+				result.isMatch = true; 
+				result.extra = {class : "markUrl", text : "URL"};
+				return result;
+			}
+		}
+		return result;
 	}
 
 
@@ -1264,6 +1370,53 @@ function handleTabActivated(activeInfo) {
   });
 }
 browser.tabs.onActivated.addListener(handleTabActivated);
+
+// Provide help text to the user.
+// browser.omnibox.setDefaultSuggestion({
+//   description: `!Search in Google Bookmarks`
+// });
+
+// Update the suggestions whenever the input is changed.
+browser.omnibox.onInputChanged.addListener((text, addSuggestions) => {
+	let suggestions = [];
+  let suggestionsOnEmptyResults = [{
+    content: "!no bookmarks found",
+    description: "!no bookmarks found"
+	}];
+	if (!GBE2.m_bookmarkList.length)
+		addSuggestions(suggestionsOnEmptyResults);
+	else {
+		GBE2.m_bookmarkList.forEach(function (bkmk) {
+			let check = GBE2.checkBookmark(bkmk, text);
+			if (check.isMatch) {
+				suggestions.push({
+          content: bkmk.url,
+          description:  (check.extra == null) ? bkmk.title : `[${check.extra.text}] ${bkmk.title}`,
+				});
+			}
+		});
+		// console.log(suggestions);
+		addSuggestions(suggestions);
+	}
+
+});
+
+// Open the page based on how the user clicks on a suggestion.
+browser.omnibox.onInputEntered.addListener((text, disposition) => {
+  let url = text;
+  console.log(text);
+  switch (disposition) {
+    case "currentTab":
+      browser.tabs.update({url});
+      break;
+    case "newForegroundTab":
+      browser.tabs.create({url});
+      break;
+    case "newBackgroundTab":
+      browser.tabs.create({url, active: false});
+      break;
+  }
+});
 
 
 chrome.runtime.onMessage.addListener(
