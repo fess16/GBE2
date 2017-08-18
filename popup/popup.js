@@ -10,6 +10,8 @@ var editLblDlg = null;
 var delLblkDlg = null;
 var confirmDlg = null;
 var addAllTabsDlg = null;
+var dragInfo = {item : null, source : null,	target : null};
+
 getting.then((page) => {bg = page}, (error) => {_errorLog ("Popup-getBackgroundPage", error)});
 browser.tabs.query({active: true, currentWindow: true}).then((tabs) => {
 	aTab = tabs[0];
@@ -129,33 +131,33 @@ $(document).ready(function(){
     focusOnSelect: false, // Set focus when node is checked by a mouse click
     quicksearch: true, // Navigate to next node by typing the first letters
     selectMode: 1, // 1:single, 2:multi, 3:multi-hier
-    tabindex: "0", // Whole tree behaves as one single control
+    tabindex: "-1", // Whole tree behaves as one single control
     tooltip: true, // Use title as tooltip (also a callback could be specified)
   	source: bg.GBE2.m_treeSource,
   	// обработчик кликов по закладкам и меткам
   	click: function(event, data) {
-  		console.log("click " + data.node);
+  		console.log("FT_click " + event.originalEvent.which);
 	    let node = data.node,
         // Only for click and dblclick events:
         // 'title' | 'prefix' | 'expander' | 'checkbox' | 'icon'
         targetType = data.targetType;
       // if (targetType == "title" ) {
       if (targetType == "title" || targetType == "icon") {
-      	if ($("#filterTextbox").val() !== "" && event.originalEvent.which == 1 && node.isFolder()) {
-      		// $("#filterTextbox").val("");
-      		// let tree = $.ui.fancytree.getTree();
-      		// resetFilter();
-      		filteredLabelAction(node);
-      		return true;
-      	}
+      	// if ($("#filterTextbox").val() !== "" && event.originalEvent.which == 1 && node.isFolder()) {
+      	// 	// $("#filterTextbox").val("");
+      	// 	// let tree = $.ui.fancytree.getTree();
+      	// 	// resetFilter();
+      	// 	filteredLabelAction(node);
+      	// 	return true;
+      	// }
 
-      	// левый клик по закладкам - открываем в новой вкладке (по-умолчанию), если reverseLeftClick = false
-      	// which: left button - 1, middle button - 2
-      	if (event.originalEvent.which == 1 && !node.isFolder())	{
-      		showURL(node.data.url, !bg.GBE2.opt.reverseLeftClick, true);
-      		// return false;
-      		window.close();
-      	}
+      	// // левый клик по закладкам - открываем в новой вкладке (по-умолчанию), если reverseLeftClick = false
+      	// // which: left button - 1, middle button - 2
+      	// if (event.originalEvent.which == 1 && !node.isFolder())	{
+      	// 	showURL(node.data.url, !bg.GBE2.opt.reverseLeftClick, true);
+      	// 	// return false;
+      	// 	window.close();
+      	// }
       	// клик колесиком (средней кнопкой)
       	if (event.originalEvent.which == 2) {
       		if (node.isFolder())
@@ -240,8 +242,12 @@ $(document).ready(function(){
       preventVoidMoves: true, // Prevent dropping nodes 'before self', etc.
       preventRecursiveMoves: true, // Prevent dropping nodes on own descendants
       dragStart: function(node, data) {
-      	console.log("dragStart " + data.node);
       	if (node.data.ignoreMe) return false;
+      	dragInfo.item = data.node;
+      	let parent = data.node.getParent();
+      	dragInfo.source = (parent.key == "root_1") ? null : parent;
+      	console.log("dragStart");
+      	console.log(dragInfo);
         /** This function MUST be defined to enable dragging for the tree.
          *  Return false to cancel dragging of node.
          */
@@ -249,6 +255,9 @@ $(document).ready(function(){
       },
       dragEnter: function(node, data) {
         if (node.data.ignoreMe || !node.isFolder()) return false;
+        let parent = data.node.getParent();
+        if (parent.key !== "root_1" || (parent.key == data.otherNode.getParent().key))
+        	return ["over"];
         /** data.otherNode may be null for non-fancytree droppables.
          *  Return false to disallow dropping on node. In this case
          *  dragOver and dragLeave are not called.
@@ -271,8 +280,66 @@ $(document).ready(function(){
         /** This function MUST be defined to enable dropping of items on
          *  the tree.
          */
-        data.otherNode.moveTo(node, data.hitMode);
-      }
+        console.log ("dragDrop "+ data.hitMode)
+        dragInfo.target = node;
+        if ((data.hitMode == "before" || data.hitMode == "after") && node.getParent().key == "root_1")
+          dragInfo.target = null;
+        console.log(dragInfo.item.title + "|" 
+        	+ (dragInfo.source == null ? dragInfo.source : dragInfo.source.data.path) + "|" 
+        	+ (dragInfo.target == null ? dragInfo.target : dragInfo.target.data.path));
+
+        if (dragInfo.item.isFolder()) {
+        	let label = {name : "", oldName : dragInfo.item.data.path};
+        	if (dragInfo.target == null)
+        		label.name = dragInfo.item.title
+        	else
+        		label.name = dragInfo.target.data.path + bg.GBE2.opt.nestedLabelSep + dragInfo.item.title;
+        	console.log(label);
+        	browser.runtime.sendMessage({
+	      		"type": "editLabel",
+	      		"data": label
+      		}).then((result) => {
+          	
+      		});
+
+        } else {
+        	let bkmk = Object.assign({oldUrl : ""}, bg.GBE2.getBookmark({ id : dragInfo.item.refKey}));
+        	let lbls = [];
+        	if (dragInfo.target == null) {
+	        	bkmk.labels = "";
+        	}
+	        else {
+	        	if (dragInfo.source == null){
+	        		bkmk.labels = dragInfo.target.data.path;
+	        	}
+	        	else {
+		        	let index = bkmk.labels.indexOf(dragInfo.source.data.path);
+		        	if (index) {
+		        	  	bkmk.labels[index] = dragInfo.target.data.path;
+		        	  	bkmk.labels.sort(function (a, b) {
+		        	  	  return a.localeCompare(b);
+		        	  	});
+		        	  	bkmk.labels = bkmk.labels.join();
+		        	}
+		        	else {
+		        		bkmk.labels = dragInfo.target.data.path;
+		        	}
+		        }
+	      	}
+	        // 	// console.log ("|" + result.oldUrl + "|");
+        	browser.runtime.sendMessage({
+	      		"type": "moveBookmark",
+	      		"data": bkmk
+      		}).then((result) => {
+	        	data.otherNode.moveTo(node, data.hitMode);
+	        	//TODO если в исходной метке была только эта закладка, метку надо удалить!!!!
+      		});
+	        
+        }
+      },
+      dragStop: function(node, data) {
+      	dragInfo = {item : null, source : null,	target : null};
+    	},
     },
     activate: function(event, data) {
 			console.log("activate " + data.node);
@@ -280,16 +347,10 @@ $(document).ready(function(){
 
   });
 
-
-// 	$("span.fancytree-title").on("click", function(){
-//     // Trigger popup menu on the first target element
-//     console.log("contextmenu");
-//     // $(document).contextmenu("open", $(".hasmenu:first"), {foo: "bar"});
-// });
-
   fTree = $("#bkmk-tree").fancytree("getTree");
 
   let hiddenPKey  = bg.GBE2.genereteLabelId(bg.GBE2.opt.hiddenLabelsTitle);
+
   $("#bkmk-tree").contextmenu({
     delegate: "span.fancytree-title, img.fancytree-icon, span.fancytree-expander",
     addClass : "GBE-ui-contextmenu",
@@ -328,7 +389,7 @@ $(document).ready(function(){
       {title: "Twitter...", cmd: "bookmark-twshare", uiIcon: "cntx-bookmark-twshare"},
     ],
     beforeOpen: function(event, ui) {
-    	console.log("beforeOpen");
+    	// console.log("beforeOpen");
       var node = $.ui.fancytree.getNode(ui.target);
       // Modify menu entries depending on node status
       $("#bkmk-tree").contextmenu("enableEntry", "paste", node.isFolder());
@@ -409,6 +470,46 @@ $(document).ready(function(){
     },
     select: handleContextMenuClick
   });
+  // обработчик кликов по закладкам и меткам
+	$("#bkmk-tree").on("click", function(event) {
+		let node = $.ui.fancytree.getNode(event),
+      // Only for click and dblclick events:
+      // 'title' | 'prefix' | 'expander' | 'checkbox' | 'icon'
+      targetType = $.ui.fancytree.getEventTargetType(event);
+      console.log("click " + event.originalEvent.which)
+    // if (targetType == "title" ) {
+    if (targetType == "title" || targetType == "icon") {
+    	if ($("#filterTextbox").val() !== "" && event.originalEvent.which == 1 && node.isFolder()) {
+    		// $("#filterTextbox").val("");
+    		// let tree = $.ui.fancytree.getTree();
+    		// resetFilter();
+    		filteredLabelAction(node);
+    		return true;
+    	}
+    	// левый клик по закладкам - открываем в новой вкладке (по-умолчанию), если reverseLeftClick = false
+    	// which: left button - 1, middle button - 2
+    	if (event.originalEvent.which == 1 && !node.isFolder())	{
+    		showURL(node.data.url, !bg.GBE2.opt.reverseLeftClick, true);
+    		// return false;
+    		window.close();
+    	}
+    	// клик колесиком (средней кнопкой)
+    	if (event.originalEvent.which == 2) {
+    		if (node.isFolder())
+    			// по метке - открываем вложенные закладки
+    			labelMenuOpenAll({id: node.key, name: node.data.path});
+  			else
+  				// по закладке - открываем в той же вкладке (по-умолчанию), если reverseLeftClick = false
+    			showURL(node.data.url, bg.GBE2.opt.reverseLeftClick);
+    		window.close();
+    	}
+    }
+    // if (targetType == "icon" && event.originalEvent.which == 3) {
+    // 	console.log(node.key);
+    // 	$("#bkmk-tree").contextmenu("open", $(node));
+    // }
+  }
+  );
 
 	$(".filterHBox label").text(_getMsg("popup_filterLabel"));
 
@@ -488,6 +589,8 @@ $(document).ready(function(){
 			//test1();
 			openAddAllTabsDlg();
 	});
+
+	//"Read Later" Label: Unread Bookmarks
 	
 	$(".hmenuGBs a")
 		.attr('title', _getMsg("popup_hmenuGBs"))
@@ -567,7 +670,10 @@ $(document).ready(function(){
 		}
 	}).focus();
 
-	setTimeout (() => {console.log("#filterTextbox");$("#filterTextbox").focus();}, 200);
+	setTimeout (() => {$("#filterTextbox").focus();}, 200);
+	$("#bkmk-tree ul").attr("tabindex", "3");
+	// $("*").on("focus", e => {console.log(e.target)})
+
 }); // document ready
 
 function resetFilter(){
@@ -1027,7 +1133,7 @@ function openAddAllTabsDlg(label="_OpenTabs") {
 	    resizable: false,
 	    width: 500,
 	    position: { my: "center", at: "center", of: "#wrapper" },
-	    title: "!Добавление в закладки открытых вклдадок",
+	    title: _getMsg("addAllTabsDlg_title"),
 	    buttons: [
 	      {
 	        text: _getMsg("btn_Save"),
@@ -1081,7 +1187,10 @@ function openAddAllTabsDlg(label="_OpenTabs") {
 		});
 		$("#addAllTabsDlg-headCheckBox").on("change", function(e) {
 			$("div.divTableCell  input").prop("checked", $(this).prop('checked'));
-		})
+		});
+		$("label[for=addAllTabsDlg-label]").text(_getMsg("addAllTabsDlg_label"));
+		$(".addAllTabsDlg_tblHeadTitle").text(_getMsg("addAllTabsDlg_tblHeadTitle"));
+		$(".addAllTabsDlg_tblHeadUrl").text(_getMsg("addAllTabsDlg_tblHeadUrl"));
 	}
 	$("#wrapper").width("500px");
 
@@ -1363,6 +1472,10 @@ function handleContextMenuClick(event, ui) {
   	case "menuExport":
   		lbl = {id: node.key, name: node.data.path, title: node.title};
   		folderMenuExport(lbl);
+  		break;
+  	case "menuAddAllTabs":
+  		lbl = {id: node.key, name: node.data.path, title: node.title};
+  		openAddAllTabsDlg(lbl.name);
   		break;
   }
 }

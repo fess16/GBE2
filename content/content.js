@@ -1,3 +1,4 @@
+/*
 var linkTitle = "";
 browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   switch (request.type) {
@@ -131,4 +132,13 @@ $("A").on( "contextmenu", function(e) {
   	linkTitle = t.attr("href").replace(/^(?:https?:\/\/)?(?:www\.)?/i, "").split('/')[0];
   }
   // console.log (linkTitle);
-});
+});*/
+
+
+
+//   "content_scripts": [ {
+//        "css": [ "lib/jquery-ui.min.css", "content/content.css" ],
+//        "js": [ "lib/jquery-3.2.1.min.js", "lib/jquery-ui.min.js", "content/content.js" ],
+//        "matches": [ "*://*/*" ]
+//     }
+//   ],

@@ -387,7 +387,7 @@ div.tabsList {
   border-bottom: 3px solid #aed0ea;
 }
 .divTable.tabsList .divTableHeading .divTableHead {
-  /*font-size: 14px;*/
+  font-size: 0.8em;
   font-weight: bold;
   color: #222;
   text-align: center;
@@ -422,7 +422,14 @@ div.tabsList {
 .divTableHeading { 
 	display: table-header-group;
 }
-.divTableCell, .divTableHead { display: table-cell;}
+.divTableCell, .divTableHead { 
+	display: table-cell;
+	max-width:100px;
+	white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
 .divTableHeading { display: table-header-group;}
 .divTableFoot { display: table-footer-group;}
 .divTableBody { display: table-row-group;}

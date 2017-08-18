@@ -138,6 +138,19 @@
     }
   },
 
+  "addAllTabsDlg_title": {
+    "message": "Bookmark open tabs"
+  },
+  "addAllTabsDlg_label": {
+    "message": "Labels:"
+  },
+  "addAllTabsDlg_tblHeadTitle": {
+    "message": "Title"
+  },
+  "addAllTabsDlg_tblHeadUrl": {
+    "message": "URL"
+  },
+
   "confirmDlg_title": {
     "message": "Action confirmation"
   },

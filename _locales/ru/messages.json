@@ -50,7 +50,7 @@
     "message": "Добавить закладку здесь"
   },
   "cntx_folder_menuAddAllTabs": {
-    "message": "?Добавить в закладки открытые вкладки"
+    "message": "Добавить в закладки открытые вкладки"
   },
   "cntx_folder_menuHideFolder": {
     "message": "Добавить в скрытые"
@@ -133,6 +133,19 @@
         "content" : "$1"
       }
     }
+  },
+
+  "addAllTabsDlg_title": {
+    "message": "Добавление в закладки открытых вкладок"
+  },
+  "addAllTabsDlg_label": {
+    "message": "Метки:"
+  },
+  "addAllTabsDlg_tblHeadTitle": {
+    "message": "Заголовок"
+  },
+  "addAllTabsDlg_tblHeadUrl": {
+    "message": "Адрес"
   },
 
   "confirmDlg_title": {
