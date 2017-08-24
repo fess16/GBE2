@@ -73,6 +73,17 @@ body
 	background:url("../images/update.png") no-repeat center center transparent; 
 }
 
+.nav-bar .hmenuReadLater a 
+{ 
+	background:url("../images/readLater_on.svg") no-repeat center center transparent; 
+}
+.nav-bar .hmenuReadLater a.disabled-link 
+{ 
+	background:url("../images/readLater_off.svg") no-repeat center center transparent; 
+	pointer-events: none;
+}
+
+
 .nav-bar .hmenuAdd a 
 { 
 	background:url("../images/bkmrk_add_on.png") no-repeat center center transparent; 

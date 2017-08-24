@@ -28,6 +28,9 @@
     "popup_hmenuGBs": {
     "message": "Go to Google Bookmarks Page"
   },
+  "popup_hmenuReadLater": {
+    "message": "Read Later"
+  },
 
 
   "popup_RecentLabel": {
@@ -283,6 +286,13 @@
   },
   "options_fsLabelHiding_legend": {
     "message": "Labels hiding"
+  },
+
+  "contextMenuAddBookmark": {
+    "message": "Add Page to Google Bookmarks"
+  },
+  "contextMenuAddLinkToBookmark": {
+    "message": "Add Link to Google Bookmarks"
   }
 
 }

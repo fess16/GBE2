@@ -35,6 +35,9 @@
   "popup_VisitedLabel": {
     "message": "10 самых популярных"
   },
+  "popup_hmenuReadLater": {
+    "message": "Читать позже"
+  },
 
 
   "cntx_folder_menuEdit": {
@@ -296,6 +299,13 @@
   },
   "options_fsLabelHiding_legend": {
     "message": "Скрытие меток"
+  },
+
+  "contextMenuAddBookmark": {
+    "message": "Добавить страницу в Google Bookmarks"
+  },
+  "contextMenuAddLinkToBookmark": {
+    "message": "Добавить ссылку в Google Bookmarks"
   }
 
 }

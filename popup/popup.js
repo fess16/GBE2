@@ -35,9 +35,10 @@ function setClickHandlers (aBkmk)
 	$(".hmenuAdd a").attr('title', _getMsg("popup_hmenuAdd"));
 	$(".hmenuEdit a").attr('title', _getMsg("popup_hmenuEdit"))
 	$(".hmenuDel a").attr('title', _getMsg("popup_hmenuDel"))
+	$(".hmenuReadLater a").attr('title', _getMsg("popup_hmenuReadLater"))
 	
 	if (aBkmk !== null) {
-		$(".hmenuAdd a")
+		$(".hmenuAdd a, .hmenuReadLater a")
 			.addClass('disabled-link')
 			.click(function(event) {
 				return false;
@@ -59,6 +60,11 @@ function setClickHandlers (aBkmk)
 			.removeClass('disabled-link')
 			.click(function(event) {
 				openBkmkDialog({id: null, title: aTab.title, url: aTab.url, labels: "", notes: "", favIconUrl: aTab.favIconUrl});
+		});
+		$(".hmenuReadLater a")
+			.removeClass('disabled-link')
+			.click(function(event) {
+				readLater({id: null, title: aTab.title, url: aTab.url, labels: "", notes: "", favIconUrl: aTab.favIconUrl});
 		});
 		$(".hmenuEdit a")
 			.addClass('disabled-link')
@@ -304,13 +310,13 @@ $(document).ready(function(){
 
         } else {
         	let bkmk = Object.assign({oldUrl : ""}, bg.GBE2.getBookmark({ id : dragInfo.item.refKey}));
-        	let lbls = [];
+        	// let lbls = [];
         	if (dragInfo.target == null) {
-	        	bkmk.labels = "";
+	        	bkmk.labels = [];
         	}
 	        else {
 	        	if (dragInfo.source == null){
-	        		bkmk.labels = dragInfo.target.data.path;
+	        		bkmk.labels = [dragInfo.target.data.path];
 	        	}
 	        	else {
 		        	let index = bkmk.labels.indexOf(dragInfo.source.data.path);
@@ -319,20 +325,63 @@ $(document).ready(function(){
 		        	  	bkmk.labels.sort(function (a, b) {
 		        	  	  return a.localeCompare(b);
 		        	  	});
-		        	  	bkmk.labels = bkmk.labels.join();
+		        	  	//bkmk.labels = bkmk.labels.join();
 		        	}
 		        	else {
-		        		bkmk.labels = dragInfo.target.data.path;
+		        		bkmk.labels = [dragInfo.target.data.path];
 		        	}
 		        }
 	      	}
-	        // 	// console.log ("|" + result.oldUrl + "|");
+        	//если в исходной метке была только эта закладка, метку надо удалить
+    			let mvNode = data.otherNode;
+      		let oldParent = mvNode.getParent();
+    			let rmvOldParent = false;
+  				if (oldParent !== null && oldParent.getChildren().length == 1)
+  				// if (oldParent !== null && oldParent.getChildren().filter(x => !x.isFolder()).length == 1)
+  				{
+  					rmvOldParent = true;
+  				}
+	        
         	browser.runtime.sendMessage({
 	      		"type": "moveBookmark",
-	      		"data": bkmk
+	      		"data": {
+	      			"bkmk" :	bkmk,
+	      			"oldParent" : rmvOldParent ? oldParent.data.path : null
+	      		}
       		}).then((result) => {
-	        	data.otherNode.moveTo(node, data.hitMode);
-	        	//TODO если в исходной метке была только эта закладка, метку надо удалить!!!!
+      			let children = null;
+      			if (bkmk.labels.length == 0) {
+      				let tree = $("#bkmk-tree").fancytree("getTree");
+      				children = tree.rootNode.getChildren();
+      			}
+      			else {
+      				children = node.getChildren();
+      			}
+    				let flag = 0;
+    				let child = null;
+    				if (children.length>0) {
+    					child = children[children.length-1];
+    					flag = bg.GBE2.opt.sortType == "timestamp" ? bg.GBE2.compareByDate(mvNode.data, child.data) : bg.GBE2.compareByName(mvNode, child);
+    					if (flag == 1 || child.isFolder()) {
+    						mvNode.moveTo(child, "after");
+    						mvNode.scrollIntoView(false);
+    					}
+    					else {
+		    				for (child of children) {
+		    				  if (child.isFolder()) continue;
+		    					flag = bg.GBE2.opt.sortType == "timestamp" ? bg.GBE2.compareByDate(mvNode.data, child.data) : bg.GBE2.compareByName(mvNode, child);
+		    					if (flag == -1) {
+		    						mvNode.moveTo(child, "before");
+		    				    break;
+		    					}
+		    				}
+		    			}
+		        	//если в исходной метке была только эта закладка, метку надо удалить
+		    			if (rmvOldParent) {
+	    					// удаляем из #bkmk-tree
+	    					oldParent.remove();
+	    				}
+	    			}
       		});
 	        
         }
@@ -837,6 +886,14 @@ function setBkmkControls (bkmk)
 	}
 }
 
+function readLater (bkmk) {
+	bkmk.labels = ["!Read Later"];
+	bkmk.oldUrl = "";
+	browser.runtime.sendMessage({
+		"type": "editBookmark",
+		"data": bkmk
+	}).then();
+}
 
 // function openBkmkDialog (dlgName)
 function openBkmkDialog (bkmk)
@@ -916,9 +973,15 @@ function labelAutocompleteSource (request, response) {
   // regex to match string entered with start of suggestion strings
   let re = $.ui.autocomplete.escapeRegex(term);
   let matcher = new RegExp("(^|"+ bg.GBE2.opt.nestedLabelSep + ")"+ re, 'i');
-  let regex_validated_array = $.grep(bg.GBE2.m_labelsArr, function (item, index) {
-      return matcher.test(item);
+  let tLabelArray = $.grep(bg.GBE2.m_labelsList, function (item, index) {
+      return matcher.test(item.title);
+  // let regex_validated_array = $.grep(bg.GBE2.m_labelsArr, function (item, index) {
+  //     return matcher.test(item);
   });
+  let regex_validated_array = [];
+	tLabelArray.forEach((element, index) => {
+	  regex_validated_array.push(element.title);
+	});
   // pass array `regex_validated_array ` to the response and 
   // `extractLast()` which takes care of the comma separation
 

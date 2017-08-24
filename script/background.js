@@ -65,7 +65,8 @@ var GBE2 = {
 				return String(a[0]).toLowerCase() < String(b[0]).toLowerCase() ? 1 : -1;
 			}
 		}
-		if (a instanceof Object && b instanceof Object) 
+		// if (a instanceof Object && b instanceof Object) 
+		if (a.hasOwnProperty("title") && b.hasOwnProperty("title"))
 		{
 			if (GBE2.opt.sortOrder == "asc") 
 			{
@@ -93,7 +94,8 @@ var GBE2 = {
 				return new Date(a[5]) < new Date(b[5]) ? 1 : -1;
 			}
 		}
-		if (a instanceof Object && b instanceof Object) 
+		// if (a instanceof Object && b instanceof Object) 
+		if (a.hasOwnProperty("timestamp") && b.hasOwnProperty("timestamp"))
 		{
 			if (GBE2.opt.sortOrder == "asc") 
 			{
@@ -247,7 +249,8 @@ var GBE2 = {
 				"icon": "../images/bkmrk.png",
 				"tooltip" : bkmk.title + "\n" + bkmk.url,
 				"notes" : bkmk.notes,
-				"hidden" : bkmk.hidden
+				"hidden" : bkmk.hidden,
+				"timestamp" : bkmk.timestamp
 			};
 			if (this.opt.showFavicons && this.opt.favIcons.hasOwnProperty(bkmk.url)) 
 	  			item.icon = this.opt.favIcons[bkmk.url];
@@ -263,13 +266,240 @@ var GBE2 = {
 			parent.push (item);
 	},
 
+
+	doBuildTree : function () {
+		// заполняем treeSource - данные для fancyTree
+		let treeSource = [];
+		let lbs = this.m_labelsList;
+		if (lbs.length)
+		{
+			// проходим по меткам
+			for (let i = 0, n = lbs.length; i < n; i++)
+			{
+				// пропускаем пустые метки
+				if (lbs[i].title == "") continue;
+				// разбиваем на вложенные метки по разделителю
+				let arr_nested_label = lbs[i].title.split(this.opt.nestedLabelSep);
+				let flagHidden = lbs[i].hidden;
+				
+				// первый уровень
+				let fullName = arr_nested_label[0];
+				let tempKey = this.genereteLabelId(fullName);
+				if (!$.grep(treeSource, function(e) {
+							return (e.key == tempKey);
+						}).length){
+							treeSource.push({
+								"title" 		: fullName,
+								"key" 			: tempKey,
+								"folder"		: true,
+								"children"	: [],
+								"path"			: fullName,
+								"hidden"		: flagHidden,
+								"icon"			: flagHidden ? "../images/folder.png" : "../images/folder_blue.png"
+							});
+				}
+				for (let j = 1; j < arr_nested_label.length; j++)
+				{
+					let parentContainer = this.searchLabel(treeSource, {key : tempKey});
+					fullName += this.opt.nestedLabelSep + arr_nested_label[j];
+					tempKey = this.genereteLabelId(fullName);
+					let notExist = true;
+					if (parentContainer.children.length > 0) {
+						let res = this.searchLabel(parentContainer.children, {key : tempKey});
+						if (res.hasOwnProperty("key") )
+							notExist = false;
+					}
+
+					if (notExist)
+						parentContainer.children.push({
+							"title" 		: arr_nested_label[j],
+							"key" 			: tempKey,
+							"folder"		: true,
+							"children"	: [],
+							"path"			: fullName,
+							"hidden"		: flagHidden,
+							"icon"			: flagHidden ? "../images/folder.png" : "../images/folder_blue.png"
+							});
+					}
+				}
+			}
+		// }
+
+	  // начало цепочки
+		let chain = Promise.resolve();
+	
+		let visitsArray = [];
+  	// в цикле добавляем задачи в цепочку
+  	this.m_bookmarkList.forEach((bkmk) => {
+  		if (!this.opt.showHiddenLabels && bkmk.hidden) {
+  			// console.log(JSON.stringify(bkmk));
+  			return;
+  		}
+  	  chain = chain
+  	  	// получаем URL закладки, если поле пустое
+  	    .then(() => {
+  	    	if (bkmk.url.length)
+  	    	{
+  	    		return bkmk;
+  	    	}
+  	    	else
+  	    	{
+  	    		_consoleLog("Obtain url for bkmk: ", JSON.stringify(bkmk));
+  	    		return this.doRequestBookmarkURL(bkmk);
+  	    	}
+  	    })
+  	    // сохраняем его 
+  	    .then((result) => {
+	      	if (result && result.url.length)
+	      	{
+    	    	bkmk.url = result.url;
+    	    	//console.log (JSON.stringify(bkmk));
+    	      return bkmk;
+	        }
+	        else
+	        {
+	        	throw new Error("URL for bookmark <" +  bkmk.title + "> was not found!");
+	        }
+  	    })
+  	    // получаем количество посещений данного URL из истории браузера
+  	    .then( (bkmk) => {
+  	    	return browser.history.getVisits({
+			      url: bkmk.url
+			    });
+  	    })
+  	    // если посещения были - сохраняем их
+  	    .then ( (visits) => {
+  	    	if (visits.length)
+  	    	{
+  	    		visitsArray.push({"bkmsrkId" : bkmk.id, "visits" : visits.length});
+  	    	}
+  	    	return bkmk;
+  	    })
+  	     // заносим закладку в treeSource
+  	    .then ( (bkmk) => {
+  	    	let parentContainer;
+  	    	let pKey = "";
+  	    	// если у закладки есть метки
+  	    	// console.log(bkmk.labels);
+  	    	if (bkmk.labels.length)
+  	    	{
+  	    		// добавляем ее в каждую из меток
+  	    		bkmk.labels.forEach( (label) => {
+  	    			pKey = this.genereteLabelId(label);
+  	    			//console.log(label);
+  	    			// parentContainer = this.searchLabel(treeSource, {key : pKey});
+  	    			parentContainer = this.searchLabelByPath(treeSource, label);
+  	    			this.appendBkmkToBkmksList(parentContainer.children, bkmk, pKey);
+  	    		});
+  	    	}
+  	    	else
+  	    	{
+  	    		// нет - добавляем в верхний уровень
+  	    		pKey = "";
+  	    		parentContainer = treeSource;
+  	    		// если включено p_enableLabelUnlabeled - в метку p_labelUnlabeledName
+  	    		if (this.opt.enableLabelUnlabeled)
+  	    		{
+  	    			pKey = this.genereteLabelId(this.opt.labelUnlabeledName);
+  	    			parentContainer = this.searchLabel(treeSource, {key : pKey}).children;
+  	    		}
+  	    		this.appendBkmkToBkmksList(parentContainer, bkmk, pKey)
+  	    	}
+  	    })
+  	    .catch( (error) => {
+  	    	_errorLog("doBuildTree", error);
+  	    	//console.log (error);
+  	    	// console.log (error.fileName + ", line " + error.lineNumber + ", column " + error.columnNumber);
+  	    	// console.log ("Error:" + error.message);
+  	    })
+  	    ;
+  	});
+  	
+  	// в конце — выводим результаты
+  	return chain.then(() => {
+  		// // удаляем метку labelUnlabeledName из массива меток
+  		// if (this.opt.enableLabelUnlabeled)
+  		// {
+  		// 	this.m_labelsArr = this.m_labelsArr.filter((val, i, ar) => { return val != this.opt.labelUnlabeledName});
+  		// }
+
+  		// вставляем 10 последних добавленных закладок 
+			if (this.opt.enable10recentBookmark && this.m_recent10bkmrk.length)
+			{
+				let pKey = this.genereteLabelId(this.m_RecentLabel);
+				let resentLabel = {
+					"title" 		: this.m_RecentLabel,
+					"key" 			: pKey,
+					"folder"		: true,
+					"children"	: [],
+					"path"			: this.m_RecentLabel,
+					"icon"			: "../images/folder_blue.png",
+					"ignoreMe"	: true
+				};
+				for (let i = 0; i < this.m_recent10bkmrk.length; i++)
+				{
+					let bkmk = this.m_recent10bkmrk[i];
+					bkmk["ignoreMe"] = true;
+					this.appendBkmkToBkmksList(resentLabel.children, bkmk, pKey);
+				}
+				treeSource.unshift(resentLabel);
+			}
+
+  		// вставляем 10 самых популярных закладок 
+  		if (this.opt.enable10visitedBookmark && visitsArray.length)
+  		{
+  			visitsArray.sort((a,b) => { a.visits < b.visits ? 1 : -1; });
+  			let pKey = this.genereteLabelId(this.m_VisitedLabel);
+  			let visitsLabel = {
+					"title" 		: this.m_VisitedLabel,
+					"key" 			: pKey,
+					"folder"		: true,
+					"children"	: [],
+					"path"			: this.m_VisitedLabel,
+					"icon"			: "../images/folder_blue.png",
+					"ignoreMe"	: true
+				};
+				let visitsCount = (visitsArray.length < 10 ? visitsArray.length : 10);
+				for (let i = 0; i < visitsCount; i++)
+				{
+					let bkmk = this.m_bookmarkList.filter( val => {return val.id ==  visitsArray[i].bkmsrkId})[0];
+					bkmk["ignoreMe"] = true;
+					this.appendBkmkToBkmksList(visitsLabel.children, bkmk, pKey);
+				}
+				treeSource.unshift(visitsLabel); 
+  		}
+  		visitsArray = [];
+
+  		// if (!this.opt.showHiddenLabels)
+  		// {
+  		// 	let hiddenLabel = this.searchLabel(treeSource, {key : this.genereteLabelId(this.opt.hiddenLabelsTitle)});
+  		// 	if (hiddenLabel instanceof Object)
+  		// 	{
+  		// 		hiddenLabel.hidden = "true";
+  		// 		//console.log("hidden");
+  		// 	}
+  		// }
+	  // console.log(JSON.stringify(this.m_labelsList));
+			// получаем массив меток
+			// console.log (JSON.stringify(treeSource));
+			//console.log (JSON.stringify(this.m_bookmarkList));
+			//resolve({"type" : "refresh", "data" : treeSource});
+			//browser.runtime.sendMessage({"type" : "refresh", "data" : treeSource});
+			//treeSource = [];
+  	  // return treeSource;
+			this.m_treeSource = treeSource;
+			return Promise.resolve(treeSource);
+		});
+
+	}, //doBuildTree
+
 	/**
 	 * обработка списка закладок (из ответа сервера)
 	 *
 	 * @param      {XMLDocument}   responseXML  ответ сервера в формате XML
 	 * @return     {Promise}  { description_of_the_return_value }
 	 */
-	doProcessBookmarks : function(responseXML) {
+	doProcessXML : function(responseXML) {
 		// try
 		// {
 			this.m_bookmarkList = [];
@@ -311,7 +541,7 @@ var GBE2 = {
 			{
 				// this._M.refreshInProgress = false;
 				let reason = new Error("There are any bookmarks and labels in server response!");
-				_errorLog("doProcessBookmarks", reason);
+				_errorLog("doProcessXML", reason);
 				// throw reason;
 				// reject(reason);
 			 	// return false;
@@ -322,11 +552,11 @@ var GBE2 = {
 			// если закладок в ответе сервера нет - ничего не делаем
 			if (!bookmarksLength) 
 			{
-				// console.log ("GBE:doProcessBookmarks", "Bookmarks (in server response) are empty!");
+				// console.log ("GBE:doProcessXML", "Bookmarks (in server response) are empty!");
 			 // 	reject(new Error("Network Error 2"));	
 			 // 	return false;
 			 	let reason = new Error("There are any bookmarks in server response!");
-			 	_errorLog("doProcessBookmarks", reason);
+			 	_errorLog("doProcessXML", reason);
 			 	return Promise.resolve({ type: "refreshed", count : 0, data : [] });
 			}
 	// return new Promise((resolve, reject) => {
@@ -345,7 +575,7 @@ var GBE2 = {
 				}
 				lbs.push({"title" : labelVal, "timestamp" : null, "id" : this.genereteLabelId(labelVal), "hidden" : flagHidden});
 			}
-			console.log(JSON.stringify(lbs));
+			// console.log(JSON.stringify(lbs));
 
 			// добавляем labelUnlabeledName метку в массив меток
 			if (this.opt.enableLabelUnlabeled)
@@ -357,6 +587,8 @@ var GBE2 = {
 					"hidden" : false
 				});
 			}
+
+			// let needUrlLoad = [];
 
 			// список закладок\
 			this.m_bookmarkList = new Array(bookmarksLength);
@@ -388,19 +620,19 @@ var GBE2 = {
 					});
 					if (this.m_bookmarkList[i].title == "" && this.m_bookmarkList[i].url !== "")
 					{
-						_consoleLog ("GBE2:doProcessBookmarks", "Warning. Bookmark", this.m_bookmarkList[i].url, 
+						_consoleLog ("GBE2:doProcessXML", "Warning. Bookmark", this.m_bookmarkList[i].url, 
 							" - has empty title. Title set to '", this.m_bookmarkList[i].url, "'!");
 						this.m_bookmarkList[i].title = this.m_bookmarkList[i].url;
 					}
 				}
 				catch(e1)
 				{
-					// _consoleLog ("GBE2:doProcessBookmarks", "Parse bookmark params - error. Last processing bookmark - " + 
+					// _consoleLog ("GBE2:doProcessXML", "Parse bookmark params - error. Last processing bookmark - " + 
 					// 	JSON.stringify(this.m_bookmarkList[i]));
 					// // this._M.refreshInProgress = false;
 					// throw e1;
 					console.log(e1);
-					let reason = new Error("doProcessBookmarks - Parse bookmark params - error. Last processing bookmark - " + 
+					let reason = new Error("doProcessXML - Parse bookmark params - error. Last processing bookmark - " + 
 					 	JSON.stringify(this.m_bookmarkList[i]));
 					return Promise.reject(reason);
 				}
@@ -448,13 +680,15 @@ var GBE2 = {
 				}
 				catch(e1)
 				{
-					// console.log ("GBE2:doProcessBookmarks", "Obtain bookmark notes - error. Last processing bookmark - " + JSON.stringify(this.m_bookmarkList[i]) );
+					// console.log ("GBE2:doProcessXML", "Obtain bookmark notes - error. Last processing bookmark - " + JSON.stringify(this.m_bookmarkList[i]) );
 					// // this._M.refreshInProgress = false;
 					// throw e1;
 //!!!!!!!!!!! 	а может убрать? заметка не особо критична же? оставить только предупреждение
-					let reason = new Error("doProcessBookmarks - Obtain bookmark notes - error. Last processing bookmark - " + JSON.stringify(this.m_bookmarkList[i]));
+					let reason = new Error("doProcessXML - Obtain bookmark notes - error. Last processing bookmark - " + JSON.stringify(this.m_bookmarkList[i]));
 					return Promise.reject(reason);
 				}
+				// if (this.m_bookmarkList[i].url == "") needRefresh.push(this.m_bookmarkList[i]);
+
 			} //end for
 
 			// запоминаем 10 последних добавленных закладок
@@ -475,13 +709,6 @@ var GBE2 = {
 			// Возможно перенести ниже
 			this.m_labelsList = lbs;
 
-			//------------------------------------------
-			// может убрать ?????
-			this.m_labelsArr = [];
-			lbs.forEach((element, index) => {
-			  this.m_labelsArr.push(element.title);
-			});
-			//------------------------------------------
 
 			// заполняем treeSource - данные для fancyTree
 			let treeSource = [];
@@ -495,16 +722,13 @@ var GBE2 = {
 					// разбиваем на вложенные метки по разделителю
 					let arr_nested_label = lbs[i].title.split(this.opt.nestedLabelSep);
 					let flagHidden = lbs[i].hidden;
-					// let key = "";
 					
 					// первый уровень
 					let fullName = arr_nested_label[0];
-					//console.log("1 " + fullName);
 					let tempKey = this.genereteLabelId(fullName);
 					if (!$.grep(treeSource, function(e) {
 								return (e.key == tempKey);
 							}).length){
-								// let flagHidden = (this.opt.enableLabelHiding && this.isHiddenLabel(fullName));
 								treeSource.push({
 									"title" 		: fullName,
 									"key" 			: tempKey,
@@ -518,26 +742,16 @@ var GBE2 = {
 					for (j = 1; j < arr_nested_label.length; j++)
 					{
 						let parentContainer = this.searchLabel(treeSource, {key : tempKey});
-						// console.log(JSON.stringify(parentContainer));
 						fullName += this.opt.nestedLabelSep + arr_nested_label[j];
-						//console.log(j + " " + fullName);
 						tempKey = this.genereteLabelId(fullName);
-						// if (!$.grep(treeSource, function(e) {return (e.key == tempKey);}).length)
-						//if (!$.grep(parentContainer, function(e) {return (e.key == tempKey);}).length)
 						let notExist = true;
 						if (parentContainer.children.length > 0) {
 							let res = this.searchLabel(parentContainer.children, {key : tempKey});
 							if (res.hasOwnProperty("key") )
 								notExist = false;
-							// console.log(res);
 						}
 
 						if (notExist)
-						// if ( parentContainer.children //&& parentContainer.children.length > 0 
-						// 	&& this.searchLabel(parentContainer.children, {key : tempKey}).length == 0)
-						{
-							//console.log("insert " + fullName);
-							// let flagHidden = (this.opt.enableLabelHiding && this.isHiddenLabel(fullName));
 							parentContainer.children.push({
 								"title" 		: arr_nested_label[j],
 								"key" 			: tempKey,
@@ -550,8 +764,8 @@ var GBE2 = {
 						}
 					}
 				}
-			}
-
+			// }
+/*
 		  // начало цепочки
 			let chain = Promise.resolve();
 		
@@ -559,7 +773,7 @@ var GBE2 = {
     	// в цикле добавляем задачи в цепочку
     	this.m_bookmarkList.forEach((bkmk) => {
     		if (!this.opt.showHiddenLabels && bkmk.hidden) {
-    			console.log(JSON.stringify(bkmk));
+    			// console.log(JSON.stringify(bkmk));
     			return;
     		}
     	  chain = chain
@@ -594,7 +808,7 @@ var GBE2 = {
 				      url: bkmk.url
 				    });
     	    })
-    	    // если посещения были - сохранеем их
+    	    // если посещения были - сохраняем их
     	    .then ( (visits) => {
     	    	if (visits.length)
     	    	{
@@ -602,7 +816,7 @@ var GBE2 = {
     	    	}
     	    	return bkmk;
     	    })
-    	    // заносим закладку в treeSource
+    	     // заносим закладку в treeSource
     	    .then ( (bkmk) => {
     	    	let parentContainer;
     	    	let pKey = "";
@@ -633,7 +847,7 @@ var GBE2 = {
     	    	}
     	    })
     	    .catch( (error) => {
-    	    	_errorLog("doProcessBookmarks", error);
+    	    	_errorLog("doProcessXML", error);
     	    	//console.log (error);
     	    	// console.log (error.fileName + ", line " + error.lineNumber + ", column " + error.columnNumber);
     	    	// console.log ("Error:" + error.message);
@@ -643,11 +857,11 @@ var GBE2 = {
     	
     	// в конце — выводим результаты
     	return chain.then(() => {
-    		// удаляем метку labelUnlabeledName из массива меток
-    		if (this.opt.enableLabelUnlabeled)
-    		{
-    			this.m_labelsArr = this.m_labelsArr.filter((val, i, ar) => { return val != this.opt.labelUnlabeledName});
-    		}
+    		// // удаляем метку labelUnlabeledName из массива меток
+    		// if (this.opt.enableLabelUnlabeled)
+    		// {
+    		// 	this.m_labelsArr = this.m_labelsArr.filter((val, i, ar) => { return val != this.opt.labelUnlabeledName});
+    		// }
 
     		// вставляем 10 последних добавленных закладок 
 				if (this.opt.enable10recentBookmark && this.m_recent10bkmrk.length)
@@ -705,7 +919,7 @@ var GBE2 = {
     		// 		//console.log("hidden");
     		// 	}
     		// }
-    	  // console.log(JSON.stringify(this.m_labelsArr));
+  	  // console.log(JSON.stringify(this.m_labelsList));
 				// получаем массив меток
 				// console.log (JSON.stringify(treeSource));
 				//console.log (JSON.stringify(this.m_bookmarkList));
@@ -714,18 +928,21 @@ var GBE2 = {
 				//treeSource = [];
     	  // return treeSource;
 				this.m_treeSource = treeSource;
+				this.doBuildTree();
     	  return { type: "refreshed", count : bookmarksLength, data : treeSource };
-    	});
+    	});*/
+    	return this.doBuildTree().then(treeSource => {return { type: "refreshed", count : bookmarksLength, data : treeSource };});
+
 		// }		
 		// catch (e)
 		// {
-		// 	console.log ("GBE2:doProcessBookmarks", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		// 	console.log ("GBE2:doProcessXML", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		// 	// this._M.refreshInProgress = false;	
 		// 	reject(new Error("Network Error 1"));		
 		// 	// return false;
 		// }
 	// });
-	}, // doProcessBookmarks end
+	}, // doProcessXML end
 
 	/**
 	 * Запрос списка закладок с сервера
@@ -733,7 +950,7 @@ var GBE2 = {
 	doRequestBookmarks : function ()
 	{
 		let debug = false;		
-		//debug = true;
+		// debug = true;
 		let output = this.opt.enableNotes ? "rss" : "xml";
 		return $.ajax({
 			url: (debug ? ("lookupFess"+output+".xml") : (this.m_baseUrl + "lookup")),
@@ -839,7 +1056,7 @@ var GBE2 = {
 							if (result.id == $(ids[i]).text())
 							{
 								result.url = $(urls[i]).text();
-								// TODO !!!! Убрать?
+								/*TODO !!!! Убрать?*/
 								result.index = index;
 			        	return result;
 			        }
@@ -938,7 +1155,7 @@ var GBE2 = {
 						zx : (new Date()).getTime(),
 						bkmk : bkmk.url,
 						title : bkmk.title,
-						labels : bkmk.labels,
+						labels : (Array.isArray(bkmk.labels) ? bkmk.labels.join() : bkmk.labels),
 						annotation : bkmk.notes,
 						prev : "lookup",
 						sig : this.m_signature,
@@ -1087,7 +1304,7 @@ var GBE2 = {
 		{
 			this.doRequestSignature().catch((error) => {_errorLog("reloadBkmks", error);});
 		}
-		return this.doRequestBookmarks().then((result) => {return this.doProcessBookmarks(result);});
+		return this.doRequestBookmarks().then((result) => {return this.doProcessXML(result);});
 	},
 
 	setBrowserActionIcon : function (tTab) {
@@ -1245,16 +1462,19 @@ $(document).ready(function()
 
 browser.contextMenus.create({
   id: "contextMenuAddBookmark",
-  title: "Добавить страницу в Google Bookmarks",
+  title: _getMsg("contextMenuAddBookmark"),
   contexts: ["page"],
   command: "_execute_browser_action"
 });
-
+// browser.menus.create({
 browser.contextMenus.create({
   id: "contextMenuAddLinkToBookmark",
-  title: "Добавить ссылку в Google Bookmarks",
+  title: _getMsg("contextMenuAddLinkToBookmark"),
   contexts: ["link"],
-  command: "_execute_browser_action"
+  command: "_execute_browser_action",
+  icons: {
+     16: "../images/bkmrk_add_link.png",
+  },
 });
 
 browser.contextMenus.onClicked.addListener(function(info, tab) {
@@ -1424,18 +1644,30 @@ chrome.runtime.onMessage.addListener(
 	    	break;
 	    case "editLabel": {
 	    	let chain = Promise.resolve();
-	    	GBE2.m_labelsArr.forEach(function(lbl) {
-	    		if (lbl == request.data.oldName || lbl.indexOf(request.data.oldName+GBE2.opt.nestedLabelSep) == 0) {
+				GBE2.m_labelsList.forEach(function(lbl) {
+	    		if (lbl.title == request.data.oldName || lbl.title.indexOf(request.data.oldName+GBE2.opt.nestedLabelSep) == 0) {
 	    			chain = chain.then(() => {
 	    				let re = request.data.oldName;
-	    				if (GBE2.opt.showHiddenLabels && request.data.oldName == GBE2.opt.hiddenLabelsTitle && lbl !== GBE2.opt.hiddenLabelsTitle)
+	    				if (GBE2.opt.showHiddenLabels && request.data.oldName == GBE2.opt.hiddenLabelsTitle && lbl.title !== GBE2.opt.hiddenLabelsTitle)
 	    						re += GBE2.opt.nestedLabelSep;
 	    				return GBE2.doChangeLabel({
-	    					oldName: lbl, name: lbl.replace(re, request.data.name)
+	    					oldName: lbl.title, name: lbl.title.replace(re, request.data.name)
 	    				});
 	    			});
 	    		}
-	    	});
+	    	});    	
+	    	// GBE2.m_labelsArr.forEach(function(lbl) {
+	    	// 	if (lbl == request.data.oldName || lbl.indexOf(request.data.oldName+GBE2.opt.nestedLabelSep) == 0) {
+	    	// 		chain = chain.then(() => {
+	    	// 			let re = request.data.oldName;
+	    	// 			if (GBE2.opt.showHiddenLabels && request.data.oldName == GBE2.opt.hiddenLabelsTitle && lbl !== GBE2.opt.hiddenLabelsTitle)
+	    	// 					re += GBE2.opt.nestedLabelSep;
+	    	// 			return GBE2.doChangeLabel({
+	    	// 				oldName: lbl, name: lbl.replace(re, request.data.name)
+	    	// 			});
+	    	// 		});
+	    	// 	}
+	    	// });
 	    	chain.then(() => {
 	    			browser.runtime.sendMessage({type: "needRefresh"});
 	    		})
@@ -1536,7 +1768,7 @@ chrome.runtime.onMessage.addListener(
       	break;
       }
       case "moveBookmark" : {
-      	let tBkmk = request.data;
+      	let tBkmk = request.data.bkmk;
       	let chain = Promise.resolve()
       		.then(() => {
     	    	if (GBE2.opt.enableNotes && tBkmk.url == "") 
@@ -1563,7 +1795,6 @@ chrome.runtime.onMessage.addListener(
   	        	throw new Error("URL for bookmark <" +  tBkmk.title + "> was not found!");
   	        }
     	    })
-    	    // получаем количество посещений данного URL из истории браузера
     	    .then( (result) => {
     	    	if (result.notes) tBkmk.notes = result.notes;
     	    	console.log (JSON.stringify(tBkmk));
@@ -1574,7 +1805,11 @@ chrome.runtime.onMessage.addListener(
     	    	let bkmk = GBE2.getBookmark({ id : tBkmk.id});
     	    	if (bkmk) {
     	    		bkmk.labels = tBkmk.labels;
+    	    		if (request.data.oldParent !== null) {
+    	    			GBE2.m_labelsList = GBE2.m_labelsList.filter(lbl => lbl.title !== request.data.oldParent)
+    	    		}
     	    		GBE2.m_bookmarkList.sort((GBE2.opt.sortType == "timestamp")? GBE2.compareByDate : GBE2.compareByName);
+    	    		return GBE2.doBuildTree().then();
     	    	}
 
     	    })
