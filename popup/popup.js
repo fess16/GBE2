@@ -12,23 +12,22 @@ var confirmDlg = null;
 var addAllTabsDlg = null;
 var dragInfo = {item : null, source : null,	target : null};
 
+// получаем BackgroundPage
 getting.then((page) => {bg = page}, (error) => {_errorLog ("Popup-getBackgroundPage", error)});
+// получаем информацию о текущей вкладке и соответствующей закладке (по адресу)
 browser.tabs.query({active: true, currentWindow: true}).then((tabs) => {
 	aTab = tabs[0];
-	console.log(aTab.url);
+	// console.log(aTab.url);
 	aBkmk = bg.GBE2.getBookmark({ url : aTab.url});
 	setClickHandlers (aBkmk);
 });
 
-function split(val) {
-    return val.split(/,\s*/);
-}
 
-function extractLast(term) {
-    return split(term).pop();
-}
-
-
+/**
+ * Устанавливает отбаботчики клика по кнопкам редактирования закладки
+ *
+ * @param      {<type>}  aBkmk   закладка для текущей вкладки (или null, если закладки нет) 
+ */
 function setClickHandlers (aBkmk)
 {
 	removeClickHandlers();
@@ -36,7 +35,6 @@ function setClickHandlers (aBkmk)
 	$(".hmenuEdit a").attr('title', _getMsg("popup_hmenuEdit"))
 	$(".hmenuDel a").attr('title', _getMsg("popup_hmenuDel"))
 	$(".hmenuReadLater a").attr('title', _getMsg("popup_hmenuReadLater"))
-	
 	if (aBkmk !== null) {
 		$(".hmenuAdd a, .hmenuReadLater a")
 			.addClass('disabled-link')
@@ -51,7 +49,6 @@ function setClickHandlers (aBkmk)
 		$(".hmenuDel a")
 			.removeClass('disabled-link')
 			.click(function(event) {
-				// $("#delBkmkDlg label").text(_getMsg("delBkmkDlg_label", aBkmk.title));
 				openDelBkmkDlg(aBkmk);
 		});
 	}
@@ -80,18 +77,22 @@ function setClickHandlers (aBkmk)
 	}
 }
 
+// удаляет предыдущие обработчики
 function removeClickHandlers () {
-	$(".hmenuAdd a, .hmenuEdit a").off( "click", "**" );
+	$(".hmenuAdd a, .hmenuEdit a, .hmenuReadLater a, .hmenuDel a").off( "click", "**" );
 }
+
 
 function isSpecialUrl (url) {
 	let SearchString = new RegExp("^chrome:|^javascript:|^data:|^about:|^file:.*" );
 	return SearchString.test(url);
 }
 
+// открывает ссылку в соответствии с переданными параметрами
 function showURL (url, newTab = true, activate = true)
 {
 	if (url.length) {
+		// пропускаем специальные адреса
 		if (isSpecialUrl(url)) {
 			console.log("You are trying open url: " + url);
 			console.log("But in Firefox Webextension, you can't open or navigate to privileged URLs: chrome:, javascript:, data:, about:");
@@ -100,15 +101,18 @@ function showURL (url, newTab = true, activate = true)
 		else {
 			if (newTab)
 			{
+				// в новой вкладке
 				browser.tabs.create({active: activate, url: url});
 			}
 			else {
+				// в текущей вкладке
 				browser.tabs.update(aTab.id,{url: url});
 			}
 		}
 	}
 }
 
+// открывает ссылку в новом окне
 function showURLinNewWindow(url, private = false)
 {
 	if (url.length) {
@@ -120,12 +124,16 @@ function showURLinNewWindow(url, private = false)
 		}
 	}
 }
+
+// очищаем поле фильтра, сбрасываем фильтр, разворачиваем метку 
+// по клику (нажатию) на отфильтрованных метках
 function filteredLabelAction (node) {
 	$("#filterTextbox").val("");
 	let tree = $.ui.fancytree.getTree();
 	resetFilter();
 	node.setExpanded();//.scrollIntoView();
 }
+
 
 $(document).ready(function(){
   $("#bkmk-tree").fancytree({
@@ -141,29 +149,14 @@ $(document).ready(function(){
     tooltip: true, // Use title as tooltip (also a callback could be specified)
   	source: bg.GBE2.m_treeSource,
   	// обработчик кликов по закладкам и меткам
+  	// клик левой кнопкой назначается отдельно (ниже), для корректрой работы DnD
   	click: function(event, data) {
-  		console.log("FT_click " + event.originalEvent.which);
+  		// console.log("FT_click " + event.originalEvent.which);
 	    let node = data.node,
         // Only for click and dblclick events:
         // 'title' | 'prefix' | 'expander' | 'checkbox' | 'icon'
         targetType = data.targetType;
-      // if (targetType == "title" ) {
       if (targetType == "title" || targetType == "icon") {
-      	// if ($("#filterTextbox").val() !== "" && event.originalEvent.which == 1 && node.isFolder()) {
-      	// 	// $("#filterTextbox").val("");
-      	// 	// let tree = $.ui.fancytree.getTree();
-      	// 	// resetFilter();
-      	// 	filteredLabelAction(node);
-      	// 	return true;
-      	// }
-
-      	// // левый клик по закладкам - открываем в новой вкладке (по-умолчанию), если reverseLeftClick = false
-      	// // which: left button - 1, middle button - 2
-      	// if (event.originalEvent.which == 1 && !node.isFolder())	{
-      	// 	showURL(node.data.url, !bg.GBE2.opt.reverseLeftClick, true);
-      	// 	// return false;
-      	// 	window.close();
-      	// }
       	// клик колесиком (средней кнопкой)
       	if (event.originalEvent.which == 2) {
       		if (node.isFolder())
@@ -175,31 +168,24 @@ $(document).ready(function(){
       		window.close();
       	}
       }
-      // if (targetType == "icon" && event.originalEvent.which == 3) {
-      // 	console.log(node.key);
-      // 	$("#bkmk-tree").contextmenu("open", $(node));
-      // }
 	  },
+	  // обработчки нажатия Enter на закладках и метках
 	  keydown: function(event, data) {
 	  	let node = data.node;
 	  	if (event.which == 13)
+	  		// для закладок - аналог левого клика
 	  		if (!node.isFolder()) {
 		  		showURL(node.data.url, !bg.GBE2.opt.reverseLeftClick, true);
 		  		window.close();
 	  		}
 	  		else {
+	  			// метки - только для отфильтрованных
 	  			if ($("#filterTextbox").val() !== "") filteredLabelAction(node);
 	  		}
 	  },
+	  // установка иконки по-умолчанию для закладок при невозможности загрузить заданную иконку
 	  enhanceTitle: function(event, data) {
-		  
-	  // 	if( !node.isFolder() && node.data.url.length && node.data.icon == "../images/bkmrk.png" && !isSpecialUrl(node.data.url)) {
-	  // 		if (bg.GBE2.opt.favIcons.hasOwnProperty(node.data.url)) {
-	  // 			let favicon = bg.GBE2.opt.favIcons[node.data.url];
-	  // 			console.log(favicon);
-	  // 			img.attr('src', favicon);
-	  // 		}
-			// }
+	  	// если включен показ иконок
 	  	if (bg.GBE2.opt.showFavicons) {
 	  		let node = data.node;
 				let img = $(node.span).find("img.fancytree-icon");
@@ -207,29 +193,19 @@ $(document).ready(function(){
 	    	  img.on("error", function() {
 	    			$(this).attr("src", "../images/bkmrk.png")
 	    		});
-		    // if( !node.isFolder() && node.data.url.length && !isSpecialUrl(node.data.url)) { 
-		   //  	// let favicon = "https://icons.better-idea.org/icon?url=" + encodeURIComponent(node.data.url) +"&size=32";
-		   //  	let favicon = "http://www.google.com/s2/favicons?domain_url=" + encodeURIComponent(node.data.url);
-		   //  	$.ajax({
-					// 	url: "http://www.google.com/s2/favicons",
-					// 	method: "GET",
-					// 	data: { domain_url : node.data.url }
-					// })
-					// .then(() => { img.attr('src', favicon);})
-					// .catch(() => { img.attr('src', "../images/bkmrk.png");} );
 		    }
 	  	}
 	  },
-	  renderNode: function (event, data) {
-	  	//console.log(data.node);
-	  	// $(data.node).addEventListener('contextmenu', function(){
-			$(data.node).find("span.fancytree-title").contextmenu(function(){
-			  // Trigger popup menu on the first target element
-			  console.log("contextmenu" + data.node.data.url);
-			  // $(document).contextmenu("open", $(".hasmenu:first"), {foo: "bar"});
-			});
-
-	  },
+	  // renderNode: function (event, data) {
+	  // 	//console.log(data.node);
+	  // 	// $(data.node).addEventListener('contextmenu', function(){
+			// $(data.node).find("span.fancytree-title").contextmenu(function(){
+			//   // Trigger popup menu on the first target element
+			//   console.log("contextmenu" + data.node.data.url);
+			//   // $(document).contextmenu("open", $(".hasmenu:first"), {foo: "bar"});
+			// });
+	  // },
+	  // параметры расширения-фильтра
 	  filter: {
 			autoApply: true,   // Re-apply last filter if lazy data is loaded
 			autoExpand: true, // Expand all branches that contain matches while filtered
@@ -242,25 +218,31 @@ $(document).ready(function(){
 			nodata: true,      // Display a 'no data' status node if result is empty
 			mode: "hide"       // Grayout unmatched nodes (pass "hide" to remove unmatched node instead)
 		},
+		// параметры расширения-DnD
     dnd: {
       autoExpandMS: 400,
       focusOnClick: true,
       preventVoidMoves: true, // Prevent dropping nodes 'before self', etc.
       preventRecursiveMoves: true, // Prevent dropping nodes on own descendants
+     	// начало перемещения
       dragStart: function(node, data) {
+      	// запрет перемещения для элементов с установленным ignoreMe
+      	// 10 последних закладок и т.д.
       	if (node.data.ignoreMe) return false;
+      	// перемещаемый элемент
       	dragInfo.item = data.node;
       	let parent = data.node.getParent();
+      	// источник перемещения (текущий родитель или null для верхнего уровня)
       	dragInfo.source = (parent.key == "root_1") ? null : parent;
-      	console.log("dragStart");
-      	console.log(dragInfo);
         /** This function MUST be defined to enable dragging for the tree.
          *  Return false to cancel dragging of node.
          */
         return true;
       },
       dragEnter: function(node, data) {
+      	// запрет дропа на метки с ignoreMe и закладки
         if (node.data.ignoreMe || !node.isFolder()) return false;
+        // 
         let parent = data.node.getParent();
         if (parent.key !== "root_1" || (parent.key == data.otherNode.getParent().key))
         	return ["over"];
@@ -286,46 +268,51 @@ $(document).ready(function(){
         /** This function MUST be defined to enable dropping of items on
          *  the tree.
          */
-        console.log ("dragDrop "+ data.hitMode)
+        // console.log ("dragDrop "+ data.hitMode)
+        // новое расположение элемента
         dragInfo.target = node;
         if ((data.hitMode == "before" || data.hitMode == "after") && node.getParent().key == "root_1")
           dragInfo.target = null;
-        console.log(dragInfo.item.title + "|" 
-        	+ (dragInfo.source == null ? dragInfo.source : dragInfo.source.data.path) + "|" 
-        	+ (dragInfo.target == null ? dragInfo.target : dragInfo.target.data.path));
-
+        // console.log(dragInfo.item.title + "|" 
+        // 	+ (dragInfo.source == null ? dragInfo.source : dragInfo.source.data.path) + "|" 
+        // 	+ (dragInfo.target == null ? dragInfo.target : dragInfo.target.data.path));
+        // если перемещаем метку
         if (dragInfo.item.isFolder()) {
         	let label = {name : "", oldName : dragInfo.item.data.path};
+      		// новое значение метки
         	if (dragInfo.target == null)
+        		// стала меткой верхнего уровня
         		label.name = dragInfo.item.title
         	else
+        		// стала вложенной в другую метку
         		label.name = dragInfo.target.data.path + bg.GBE2.opt.nestedLabelSep + dragInfo.item.title;
-        	console.log(label);
+        	// как при обычном изменении метки (в диалоге)
         	browser.runtime.sendMessage({
 	      		"type": "editLabel",
 	      		"data": label
-      		}).then((result) => {
-          	
-      		});
-
+      		}).then();
+        // перемещали закладку 
         } else {
+        	// перемещаемая закладка
         	let bkmk = Object.assign({oldUrl : ""}, bg.GBE2.getBookmark({ id : dragInfo.item.refKey}));
-        	// let lbls = [];
+        	// формируем новое занчение меток
         	if (dragInfo.target == null) {
+        		// верхний уровень - обнуляем
 	        	bkmk.labels = [];
         	}
 	        else {
 	        	if (dragInfo.source == null){
+	        		// перемещали с верхнего уровня - target-метка
 	        		bkmk.labels = [dragInfo.target.data.path];
 	        	}
 	        	else {
+	        		// перемещали из другой метки - меняем старую метку на новую
 		        	let index = bkmk.labels.indexOf(dragInfo.source.data.path);
 		        	if (index) {
 		        	  	bkmk.labels[index] = dragInfo.target.data.path;
 		        	  	bkmk.labels.sort(function (a, b) {
 		        	  	  return a.localeCompare(b);
 		        	  	});
-		        	  	//bkmk.labels = bkmk.labels.join();
 		        	}
 		        	else {
 		        		bkmk.labels = [dragInfo.target.data.path];
@@ -333,15 +320,19 @@ $(document).ready(function(){
 		        }
 	      	}
         	//если в исходной метке была только эта закладка, метку надо удалить
+        	//перемещаемая закладка
     			let mvNode = data.otherNode;
+    			// исходный родитель
       		let oldParent = mvNode.getParent();
+      		// флаг удаления исходной метки
     			let rmvOldParent = false;
+    			// в родителе только один дочерний элемент - текущий
   				if (oldParent !== null && oldParent.getChildren().length == 1)
   				// if (oldParent !== null && oldParent.getChildren().filter(x => !x.isFolder()).length == 1)
   				{
   					rmvOldParent = true;
   				}
-	        
+	        // сообщение в бэкграунд скрипт
         	browser.runtime.sendMessage({
 	      		"type": "moveBookmark",
 	      		"data": {
@@ -349,6 +340,7 @@ $(document).ready(function(){
 	      			"oldParent" : rmvOldParent ? oldParent.data.path : null
 	      		}
       		}).then((result) => {
+      			// элементы (закладки и метки), вложенные в новую метку (или верхний уровень)
       			let children = null;
       			if (bkmk.labels.length == 0) {
       				let tree = $("#bkmk-tree").fancytree("getTree");
@@ -359,15 +351,22 @@ $(document).ready(function(){
       			}
     				let flag = 0;
     				let child = null;
+    				// определяем позицию для вставки закладки
     				if (children.length>0) {
+    					// сначала сравниваем с последним элементом
     					child = children[children.length-1];
+    					// если заголовок/время (sortType) закладки больше/меньше (sortOrder) последней
+    					// или последний элемент - метка
+    					// вставляем после него
     					flag = bg.GBE2.opt.sortType == "timestamp" ? bg.GBE2.compareByDate(mvNode.data, child.data) : bg.GBE2.compareByName(mvNode, child);
     					if (flag == 1 || child.isFolder()) {
     						mvNode.moveTo(child, "after");
     						mvNode.scrollIntoView(false);
     					}
     					else {
+    						// проверяем остальные элементы
 		    				for (child of children) {
+		    					// пропускаем метки
 		    				  if (child.isFolder()) continue;
 		    					flag = bg.GBE2.opt.sortType == "timestamp" ? bg.GBE2.compareByDate(mvNode.data, child.data) : bg.GBE2.compareByName(mvNode, child);
 		    					if (flag == -1) {
@@ -376,9 +375,8 @@ $(document).ready(function(){
 		    					}
 		    				}
 		    			}
-		        	//если в исходной метке была только эта закладка, метку надо удалить
 		    			if (rmvOldParent) {
-	    					// удаляем из #bkmk-tree
+	    					// удаляем старую метку из #bkmk-tree
 	    					oldParent.remove();
 	    				}
 	    			}
@@ -386,20 +384,21 @@ $(document).ready(function(){
 	        
         }
       },
+      // обнуляем dragInfo после перемещения
       dragStop: function(node, data) {
       	dragInfo = {item : null, source : null,	target : null};
     	},
     },
-    activate: function(event, data) {
-			console.log("activate " + data.node);
-    },
-
-  });
+   //  activate: function(event, data) {
+			// console.log("activate " + data.node);
+   //  },
+  }); // fancytree инициализация
 
   fTree = $("#bkmk-tree").fancytree("getTree");
 
   let hiddenPKey  = bg.GBE2.genereteLabelId(bg.GBE2.opt.hiddenLabelsTitle);
 
+  // настройки плагина контекстного меню для дерева
   $("#bkmk-tree").contextmenu({
     delegate: "span.fancytree-title, img.fancytree-icon, span.fancytree-expander",
     addClass : "GBE-ui-contextmenu",
@@ -407,7 +406,6 @@ $(document).ready(function(){
     autoTrigger : true,
     // hide : "fast",
     show : "fast",
-//      menu: "#options",
     menu: [
     	// folder (label) menu
       {title: _getMsg("cntx_folder_menuEdit"), cmd: "menuEdit", uiIcon: "cntx-folder-menuEdit"},
@@ -438,11 +436,9 @@ $(document).ready(function(){
       {title: "Twitter...", cmd: "bookmark-twshare", uiIcon: "cntx-bookmark-twshare"},
     ],
     beforeOpen: function(event, ui) {
-    	// console.log("beforeOpen");
       var node = $.ui.fancytree.getNode(ui.target);
-      // Modify menu entries depending on node status
-      $("#bkmk-tree").contextmenu("enableEntry", "paste", node.isFolder());
-      // Show/hide single entries
+      // $("#bkmk-tree").contextmenu("enableEntry", "paste", node.isFolder());
+      // скрываем/отображаем элементы для меток/закладок при открытии
       if (node.isFolder()) {
       	if (node.title == bg.GBE2.m_RecentLabel || node.title == bg.GBE2.m_VisitedLabel) return false;
       	$("#bkmk-tree").contextmenu("showEntry", "menuEdit", true);
@@ -502,7 +498,6 @@ $(document).ready(function(){
       	$("#bkmk-tree").contextmenu("showEntry", "msepf", false);
       	
       }
-
       // Activate node on right-click
       node.setActive();
       // Disable tree keyboard handling
@@ -519,19 +514,15 @@ $(document).ready(function(){
     },
     select: handleContextMenuClick
   });
+
   // обработчик кликов по закладкам и меткам
 	$("#bkmk-tree").on("click", function(event) {
 		let node = $.ui.fancytree.getNode(event),
       // Only for click and dblclick events:
       // 'title' | 'prefix' | 'expander' | 'checkbox' | 'icon'
       targetType = $.ui.fancytree.getEventTargetType(event);
-      console.log("click " + event.originalEvent.which)
-    // if (targetType == "title" ) {
     if (targetType == "title" || targetType == "icon") {
     	if ($("#filterTextbox").val() !== "" && event.originalEvent.which == 1 && node.isFolder()) {
-    		// $("#filterTextbox").val("");
-    		// let tree = $.ui.fancytree.getTree();
-    		// resetFilter();
     		filteredLabelAction(node);
     		return true;
     	}
@@ -553,10 +544,6 @@ $(document).ready(function(){
     		window.close();
     	}
     }
-    // if (targetType == "icon" && event.originalEvent.which == 3) {
-    // 	console.log(node.key);
-    // 	$("#bkmk-tree").contextmenu("open", $(node));
-    // }
   }
   );
 
@@ -575,6 +562,8 @@ $(document).ready(function(){
 
 	console.log("I am popup.js");
 
+	// при установленном признаке необходимости обновления списка закладок
+	// когда меняются настроки дополнения
 	if (bg.GBE2.m_needRefresh) {
 		bg.GBE2.m_needRefresh = false;
 		refresh();
@@ -584,8 +573,6 @@ $(document).ready(function(){
 	// с параметрами из m_dlgInfo
 	if (bg.GBE2.m_dlgInfo !== null && bg.GBE2.m_dlgInfo.needOpen && !bg.GBE2.m_needRefresh)
 	{
-		// $("#editBkmkDlg-name").val(bg.GBE2.m_dlgInfo.title);
-		// $("#editBkmkDlg-url").val(bg.GBE2.m_dlgInfo.url);
 		bg.GBE2.m_dlgInfo.needOpen = false;
 		// setTimeout(() => {
 		openBkmkDialog(
@@ -594,53 +581,34 @@ $(document).ready(function(){
 		$("#editBkmkDlg").dialog('option', 'position', { my: "center", at: "center", of: "#wrapper" })
 		// }, 100);
 	}
+
+	// назначем обработчики кнопок
+	// зависящие от текущей вкладки - добавление/редактирование/удаление закладки
 	if (aTab){
 		aBkmk = bg.GBE2.getBookmark({ url : aTab.url});
 		setClickHandlers (aBkmk);
 	}
-	// назначем обработчики кнопок
-	// 
+
 	// обновление списка закладок
 	$(".hmenuRefresh a")
 		.attr('title', _getMsg("popup_hmenuRefresh"))
 		.click(function(event) { 
 			refresh();	
 	});
-
+	// открытие настроек дополнения
 	$(".hmenuOpt a")
 		.attr('title', _getMsg("popup_hmenuOpt"))
 		.click(function(event) {
 			openOptionsPage();
 	});
-
-/*	$(".hmenuDel a").click(function(event) {
-		// browser.tabs.executeScript(null, {
-		//       file: "/content/content.js"
-  //   });
-    console.log ("aTab  " + aTab.url);
-    	// if (aTab.url == "" || aTab.url.indexOf("about:") == 0 )
-    	// {
-    		// console.log ("url 1  " + aTab.url);
-    		openBkmkDialog("editBkmkDlg");
-    	// }
-    	// else
-    	// {
-    	// 	console.log ("url 2  " + aTab.url);
-     //  	window.close();
-     //  	browser.tabs.sendMessage(aTab.id, {type: "ShowEditDialog", message: "Show Edit Bookmark Dialog"});
-     //  }
-	});*/
-
-
+	// добавление в закладки открытых вкладок		
 	$(".hmenuAddOpenTabs a")
 		.attr('title', _getMsg("popup_hmenuAddOpenTabs"))
 		.click(function(event) {
 			//test1();
 			openAddAllTabsDlg();
 	});
-
-	//"Read Later" Label: Unread Bookmarks
-	
+	// открытие страницы Google Bookmarks
 	$(".hmenuGBs a")
 		.attr('title', _getMsg("popup_hmenuGBs"))
 		.click(function(event) {
@@ -648,14 +616,13 @@ $(document).ready(function(){
 			window.close();
 	});
 
-	// клик на QR-коде - открываем его в новой вкладке 
+	// клик на QR-коде в диалоге - открываем его в новой вкладке 
 	$("#qr_dialog_image").on("click", function () {
 		showURL($(this).attr("src"));
-		// chrome.tabs.create({active: true, url: $(this).attr("src")});
 		window.close();
 	});
 
-	// разрешение/запрет редактирования адреса
+	// разрешение/запрет редактирования адреса закладки
 	$("#editBkmkDlg-enableUrlEdit").on("click", function() {
 		let urlCtrl = $("#editBkmkDlg-url");
 		// включили флаг - снимаем readonly атрибут
@@ -669,6 +636,7 @@ $(document).ready(function(){
 		}
 	});
 
+	// сброс фильтра - по клику или нажанию Enter и пробела
 	$("a.clrBtn").on("keypress click", (e) => {
 		if (e.type = "click" && (e.which == 1 || e.which == 13 || e.which == 32)) {
 			$("#filterTextbox").val('').focus();
@@ -676,167 +644,75 @@ $(document).ready(function(){
     }
 	});
 
+	// фильтрация списка при наборе в #filterTextbox
 	$("#filterTextbox").keyup(function(e){
 		let n,
 				tree = $.ui.fancytree.getTree(),
 				match = $(this).val();
+		// сбрасываем таймер при вводе очередного символа
 		clearTimeout($.data(this, 'timer'));
-
+		// если поле фильтра пустое (одни пробелы) или одна кавычка (") - сбрасываем фильтр
+		// !!!!! ESCAPE - не работает - окно закрывается
 		if(e && e.which === $.ui.keyCode.ESCAPE || $.trim(match) === "" || $.trim(match) === '"'){
-			// console.log("filter 2 " + e.which);
 			resetFilter();
 			return false;
 		}
+		// показываем кнопку очистки фильтра
 		$("a.clrBtn").css({display: 'inline'});
-		var wait = setTimeout(filter, 200);
+		// задержка срабатывания фильтра
+		var wait = setTimeout(filter, bg.GBE2.opt.filterDelay);
 		$(this).data('timer', wait);
+		// функция фильтрации
 		function filter() {
+			// фильтруем
 			n = tree.filterNodes(function(node) {
+				// пропускаем метки с ignoreMe
 				if( node.data.ignoreMe ) {
-				    return "skip";  // don't match anythin inside this branch
+				    return "skip";  
 				}
+				// параметры фильтра: заголовок, заметки, адрес
 				let bkmk = {
 					title : node.title,
 					notes : node.data.notes ? node.data.notes : "",
 					url : node.data.url ? node.data.url : ""
 				}
+				// выделяем найденный текст
 				let replacement = '<mark>$&</mark>';
+				// проверяем текущее значение фильтра
 				let check = bg.GBE2.checkBookmark(bkmk, match);
-				if (check.isMatch && node.isFolder()) 
+				// нашли
+				if (check.isMatch) 
 				{
-					node.titleWithHighlight = node.title.replace(check.search, replacement);
-					return "branch";  // match the whole 'Foo' branch, if it's a folder
-				}
-				else {
-					if (check.search !== "") 
+					// для меток и закладок (при совпадении в заголовке) - выделяем найденный текст
+					if (node.isFolder()) {
 						node.titleWithHighlight = node.title.replace(check.search, replacement);
-					else
-						node.titleWithHighlight = (check.extra == null) ? node.title : `<mark class="${check.extra.class}">${check.extra.text}</mark>` + node.title;
-					return check.isMatch;
+						return "branch";  // match the whole 'Foo' branch, if it's a folder
+					}
+					else {
+						if (check.search !== "") 
+							node.titleWithHighlight = node.title.replace(check.search, replacement);
+						else
+							// при совпадении в примечании или адресе - добавляем к заголовку соответствующую метку
+							node.titleWithHighlight = (check.extra == null) ? node.title : `<mark class="${check.extra.class}">${check.extra.text}</mark>` + node.title;
+					}						                 
 				}
-
+				return check.isMatch;
 			});
 		}
 	}).focus();
 
+	// при открытии окна устанавливаем фокус на поле фильтра
 	setTimeout (() => {$("#filterTextbox").focus();}, 200);
 	$("#bkmk-tree ul").attr("tabindex", "3");
-	// $("*").on("focus", e => {console.log(e.target)})
-
 }); // document ready
 
+// сброс фильтра
 function resetFilter(){
 	$("a.clrBtn").css({display: 'none'})
 	fTree.clearFilter();
 }
 
-/**
- * проверяет закладку/метку на соответствие значению фильтра
- *
- * @param      {object}  bkmk    информация о закладке в виде bkmk = {	title, notes, url }
- * @param      {string}  search  строка поиска
- * 
- * возвращает result = {
- * 	isMatch: false,  - совпадает или нет
- * 	search: "", - регулярка для выделения найденого в заголовке закладки
- * 	extra: [] - добавляется в начало заголовка (для url и notes)
- * }
- */
-//  function checkBookmark (bkmk, search) {
-// 	let result = {isMatch: false, search: "", extra: []};
-// 	let enableFilterByUrl = bg.GBE2.opt.enableFilterByUrl;
-// 	let enableFilterByNotes = bg.GBE2.opt.enableFilterByNotes;
-
-// 	// если в строке нечетное число кавычек, например
-// 	// "
-// 	// "значение
-// 	// знач1 "знач2
-// 	// "знач1" знач2 "знач3
-// 	if (Math.abs((search.match(/"/g) || []).length % 2) == 1) {
-// 		var pos = search.lastIndexOf('"');
-// 		// удаляем последнюю кавычку
-// 	  search = search.substring(0,pos) + "" + search.substring(pos+1)
-// 		if (search.length == 0) {
-// 			result.isMatch = true; 
-// 			return result;
-// 		}
-// 	}
-
-// 	// проверка на "значение поиска с пробелами"
-// 	// учитывается только одно вхождение
-// 	let result0 = /"(.*?\s.*?)"/i.exec(search);
-// 	if (result0 && Array.isArray(result0) && result0.length == 2){
-//     let search = _escape(result0[1]);
-//     // search1 = escape(result0[1].replace(/"/g,""));
-//     let tRe = new RegExp(search, "i");
-//     if (tRe.test(bkmk.title)) {
-//        result.isMatch = true; 
-//        result.search = tRe;
-//        return result;
-//     }    
-// 	}
-// 	// делим значение поиска по пробелам
-// 	var words = search.split(/\s+/);
-// 	// формируем регулярки для поиска и выделения
-// 	// если слов несколько - должны встречаться все слова
-// 	var tSearch = "(?:";
-// 	var tMark = "";
-// 	words.forEach((elem) => {
-//     if (elem.length == 0) return;
-//     // вариант для слова в кавычках - ищем целое слово
-//     if (/"\S*?"/ig.test(elem))
-//     {
-//       var elem = _escape(elem.replace(/"/g,""));
-//       // tSearch += '(?=.*\\b(' + elem + ')(?=\\s|$|[,.:;]))';
-//       tSearch += '(?=.*([^0-9a-zA-Zа-яёА-ЯЁ]|\\b)(' + elem + ')(?=\\s|$|[,.:;]))';
-//       // tMark += '(?=([^0-9a-zA-Zа-яёА-ЯЁ]+|\\b)(' + elem + ')(?=\\s|$|[,.:;]))|';
-//       tMark += '(?:([^0-9a-zA-Zа-яёА-ЯЁ]{0}|\\b)(' + elem + ')(?=\\s|$|[,.:;]))|';
-//     }
-//     // без кавычек - любое соответствие
-//     else {
-//       var elem = _escape(elem);
-//       tSearch += '(?=.*(' + elem + '))';
-//       tMark += '(' + elem + ')|';
-//     }
-// 	});
-// 	tSearch += '.+)';
-// 	tMark = tMark.substring(0, tMark.length - 1);
-// 	var reSearch = new RegExp(tSearch, "ig");
-// 	// console.log (reSearch);
-// 	var reMark = new RegExp(tMark, "ig");
-// 	// console.log (reMark);
-
-// 	// поиск в заголовке закладки
-// 	let match = reSearch.exec(bkmk.title);
-// 	if (match) {
-// 		result.isMatch = true; 
-// 		result.search = reMark;
-// 		return result;
-// 	}
-
-// 	result.search = "";
-// 	// поиск в примечании
-// 	if (enableFilterByNotes && bkmk.notes.length > 0) {
-// 		match = (new RegExp(tSearch, "ig")).exec(bkmk.notes);
-// 		if (match) {
-// 			result.isMatch = true; 
-// 			result.extra = "<mark class='markNote'>NOTE</mark>";
-// 			return result;
-// 		}
-// 	}
-// 	// поиск в Url
-// 	if (enableFilterByUrl && bkmk.url.length > 0) {
-// 		match = (new RegExp(tSearch, "ig")).exec(bkmk.url);
-// 		if (match) {
-// 			result.isMatch = true; 
-// 			result.extra = "<mark class='markUrl'>URL</mark>";
-// 			return result;
-// 		}
-// 	}
-// 	return result;
-// }
-
-
+// настройка элементов управления в диалоге редактирования закладки
 function setBkmkControls (bkmk)
 {
 	$("#editBkmkDlg-name").val(bkmk.title);
@@ -844,26 +720,26 @@ function setBkmkControls (bkmk)
 	$("#editBkmkDlg-labels").val(bkmk.labels);
 	$("#editBkmkDlg-notes").val(bkmk.notes);
 	$("#editBkmkDlg-id").val(bkmk.id);
-	if (bkmk.labels.length > 0) 
-	{
-		$("#editBkmkDlg-labels").val(bkmk.labels + ",");
+	if (bkmk.labels.length > 0) {
+		$("#editBkmkDlg-labels").val(bkmk.labels + ", ");
 	}
 	$("#editBkmkDlg-notes").val(bkmk.notes);
 
 	if (bkmk.hasOwnProperty("favIconUrl") && bkmk.favIconUrl) {
-		console.log(bkmk.favIconUrl);
 		$("#editBkmkDlg-favIconUrl").val(bkmk.favIconUrl);
 	}
-
+	// при добавлении закладки
 	if (bkmk.id == null) 	{
 		$("#editBkmkDlg-enableUrlEdit").attr("disabled",true);
 	}
+	// при редактировании закладки
 	else {
-		// $("#editBkmkDlg-id").val(bkmk.id);
 		$("#editBkmkDlg-oldUrl").val(bkmk.url);
 		$("#editBkmkDlg-enableUrlEdit").prop("checked", false).attr("disabled",false);
 		$("#editBkmkDlg-url").attr("readonly",true);
+		// при отключенной опции enableNotes и не заполенном поле примечания
 		if (!bg.GBE2.opt.enableNotes && bkmk.notes == "") {
+			// делаем запрос 
 			bg.GBE2.doRequestBookmarkNote(bkmk)
 			.then(result => {
 				$("#editBkmkDlg-notes").val(result);
@@ -872,7 +748,8 @@ function setBkmkControls (bkmk)
 	    	_errorLog("popup:setBkmkControls", error);
  	 		});
 		}
-		bkmk.url = "";
+		// bkmk.url = "";
+		// при пустом поле адреса - запрашиваем его
 		if (bkmk.url == "") {
 			bg.GBE2.doRequestBookmarkURL(bkmk)
 			.then(result => {
@@ -886,19 +763,23 @@ function setBkmkControls (bkmk)
 	}
 }
 
+// добавление закладки в метку readLater - без показа диалога редактирования
 function readLater (bkmk) {
-	bkmk.labels = ["!Read Later"];
+	bkmk.labels = [bg.GBE2.opt.readLaterTitle];
 	bkmk.oldUrl = "";
 	browser.runtime.sendMessage({
 		"type": "editBookmark",
 		"data": bkmk
 	}).then();
+
+
+	//TODO: почему 2 раза
 }
 
-// function openBkmkDialog (dlgName)
+// открытие диалога редактирования закладки
 function openBkmkDialog (bkmk)
 {
-	// var dlg = $("#" + dlgName);
+	// инициализация
 	if (editBkmkDlg == null)
 	{
 		editBkmkDlg = $("#editBkmkDlg");
@@ -906,16 +787,17 @@ function openBkmkDialog (bkmk)
 			dialogClass: "no-close",
       autoOpen: false,
       modal: true,
-      draggable: true,
+      draggable: false,
       resizable: false,
       position: { my: "center", at: "center", of: "#wrapper" },
       // closeOnEscape: false
       // minWidth: "480px",
-      width: 500,
+      width: "500px",
       buttons: [
         {
           text: _getMsg("btn_Save"),
           click: function() {
+          	// TODO: добавить проверки полей
           	let result = {
 	          	id: $("#editBkmkDlg-id").val().trim(),
 	          	oldUrl: $("#editBkmkDlg-oldUrl").val().trim(),
@@ -925,7 +807,6 @@ function openBkmkDialog (bkmk)
 	          	notes: $("#editBkmkDlg-notes").val().trim(),
 	          	favIconUrl: $("#editBkmkDlg-favIconUrl").val().trim(),
           	}
-          	// console.log ("|" + result.oldUrl + "|");
           	browser.runtime.sendMessage({
 		      		"type": "editBookmark",
 		      		"data": result
@@ -960,33 +841,46 @@ function openBkmkDialog (bkmk)
 	editBkmkDlg.dialog("open");
 }
 
+function split(val) {
+  return val.split(/,\s*/);
+}
 
+function extractLast(term) {
+  return split(term).pop();
+}
+
+// формирует список значений для автокомплита поля метки
 function labelAutocompleteSource (request, response) {
   let term = request.term;
-
   // substring of new string (only when a comma is in string)
-  if (term.indexOf(', ') > 0) {
-      var index = term.lastIndexOf(', ');
-      term = term.substring(index + 2);
-  }
-
-  // regex to match string entered with start of suggestion strings
+  // if (term.indexOf(', ') > 0) {
+  //     var index = term.lastIndexOf(', ');
+  //     term = term.substring(index + 2);
+  // }
+  // получаем значение после последнего вхождения ,\s*
+  // например: тест1, тест2, <значение>
+  // let re1 = /(,\s*)((?!.*\1)|$)/g;
+  // if (re1.test(term)) {
+  //     let index = term.search(re1);
+  //     term = term.replace(re1, ",").substring(index + 1);
+  // }
+  term = extractLast(term);
+  // экранируем введенное значение
   let re = $.ui.autocomplete.escapeRegex(term);
+  // ищем с начала метки или после разделителя вложенных меток
   let matcher = new RegExp("(^|"+ bg.GBE2.opt.nestedLabelSep + ")"+ re, 'i');
+  // фильтруем массив меток m_labelsList
   let tLabelArray = $.grep(bg.GBE2.m_labelsList, function (item, index) {
       return matcher.test(item.title);
-  // let regex_validated_array = $.grep(bg.GBE2.m_labelsArr, function (item, index) {
-  //     return matcher.test(item);
   });
+  // формируем список для автокомплита
   let regex_validated_array = [];
 	tLabelArray.forEach((element, index) => {
 	  regex_validated_array.push(element.title);
 	});
   // pass array `regex_validated_array ` to the response and 
   // `extractLast()` which takes care of the comma separation
-
-  response($.ui.autocomplete.filter(regex_validated_array, 
-       extractLast(term)));
+  response($.ui.autocomplete.filter(regex_validated_array, term));
 }
 
 function labelAutocompleteSelect (event, ui)
@@ -1004,7 +898,9 @@ function labelAutocompleteSelect (event, ui)
   return false;
 }
 
+// открывает диалог удаления закладки
 function openDelBkmkDlg (aBkmk){
+	// инициализация
 	if (delBkmkDlg == null) {
 		delBkmkDlg = $("#delBkmkDlg");
 		delBkmkDlg.dialog({
@@ -1031,8 +927,6 @@ function openDelBkmkDlg (aBkmk){
 	      {
 	        text: _getMsg("btn_Cancel"),
 	        click: function() {
-	        	// $("#delBkmkDlg label").text("");
-	        	// $("#delBkmkDlg-id").val("");
 	          $(this).dialog("close");
 	        }
 	      },
@@ -1045,6 +939,7 @@ function openDelBkmkDlg (aBkmk){
 	delBkmkDlg.dialog("open");
 }
 
+// открывает диалог редактирования метки
 function openEditLblDlg (aLbl) {
 	if (editLblDlg == null){
 		editLblDlg = $("#editLblDlg");
@@ -1088,6 +983,7 @@ function openEditLblDlg (aLbl) {
 	editLblDlg.dialog("open");
 }
 
+// открывает диалог удаления метки
 function openDelLblDlg (aLbl){
 	if (delLblkDlg == null) {
 		delLblkDlg = $("#delLblkDlg");
@@ -1131,7 +1027,7 @@ function openDelLblDlg (aLbl){
 	delLblkDlg.dialog("open");
 }
 
-
+// открывает диалог с QR-кодом для закладки
 function openQRdialog(aBkmk){
 	let dlg = $("#QRdialog");
 	dlg.dialog({
@@ -1150,6 +1046,9 @@ function openQRdialog(aBkmk){
 	dlg.dialog("open");
 }
 
+// открывает диалог подтверждения действия
+// message - задает сообдение в диалоге
+// callback - действие по кнопке подтверждения
 function openConfirmDlg(message, callback){
 	if (confirmDlg == null) {
 		confirmDlg = $("#confirmDlg");
@@ -1185,6 +1084,7 @@ function openConfirmDlg(message, callback){
 	confirmDlg.dialog("open");
 }
 
+// открывает диалог добавления всех открытых вкладок в закладки
 function openAddAllTabsDlg(label="_OpenTabs") {
 	if (addAllTabsDlg == null) {
 		addAllTabsDlg = $("#addAllTabsDlg");
@@ -1201,7 +1101,9 @@ function openAddAllTabsDlg(label="_OpenTabs") {
 	      {
 	        text: _getMsg("btn_Save"),
 	        click: function() {
+	        	// метка/и для добавляемых закладок
 	        	let label = $("#addAllTabsDlg-label").val();
+	        	// формируем массив с добавляемыми закладками
 	        	let result = [];
 	        	$("div.divTableCell  input:checked").each(function() {
 	          	let item = {
@@ -1215,6 +1117,7 @@ function openAddAllTabsDlg(label="_OpenTabs") {
 	          	}
 	          	let bkmk = null;
 	          	bkmk = bg.GBE2.getBookmark({ url : item.url})
+	          	// для существующих заклдадок - просто добавляем новую метку
 	        		if (bkmk !== null) {
 	        			item.id = bkmk.id;
 	        			item.title = bkmk.title;
@@ -1225,7 +1128,6 @@ function openAddAllTabsDlg(label="_OpenTabs") {
 	        			}
 	        		}
 	        		result.push(item);
-	        		console.log(JSON.stringify(item));
 	        	});
 	        	if (result.length) {
 		        	browser.runtime.sendMessage({
@@ -1265,11 +1167,11 @@ function openAddAllTabsDlg(label="_OpenTabs") {
 	  focus: function () {return false;},
 	  select: labelAutocompleteSelect
 	});
-
+	// получаем все вкладки в текущем окне
 	browser.tabs.query({currentWindow: true}).then((tabs) => {
 		let tBody = $(".divTableBody");
 		tBody.empty();
-
+		// заполняем таблицу со списком вкладок
 		tabs.forEach((tab) => {
 			let tRow = '<div class="divTableRow">' +
 				'<div class="divTableCell"><input type="checkbox" id="addAllTabsDlg-row' + tab.id +'">' +
@@ -1284,6 +1186,7 @@ function openAddAllTabsDlg(label="_OpenTabs") {
 	})
 }
 
+// обработка пунктов "поделиться" (фэйсбук, твиттер, почта) в контекстном меню закладки
 function contextMenuShareBookmark (bkmk, mode) {
 	if (bkmk !== null)
 	{
@@ -1301,29 +1204,31 @@ function contextMenuShareBookmark (bkmk, mode) {
          + "&body=" + bkmk.title + "%0D%0A" + escape(bkmk.url);
 		}
 		if (link.length > 0) showURL(link);
-		// if (link.length > 0) chrome.tabs.create({active: true, url: link});
 		window.close();
 	}
 }
 
+// открытие всех закладок в метке
 function labelMenuOpenAll(lbl){
 	bg.GBE2.m_bookmarkList.forEach((bkmk) => {
 		if (bkmk.labels.length && bkmk.labels.indexOf(lbl.name) >=0){
 			showURL(bkmk.url, true, false);
-			// browser.tabs.create({active: false, url: bkmk.url})
-			// 	.catch((e) => {_errorLog("labelMenuOpenAll", e)});
 		}
 	});
 }
 
+// контекстное меню метки - добавить закладку здесь
 function labelMenuAddHere(lbl) {
+	// получаем информацию о текущей вкладке
 	browser.tabs.query({active: true, currentWindow: true})
 		.then((tabs) => {
 			let tab = tabs[0];
 			let bkmk = bg.GBE2.getBookmark({ url : tab.url});
+			// если закладки с таким адресом нет - добавляем
 			if (bkmk == null) 
 				openBkmkDialog ({id: null, title: aTab.title, url: aTab.url, labels: lbl.name, notes: "", favIconUrl: aTab.favIconUrl});
 			else {
+				// иначе - добавляем метку к существующей закладке
 				let tbkmk = {
 					id: bkmk.id, title: bkmk.title, url: bkmk.url, 
 					labels: (bkmk.labels.length>0 ? (bkmk.labels+","+lbl.name):lbl.name), 
@@ -1334,6 +1239,7 @@ function labelMenuAddHere(lbl) {
 		});
 }
 
+// контекстное меню метки - скрытие метки
 function folderMenuHideFolder(lbl) {
 	let msg = _getMsg("confirmDlg_HideFolder_msg", lbl.name);
 	let hideFolder = () => {
@@ -1351,6 +1257,7 @@ function folderMenuHideFolder(lbl) {
 	openConfirmDlg(msg, hideFolder);
 }
 
+// контекстное меню скрытой метки - убрать метку из скрытых
 function folderMenuUnhideFolder (lbl) {
 	let msg = _getMsg("confirmDlg_UnhideFolder_msg", lbl.name);
 	let re = new RegExp ("^" + bg.GBE2.opt.hiddenLabelsTitle + bg.GBE2.opt.nestedLabelSep, "i");
@@ -1371,6 +1278,7 @@ function folderMenuUnhideFolder (lbl) {
 	}
 }
 
+// контекстное меню скрытых меток - убрать все метки из скрытых
 function folderMenuUnhideAll (lbl) {
 	let msg = _getMsg("confirmDlg_UnhideAll_msg");
 	if (lbl.name == bg.GBE2.opt.hiddenLabelsTitle) {
@@ -1390,6 +1298,8 @@ function folderMenuUnhideAll (lbl) {
 	}
 }
 
+// контекстное меню метки - экспорт в HTML
+// ограничения - пока только в папку Загрузки
 function folderMenuExport(lbl) {
 	if (bg.GBE2.m_treeSource && bg.GBE2.m_treeSource.length)
 	{
@@ -1444,25 +1354,17 @@ function folderMenuExport(lbl) {
 	}
 }
 
-
+// обработчик кликов для пунктов контекстного меню дерева закладок
 function handleContextMenuClick(event, ui) {
   var node = $.ui.fancytree.getNode(ui.target);
   console.log("select " + ui.cmd + " on " + node);
   let bkmk = null;
+  let lbl = null;
   switch (ui.cmd) {
-  	// bookmark
+  	// для закладок
   	case "page-go":
   			if (node.data.url.length) {
   				showURL(node.data.url, bg.GBE2.opt.reverseLeftClick, true);
-  				// let SearchString = new RegExp("^chrome:|^javascript:|^data:|^about:.*" );
-  				// if (SearchString.test(node.data.url)) {
-  				// 	console.log("In Firefox, you can't open, or navigate to privileged URLs: chrome:, javascript:, data:, about:");
-  				// 	console.log("https://developer.mozilla.org/ru/Add-ons/WebExtensions/Chrome_incompatibilities");
-  				// }
-  				// else {
-   			// 		chrome.tabs.update(aTab.id,{url: node.data.url});
-  				// }
-  				//$("#bkmk-tree").contextmenu("close");
   				window.close();
   			}
   		break;
@@ -1472,18 +1374,13 @@ function handleContextMenuClick(event, ui) {
   		break;
   	case "page-delete":
   		bkmk = bg.GBE2.getBookmark({id: node.refKey});
-  		// $("#delBkmkDlg label").text(_getMsg("delBkmkDlg_label", bkmk.title));
   		openDelBkmkDlg(bkmk);
   		break;
   	case "page-newWidow":
-  		if (node.data.url.length) {
-  			showURLinNewWindow(node.data.url);
-  		}
+  		if (node.data.url.length) showURLinNewWindow(node.data.url);
   		break;
   	case "page-newPrivate":
-  		if (node.data.url.length) {
-  			showURLinNewWindow(node.data.url, true);
-  		}
+  		if (node.data.url.length) showURLinNewWindow(node.data.url, true);
   		break;
   	case "qrcode-icon":
   		bkmk = bg.GBE2.getBookmark({id: node.refKey});
@@ -1501,15 +1398,13 @@ function handleContextMenuClick(event, ui) {
   		bkmk = bg.GBE2.getBookmark({id: node.refKey});
   		contextMenuShareBookmark(bkmk, "tw");
   		break;
-  	// label
+  	// для меток
   	case "menuEdit":
   		lbl = {id: node.key, name: node.data.path};
-  		// console.log(lbl);
   		openEditLblDlg(lbl);
   		break;
   	case "menuRemove":
   		lbl = {id: node.key, name: node.data.path};
-  		// console.log(lbl);
   		openDelLblDlg(lbl);
   		break;
   	case "menuOpenAll":
@@ -1543,20 +1438,19 @@ function handleContextMenuClick(event, ui) {
   }
 }
 
-
+// слушает сообщения от background.js
 function bgListener(message)
 {
 	switch (message.type){
+		// нужно начать обновление списка закладок
 		case "needRefresh":
 			refresh();
 			break;
+		// список закладок обновлен
 		case "refreshed":
 			aBkmk = bg.GBE2.getBookmark({ url : aTab.url});
 			setClickHandlers (aBkmk);
-			// console.log (JSON.stringify(message));
-
 			$.ui.fancytree.getTree("#bkmk-tree").reload(
-	          // message.text
 	          bg.GBE2.m_treeSource
 	        ).done(function(){
 	          console.log ("reloaded");
@@ -1564,17 +1458,19 @@ function bgListener(message)
 	    $("#bkmk-tree").fancytree("enable").show();
 	    $(".info-box").css({display: 'none'});
 	    break;
+	  // открыть диалог создания закладки (вызывается через контекстное меню ссылки или страницы)
 		case "CntxOpenBkmkDialog":
 			openBkmkDialog({id: null, title: message.title, url: message.url, labels: "", notes: "", favIconUrl: message.favIconUrl});
 			break;
 	}
 }
 
+// начало обновление списка закладок (посылка сообщения в background.js)
 function refresh() {
   console.log("refresh");
   $(".info-box").css({display: 'flex'});
-  // TODO сообщение изменить
-  $(".info-box label").text("!Loading bookmarks");
+  // TODO сообщение при ошибке обновления
+  $(".info-box label").text(_getMsg("popup_infoBox_loading"));
   $("#bkmk-tree").fancytree("disable").hide();
   chrome.runtime.sendMessage({
       type: "refresh",
@@ -1585,6 +1481,7 @@ function refresh() {
   resetFilter();
 }
 
+// открывает окно настроек дополенения
 function openOptionsPage () {
 	browser.runtime.openOptionsPage().then( ()=> {window.close();});
 }

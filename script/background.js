@@ -1,26 +1,29 @@
 ﻿"use strict";
 var GBE2 = {
+	// список закладок
 	"m_bookmarkList" : [],
-	"m_treeSource" : [],
+	// список меток
 	"m_labelsList" : null,
+	// массив для построения дерева закладок
+	"m_treeSource" : [],
 	// адрес для получения списка закладок
 	'm_baseUrl' : "https://www.google.com/bookmarks/",
 	// адрес для работы с отдельными закладками
 	'm_baseUrl2' : "https://www.google.com/bookmarks/mark",
 	// список всех закладок (полученный с сервера) в формате XML
   'm_ganswer' : null,
+  // сигнатура для операций редактирования
   'm_signature' : null, 
-
+  // заголовок последних добавленных закладок
   'm_RecentLabel' : _getMsg("popup_RecentLabel"),
+  // заголовок самых посещаемых закладок
   'm_VisitedLabel' : _getMsg("popup_VisitedLabel"),
-
-  // разделитель меток при сортировке
-  'm_labelSep'	: "{!|!}",
+  // настройки дополнения
   opt : new Options(),
 	
 	// тайм-аут ответа сервера при получении закладок и сигнатуры
 	// TODO: change to opt.timeout
-	'p_timeout' : 10000,
+	// 'p_timeout' : 10000,
 	// режим без примечаний - формат получения закладок: rss or xml
 	// 'p_enableNotes' : true,
 
@@ -960,7 +963,7 @@ var GBE2 = {
 				// output : (this.opt.enableNotes ? "rss" : "xml"),
 				num : 10000
 			},
-			timeout : this.p_timeout
+			timeout : this.opt.timeout
 		})
 		.then(
 			(response, status, xhr) =>	{
@@ -996,7 +999,7 @@ var GBE2 = {
 		  	output : "rss",
 		  	q : "qB89f6ZAUXXsfrwPdN4t"
 		  },
-		  timeout : this.p_timeout,
+		  timeout : this.opt.timeout/2|0,
 		  // dataType: "xml"
 		}).then(
 			(response, status, xhr) =>	{
@@ -1038,7 +1041,7 @@ var GBE2 = {
 		  	output : "xml",
 		  	q : result.title
 		  },
-		  timeout : this.p_timeout,
+		  timeout : this.opt.timeout/2|0,
 		  // dataType: "xml" 
 		}).then(
 			function (response, status, xhr)
@@ -1088,7 +1091,7 @@ var GBE2 = {
 				output : "rss",
 				q : bkmk.title
 			},
-			timeout : this.p_timeout
+			timeout : this.opt.timeout/2|0
 		})
 		.then(
 			function(response, status,xhr){
@@ -1163,7 +1166,7 @@ var GBE2 = {
 						q : "",
 						start : 0
 					},
-					timeout : this.p_timeout,
+					timeout : this.opt.timeout/2|0,
 				})
 				.then( (response, status, xhr) => {
 			    	if (bkmk.oldUrl.trim() !== "" && bkmk.oldUrl.trim() !== bkmk.url.trim()) {
@@ -1205,7 +1208,7 @@ var GBE2 = {
 						labels : lbl.oldName + "," + lbl.name,
 						sig : this.m_signature
 					},
-					timeout : this.p_timeout,
+					timeout : this.opt.timeout/2|0,
 				})
 				.then( (response, status, xhr) => {
 						 // console.log("doChangeLabel : Ok");
@@ -1244,7 +1247,7 @@ var GBE2 = {
 						labels : lbl.name,
 						sig : this.m_signature
 					},
-					timeout : this.p_timeout,
+					timeout : this.opt.timeout/2|0,
 				})
 				.then( (response, status, xhr) => {
 						console.log("doDeleteLabel : Ok");
@@ -1284,7 +1287,7 @@ var GBE2 = {
 						dlq : bkmk.id,
 						sig : this.m_signature
 					},
-					timeout : this.p_timeout,
+					timeout : this.opt.timeout/2|0,
 				})
 				.then( (response, status, xhr) => {
 			    	// console.log("doDeleteBookmark : Ok");

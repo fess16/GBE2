@@ -63,10 +63,12 @@ function setTexts()
 	$("label[for=enableFilterByUrl]").text(_getMsg("options_enableFilterByUrl"));
 	$("label[for=enableFilterByNotes]").text(_getMsg("options_enableFilterByNotes"));
 	$("label[for=filterDelay]").text(_getMsg("options_filterDelay"));
+	$("label[for=timeout]").text(_getMsg("options_timeout"));
 	
 	$("label[for=enableLabelHiding]").text(_getMsg("options_enableLabelHiding"));
 	$("label[for=showHiddenLabels]").text(_getMsg("options_showHiddenLabels"));
 	$("label[for=hiddenLabelsTitle]").text(_getMsg("options_hiddenLabelsTitle"));
+	$("label[for=readLaterTitle]").text(_getMsg("options_readLaterTitle"));
 
 	$("#fsFilter legend").text(_getMsg("options_fsFilter_legend"));
 	$("#fsLabelHiding legend").text(_getMsg("options_fsLabelHiding_legend"));
@@ -105,6 +107,8 @@ function restoreOptions()
   	$("#enableLabelHiding").prop("checked", r.enableLabelHiding);
   	$("#showHiddenLabels").prop("checked", r.showHiddenLabels);
   	$("#hiddenLabelsTitle").val(r.hiddenLabelsTitle);
+  	$("#readLaterTitle").val(r.readLaterTitle);
+  	$("#timeout").val(r.timeout);
 
   	$("#clrFavIcons").attr('disabled', !r.showFavicons);
   	$("#reloadFavIcons").attr('disabled', !r.showFavicons);
@@ -134,6 +138,8 @@ function saveOptions(e)
 	opt.showHiddenLabels = $("#showHiddenLabels").prop("checked");
 	//TODO проверка ввода
 	opt.hiddenLabelsTitle = $("#hiddenLabelsTitle").val();
+	opt.readLaterTitle = $("#readLaterTitle").val();
+	opt.timeout = $("#timeout").val();
 	console.log("saveOptions:write");
 	opt.write().then();
 }

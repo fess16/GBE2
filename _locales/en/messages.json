@@ -28,16 +28,17 @@
     "popup_hmenuGBs": {
     "message": "Go to Google Bookmarks Page"
   },
-  "popup_hmenuReadLater": {
-    "message": "Read Later"
-  },
-
-
   "popup_RecentLabel": {
     "message": "10 most recent bookmarks"
   },
   "popup_VisitedLabel": {
     "message": "10 most frequent bookmarks"
+  },
+  "popup_hmenuReadLater": {
+    "message": "Read Later"
+  },
+  "popup_infoBox_loading": {
+    "message": "Loading bookmarks!"
   },
 
   "cntx_folder_menuEdit": {
@@ -270,7 +271,7 @@
     "message": "Enable filter by Notes"
   },
   "options_filterDelay": {
-    "message": "Filter delay, ms (1s = 1000ms)"
+    "message": "Filter delay, milliseconds (1 second = 1000 milliseconds)"
   },
   "options_enableLabelHiding": {
     "message": "Enable labels hidding"
@@ -287,6 +288,12 @@
   "options_fsLabelHiding_legend": {
     "message": "Labels hiding"
   },
+  "options_readLaterTitle": {
+    "message": "'Read Later' Label"
+  },
+  "options_timeout": {
+    "message": "Request Timeout, milliseconds (1 second = 1000 milliseconds)"
+  },  
 
   "contextMenuAddBookmark": {
     "message": "Add Page to Google Bookmarks"

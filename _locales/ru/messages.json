@@ -38,6 +38,9 @@
   "popup_hmenuReadLater": {
     "message": "Читать позже"
   },
+  "popup_infoBox_loading": {
+    "message": "Загрузка закладок!"
+  },
 
 
   "cntx_folder_menuEdit": {
@@ -299,6 +302,12 @@
   },
   "options_fsLabelHiding_legend": {
     "message": "Скрытие меток"
+  },
+  "options_readLaterTitle": {
+    "message": "Название для метки 'Читать позже'"
+  },
+  "options_timeout": {
+    "message": "Тайм-аут ответа сервера, мс (1с = 1000мс)"
   },
 
   "contextMenuAddBookmark": {
