@@ -31,6 +31,7 @@ browser.tabs.query({active: true, currentWindow: true}).then((tabs) => {
 function setClickHandlers (aBkmk)
 {
 	removeClickHandlers();
+	// console.log(jQuery._data( jQuery(".hmenuReadLater a")[0], "events" ));
 	$(".hmenuAdd a").attr('title', _getMsg("popup_hmenuAdd"));
 	$(".hmenuEdit a").attr('title', _getMsg("popup_hmenuEdit"))
 	$(".hmenuDel a").attr('title', _getMsg("popup_hmenuDel"))
@@ -79,7 +80,7 @@ function setClickHandlers (aBkmk)
 
 // удаляет предыдущие обработчики
 function removeClickHandlers () {
-	$(".hmenuAdd a, .hmenuEdit a, .hmenuReadLater a, .hmenuDel a").off( "click", "**" );
+	$(".hmenuAdd a, .hmenuEdit a, .hmenuReadLater a, .hmenuDel a").off();
 }
 
 
@@ -560,7 +561,7 @@ $(document).ready(function(){
    return false;
 	}); 
 
-	console.log("I am popup.js");
+	console.log("GBE2:popup.js");
 
 	// при установленном признаке необходимости обновления списка закладок
 	// когда меняются настроки дополнения
@@ -771,9 +772,6 @@ function readLater (bkmk) {
 		"type": "editBookmark",
 		"data": bkmk
 	}).then();
-
-
-	//TODO: почему 2 раза
 }
 
 // открытие диалога редактирования закладки
@@ -1453,7 +1451,7 @@ function bgListener(message)
 			$.ui.fancytree.getTree("#bkmk-tree").reload(
 	          bg.GBE2.m_treeSource
 	        ).done(function(){
-	          console.log ("reloaded");
+	          _console("GBE2:popup:reloaded");
 	        });
 	    $("#bkmk-tree").fancytree("enable").show();
 	    $(".info-box").css({display: 'none'});
@@ -1467,7 +1465,7 @@ function bgListener(message)
 
 // начало обновление списка закладок (посылка сообщения в background.js)
 function refresh() {
-  console.log("refresh");
+  _console("GBE2:popup:refresh");
   $(".info-box").css({display: 'flex'});
   // TODO сообщение при ошибке обновления
   $(".info-box label").text(_getMsg("popup_infoBox_loading"));
