@@ -84,6 +84,11 @@ body
 }
 
 
+.nav-bar .hmenuLgt a 
+{ 
+	background:url("../images/logout.svg") no-repeat center center transparent; 
+}
+
 .nav-bar .hmenuAdd a 
 { 
 	background:url("../images/bkmrk_add_on.png") no-repeat center center transparent; 

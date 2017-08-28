@@ -31,6 +31,18 @@ browser.tabs.query({active: true, currentWindow: true}).then((tabs) => {
 function setClickHandlers (aBkmk)
 {
 	removeClickHandlers();
+	$(".hmenuLgt a").attr('title', "Logout");
+	if (bg.GBE2.m_bookmarkList.length) {
+		$(".hmenuLgt a")
+			.css({display: 'block'})
+			.click(function(event) {
+				console.log("Logout");
+			});
+	}
+	else {
+		$(".hmenuLgt a").css({display: 'none'})
+	}
+	
 	// console.log(jQuery._data( jQuery(".hmenuReadLater a")[0], "events" ));
 	$(".hmenuAdd a").attr('title', _getMsg("popup_hmenuAdd"));
 	$(".hmenuEdit a").attr('title', _getMsg("popup_hmenuEdit"))
@@ -80,7 +92,7 @@ function setClickHandlers (aBkmk)
 
 // удаляет предыдущие обработчики
 function removeClickHandlers () {
-	$(".hmenuAdd a, .hmenuEdit a, .hmenuReadLater a, .hmenuDel a").off();
+	$(".hmenuAdd a, .hmenuEdit a, .hmenuReadLater a, .hmenuDel a, .hmenuLgt a").off();
 }
 
 
@@ -1171,6 +1183,7 @@ function openAddAllTabsDlg(label="_OpenTabs") {
 		tBody.empty();
 		// заполняем таблицу со списком вкладок
 		tabs.forEach((tab) => {
+			// TODO: снять галки у уже добавленных в закладки
 			let tRow = '<div class="divTableRow">' +
 				'<div class="divTableCell"><input type="checkbox" id="addAllTabsDlg-row' + tab.id +'">' +
 				'<input type="hidden" class="favIconUrl" value="' + (tab.favIconUrl ? tab.favIconUrl : "") + '"></div>' + 
@@ -1451,7 +1464,7 @@ function bgListener(message)
 			$.ui.fancytree.getTree("#bkmk-tree").reload(
 	          bg.GBE2.m_treeSource
 	        ).done(function(){
-	          _console("GBE2:popup:reloaded");
+	          _consoleLog("GBE2:popup:reloaded");
 	        });
 	    $("#bkmk-tree").fancytree("enable").show();
 	    $(".info-box").css({display: 'none'});
@@ -1465,7 +1478,7 @@ function bgListener(message)
 
 // начало обновление списка закладок (посылка сообщения в background.js)
 function refresh() {
-  _console("GBE2:popup:refresh");
+  _consoleLog("GBE2:popup:refresh");
   $(".info-box").css({display: 'flex'});
   // TODO сообщение при ошибке обновления
   $(".info-box label").text(_getMsg("popup_infoBox_loading"));
