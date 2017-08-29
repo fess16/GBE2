@@ -36,8 +36,7 @@ $(document).ready(function()
 
 });
 
-
-
+// задает подписи элементов управления формы настроек
 function setTexts()
 {
 	$("#save").text(_getMsg("options_saveBtn"));
@@ -79,15 +78,11 @@ function setTexts()
 	$('#sortType option[value="timestamp"]').text(_getMsg("options_sortType_timestamp"));
 	$('#sortOrder option[value="asc"]').text(_getMsg("options_sortOrder_asc"));
 	$('#sortOrder option[value="desc"]').text(_getMsg("options_sortOrder_desc"));
-	//options_sortType
-// options_sortType_name
-// options_sortType_timestamp
-// options_sortOrder_asc
-// options_sortOrder_desc
 }
 
 var opt  = new Options();
 
+// читает настройки и заполняет в соответствии с ними поля формы 
 function restoreOptions() 
 {
   opt.read().then((r) => {
@@ -117,13 +112,24 @@ function restoreOptions()
   });
 }
 
+// сохранение настроек
 function saveOptions(e) 
 {
 	e.preventDefault();
-	opt.nestedLabelSep = ($("#nestedLabelSep").val().length == 1) ? $("#nestedLabelSep").val() : "/";
+	let nestedLabelSep = $("#nestedLabelSep").val().trim();
+	if (nestedLabelSep.length !== 1) {
+		$("#nestedLabelSep").val(opt.nestedLabelSep);
+		nestedLabelSep = opt.nestedLabelSep;
+	}
+	opt.nestedLabelSep = nestedLabelSep;
 	opt.enableNotes = $("#enableNotes").prop("checked");
 	opt.enableLabelUnlabeled = $("#enableLabelUnlabeled").prop("checked");
-	opt.labelUnlabeledName = ($("#labelUnlabeledName").val().length == 1) ? $("#labelUnlabeledName").val() : "Unlabeled";
+	let labelUnlabeledName = $("#labelUnlabeledName").val().trim();
+	if (labelUnlabeledName.length == 0) {
+		$("#labelUnlabeledName").val(opt.labelUnlabeledName);
+		labelUnlabeledName = opt.labelUnlabeledName;
+	}
+	opt.labelUnlabeledName = labelUnlabeledName;
 	opt.reverseLeftClick = $("#reverseLeftClick").prop("checked");
 	opt.showFavicons = $("#showFavicons").prop("checked");
 	opt.sortType = $("#sortType").val();
@@ -133,14 +139,35 @@ function saveOptions(e)
 	opt.showTagsInTooltip = $("#showTagsInTooltip").prop("checked");
 	opt.enableFilterByUrl = $("#enableFilterByUrl").prop("checked");
 	opt.enableFilterByNotes = $("#enableFilterByNotes").prop("checked");
-	//TODO проверка ввода
-	opt.filterDelay = $("#filterDelay").val();
+	let filterDelay = $("#filterDelay").val();
+	if (!/^[0-9]+$/.test(filterDelay)) {
+		alert("Filter delay must be a number");
+		$("#filterDelay").val(opt.filterDelay).focus();
+		return false;
+	}
+	opt.filterDelay = filterDelay;
 	opt.enableLabelHiding = $("#enableLabelHiding").prop("checked");
 	opt.showHiddenLabels = $("#showHiddenLabels").prop("checked");
-	//TODO проверка ввода
-	opt.hiddenLabelsTitle = $("#hiddenLabelsTitle").val();
-	opt.readLaterTitle = $("#readLaterTitle").val();
-	opt.timeout = $("#timeout").val();
+	let hiddenLabelsTitle = $("#hiddenLabelsTitle").val().trim();
+	if (hiddenLabelsTitle.length == 0) {
+		$("#hiddenLabelsTitle").val(opt.hiddenLabelsTitle);
+		hiddenLabelsTitle = opt.hiddenLabelsTitle;
+	}
+	opt.hiddenLabelsTitle = hiddenLabelsTitle;
+	let readLaterTitle = $("#readLaterTitle").val().trim();
+	if (readLaterTitle.length == 0) {
+		$("#readLaterTitle").val(opt.readLaterTitle);
+		readLaterTitle = opt.readLaterTitle;
+	}
+	opt.readLaterTitle = readLaterTitle;
+	let timeout = $("#timeout").val();
+	if (!/^[0-9]+$/.test(timeout)) {
+		alert("Filter delay must be a number");
+		$("#timeout").val(opt.timeout).focus();
+		return false;
+	}
+	opt.timeout = timeout;
+
 	console.log("saveOptions:write");
 	opt.write().then()
 	$("#buttons span").css("display", "block");
@@ -148,6 +175,7 @@ function saveOptions(e)
 
 }
 
+// отображение процесса перезагрузки иконок
 browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   switch (request.type) {
   	case "startReloadFavicons":
