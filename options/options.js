@@ -41,6 +41,7 @@ $(document).ready(function()
 function setTexts()
 {
 	$("#save").text(_getMsg("options_saveBtn"));
+	$("#buttons span").hide().text(_getMsg("options_msgSaved"));
 	$("#fsShow legend").text(_getMsg("options_fildsetShowLegend"));
 	$("#fsFavIcons legend").text(_getMsg("options_fildsetFavicons"));
 	$("label[for=showFavicons]").text(_getMsg("options_showFavicons"));
@@ -141,7 +142,10 @@ function saveOptions(e)
 	opt.readLaterTitle = $("#readLaterTitle").val();
 	opt.timeout = $("#timeout").val();
 	console.log("saveOptions:write");
-	opt.write().then();
+	opt.write().then()
+	$("#buttons span").css("display", "block");
+	setTimeout(() => {$("#buttons span").hide()}, 1000);
+
 }
 
 browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {

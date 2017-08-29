@@ -290,6 +290,9 @@
   },
   "options_timeout": {
     "message": "Request Timeout, milliseconds (1 second = 1000 milliseconds)"
+  },
+  "options_msgSaved": {
+    "message": "Settings have been saved"
   },  
 
   "contextMenuAddBookmark": {

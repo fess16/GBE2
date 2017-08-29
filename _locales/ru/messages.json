@@ -305,6 +305,9 @@
   "options_timeout": {
     "message": "Тайм-аут ответа сервера, мс (1с = 1000мс)"
   },
+  "options_msgSaved": {
+    "message": "Настройки сохранены"
+  },
 
   "contextMenuAddBookmark": {
     "message": "Добавить страницу в Google Bookmarks"
