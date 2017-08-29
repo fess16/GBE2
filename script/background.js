@@ -26,6 +26,25 @@ var GBE2 = {
   // настройки дополнения
   'opt' : new Options(),
 
+  showNotify : function (title, msg, errorDetails = "") {
+  	let myId = "GBE2_notification";
+		if (errorDetails !== "") {
+			msg = `${msg}\n${errorDetails}`;
+		}
+		browser.notifications.getAll().then(function (all) {
+		  let ids = Object.keys(all);
+		  if (ids.indexOf(myId) != -1) {
+		    browser.notifications.clear(myId);
+		  }
+		  browser.notifications.create(myId, {
+		    "type": "basic",
+		    "iconUrl": browser.extension.getURL("images/logo.svg"),
+		    "title": title,
+		    "message": msg
+		  });
+	  });
+	},
+
 	/**
 	* функция сравнения закладок и меток по имени
 	* @return {int} результат сравнения
@@ -206,7 +225,7 @@ var GBE2 = {
 	 * @return     {boolean}  True if bookmarked, False otherwise.
 	 */
 	isBookmarked : function (tUrl) {
-		if (this.m_bookmarkList.length)
+		if (this.m_bookmarkList && this.m_bookmarkList.length)
 			return (this.m_bookmarkList.some( item => item.url == tUrl));
 		return false;
 	},
@@ -230,7 +249,7 @@ var GBE2 = {
 	 * @return     {<type>}  найденная закладка или null
 	 */
 	getBookmark : function (keyvalue) {
-		if (this.m_bookmarkList.length){
+		if (this.m_bookmarkList && this.m_bookmarkList.length > 0){
 			let key = Object.keys(keyvalue)[0];
 			let bkmk = this.m_bookmarkList.filter( x => (x[key] === keyvalue[key]));
 			if (bkmk.length) return bkmk[0];
@@ -406,7 +425,7 @@ var GBE2 = {
   	    	}
   	    })
   	    .catch( (error) => {
-  	    	_errorLog("doBuildTree", error);
+  	    	_errorLog("background:doBuildTree", error);
   	    })
   	    ;
   	});
@@ -517,7 +536,7 @@ var GBE2 = {
 			if (!labelsLength && !bookmarksLength) 
 			{
 				let reason = new Error("There are any bookmarks and labels in server response!");
-				_errorLog("doProcessXML", reason);
+				_errorLog("background:doProcessXML", reason);
 				return Promise.resolve({ type: "refreshed", count : 0, data : [] });
 			}
 
@@ -525,7 +544,7 @@ var GBE2 = {
 			if (!bookmarksLength) 
 			{
 			 	let reason = new Error("There are any bookmarks in server response!");
-			 	_errorLog("doProcessXML", reason);
+			 	_errorLog("background:doProcessXML", reason);
 			 	return Promise.resolve({ type: "refreshed", count : 0, data : [] });
 			}
 			let lbs = [];
@@ -582,7 +601,7 @@ var GBE2 = {
 					});
 					if (this.m_bookmarkList[i].title == "" && this.m_bookmarkList[i].url !== "")
 					{
-						_consoleLog ("GBE2:doProcessXML", "Warning. Bookmark", this.m_bookmarkList[i].url, 
+						_consoleLog ("doProcessXML", "Warning. Bookmark", this.m_bookmarkList[i].url, 
 							" - has empty title. Title set to '", this.m_bookmarkList[i].url, "'!");
 						this.m_bookmarkList[i].title = this.m_bookmarkList[i].url;
 					}
@@ -639,7 +658,7 @@ var GBE2 = {
 				catch(e1)
 				{
 					//!!!!!!!!!!! 	а может убрать? заметка не особо критична же? оставить только предупреждение
-					_consoleLog ("GBE2:doProcessXML", "Obtain bookmark notes - error. Last processing bookmark - " + JSON.stringify(this.m_bookmarkList[i]));
+					_consoleLog ("doProcessXML", "Obtain bookmark notes - error. Last processing bookmark - " + JSON.stringify(this.m_bookmarkList[i]));
 					// let reason = new Error("doProcessXML - Obtain bookmark notes - error. Last processing bookmark - " + JSON.stringify(this.m_bookmarkList[i]));
 					// return Promise.reject(reason);
 				}
@@ -685,18 +704,19 @@ var GBE2 = {
 			(response, status, xhr) =>	{
 				var ct = xhr.getResponseHeader("content-type") || "";
 		    if (ct.indexOf('xml') > -1) {
-					// _consoleLog("GBE2:doRequestBookmarks - OK!");
+					// _consoleLog("doRequestBookmarks - OK!");
 					return response;
 				}
 				else
 		    {
-		    	throw new Error("doRequestBookmarks : Server answer is not XML.");
+		    	throw new Error("Server answer is not XML.");
 		    }
 			},
 			function (jqXHR, textStatus)
 			{
-				_consoleLog ("GBE2:doRequestBookmarks - Request failed: ", textStatus);
-				_consoleLog (jqXHR.responseText);
+				_consoleLog ("doRequestBookmarks - Request failed: ", textStatus);
+				_consoleLog ("doRequestBookmarks - responseText: ",jqXHR.responseText);
+				throw new Error("Request failed: " + textStatus);
 			}
 		);
 	},
@@ -719,7 +739,7 @@ var GBE2 = {
 		  // dataType: "xml"
 		}).then(
 			(response, status, xhr) =>	{
-				// _consoleLog("GBE2:doRequestSignature - OK!");
+				// _consoleLog("doRequestSignature - OK!");
 				var ct = xhr.getResponseHeader("content-type") || "";
 		    if (ct.indexOf('xml') > -1) {
 					this.m_signature = $(response).find('smh\\:signature').text();
@@ -727,12 +747,12 @@ var GBE2 = {
 				}
 				else
 		    {
-		    	throw new Error("doRequestSignature : Server answer is not XML.");
+		    	throw new Error("Server answer is not XML.");
 		    }
 			},
 			function (jqXHR, textStatus)
 			{
-				_consoleLog ("GBE2:doRequestSignature - Request failed: ", textStatus);
+				_consoleLog ("doRequestSignature - Request failed: ", textStatus);
 				_consoleLog (jqXHR.responseText);
 			});
 	},
@@ -762,7 +782,7 @@ var GBE2 = {
 		}).then(
 			function (response, status, xhr)
 			{
-				// _consoleLog("GBE2:doRequestBookmarkURL - OK!");
+				// _consoleLog("doRequestBookmarkURL - OK!");
 				var ct = xhr.getResponseHeader("content-type") || "";
 		    if (ct.indexOf('xml') > -1) {
 					let ids = $(response).find("id");
@@ -790,8 +810,8 @@ var GBE2 = {
 			},
 			function (jqXHR, textStatus)
 			{
-				_consoleLog ("GBE2:doRequestBookmarkURL", "Obtain bookmark URL (", bkmk.title, ") - error!");
-				_consoleLog ("GBE2:doRequestBookmarkURL - Request failed: ", textStatus);
+				_consoleLog ("doRequestBookmarkURL", "Obtain bookmark URL (", bkmk.title, ") - error!");
+				_consoleLog ("doRequestBookmarkURL - Request failed: ", textStatus);
 				_consoleLog (jqXHR.responseText);
 			}
 		);
@@ -845,8 +865,8 @@ var GBE2 = {
 			,
 			function (jqXHR, textStatus)
 			{
-				_consoleLog ("GBE2:doRequestBookmarkNote", "Obtain bookmark Note (", bkmk.title, ") - error!");
-				_consoleLog ("GBE2:doRequestBookmarkNote - Request failed: ", textStatus);
+				_consoleLog ("doRequestBookmarkNote", "Obtain bookmark Note (", bkmk.title, ") - error!");
+				_consoleLog ("doRequestBookmarkNote - Request failed: ", textStatus);
 				_consoleLog (jqXHR.responseText);
 			}
 		);
@@ -870,9 +890,9 @@ var GBE2 = {
 					{return this.doRequestSignature();}
 			})
 			.catch((e) => {
-				_errorLog("doChangeBookmark", e);
-				_consoleLog ("GBE2:doChangeBookmark", "Obtain signature - error!");
-				throw new Error("doChangeBookmark : Obtain signature - error!");
+				_errorLog("background:doChangeBookmark", e);
+				_consoleLog ("doChangeBookmark", "Obtain signature - error!");
+				throw new Error("Obtain signature - error!");
 			})
 			.then(() => {
 				// console.log("doChangeBookmark:ajax"+this.m_baseUrl2,);
@@ -902,9 +922,10 @@ var GBE2 = {
 					},
 					function (jqXHR, textStatus)
 					{
-						_consoleLog ("GBE2:doChangeBookmark", "Saving bookmark ", JSON.stringify(bkmk), " - error!");
-						_consoleLog ("GBE2:doChangeBookmark - Request failed: ", textStatus);
+						_consoleLog ("doChangeBookmark", "Saving bookmark ", JSON.stringify(bkmk), " - error!");
+						_consoleLog ("doChangeBookmark - Request failed: ", textStatus);
 						_consoleLog (jqXHR.responseText);
+						throw new Error ("Request failed: ", textStatus);
 					}
 				);
 			});
@@ -924,8 +945,8 @@ var GBE2 = {
 					{return this.doRequestSignature();}
 			})
 			.catch((e) => {
-				_errorLog("doChangeLabel", e);
-				throw new Error("doChangeLabel : Obtain signature - error!");
+				_errorLog("background:doChangeLabel", e);
+				throw new Error("Obtain signature - error!");
 			})
 			.then(() => {
 				return $.ajax({
@@ -940,13 +961,14 @@ var GBE2 = {
 					timeout : this.opt.timeout/2|0,
 				})
 				.then( (response, status, xhr) => {
-						_consoleLog("GBE2:doChangeLabel : Ok");
+						_consoleLog("doChangeLabel : Ok");
 					},
 					function (jqXHR, textStatus)
 					{
-						_consoleLog ("GBE2:doChangeLabel", "Changing label ", JSON.stringify(lbl), " - error!");
-						_consoleLog ("GBE2:doChangeLabel - Request failed: ", textStatus);
+						_consoleLog ("doChangeLabel", "Changing label ", JSON.stringify(lbl), " - error!");
+						_consoleLog ("doChangeLabel - Request failed: ", textStatus);
 						_consoleLog (jqXHR.responseText);
+						throw new Error ("Request failed: ", textStatus);
 					}
 				);
 			});
@@ -962,8 +984,8 @@ var GBE2 = {
 					{return this.doRequestSignature();}
 			})
 			.catch((e) => {
-				_errorLog("doDeleteLabel", e);
-				throw new Error("doDeleteLabel : Obtain signature - error!");
+				_errorLog("background:doDeleteLabel", e);
+				throw new Error("Obtain signature - error!");
 			})
 			.then(() => {
 				// console.log("doDeleteLabel:ajax");
@@ -980,13 +1002,14 @@ var GBE2 = {
 					timeout : this.opt.timeout/2|0,
 				})
 				.then( (response, status, xhr) => {
-						_consoleLog("GBE2:doDeleteLabel : Ok");
+						_consoleLog("doDeleteLabel : Ok");
 					},
 					function (jqXHR, textStatus)
 					{
-						_consoleLog ("GBE2:doDeleteLabel", "Deleting label ", JSON.stringify(lbl), " - error!");
-						_consoleLog ("GBE2:doDeleteLabel - Request failed: ", textStatus);
+						_consoleLog ("doDeleteLabel", "Deleting label ", JSON.stringify(lbl), " - error!");
+						_consoleLog ("doDeleteLabel - Request failed: ", textStatus);
 						_consoleLog (jqXHR.responseText);
+						throw new Error ("Request failed: ", textStatus);
 					}
 				);
 			});
@@ -1004,8 +1027,8 @@ var GBE2 = {
 					{return this.doRequestSignature();}
 			})
 			.catch((e) => {
-				_errorLog("doDeleteBookmark", e);
-				throw new Error("doDeleteBookmark : Obtain signature - error!");
+				_errorLog("background:doDeleteBookmark", e);
+				throw new Error("Obtain signature - error!");
 			})
 			.then(() => {
 				return $.ajax({
@@ -1019,13 +1042,14 @@ var GBE2 = {
 					timeout : this.opt.timeout/2|0,
 				})
 				.then( (response, status, xhr) => {
-						_consoleLog("GBE2:doDeleteBookmark : Ok");
+						_consoleLog("doDeleteBookmark : Ok");
 					},
 					function (jqXHR, textStatus)
 					{
-						_consoleLog ("GBE2:doDeleteBookmark", "Deleting bookmark ", JSON.stringify(bkmk), " - error!");
-						_consoleLog ("GBE2:doDeleteBookmark - Request failed: ", textStatus);
+						_consoleLog ("doDeleteBookmark", "Deleting bookmark ", JSON.stringify(bkmk), " - error!");
+						_consoleLog ("doDeleteBookmark - Request failed: ", textStatus);
 						_consoleLog (jqXHR.responseText);
+						throw new Error ("Request failed: ", textStatus);
 					}
 				);
 			});
@@ -1036,7 +1060,7 @@ var GBE2 = {
 		// нет сигнатуры - запрашиваем
 		if (!this.m_signature)
 		{
-			this.doRequestSignature().catch((error) => {_errorLog("GBE2:reloadBkmks", error);});
+			this.doRequestSignature().catch((error) => {_errorLog("background:reloadBkmks", error);});
 		}
 		return this.doRequestBookmarks().then((result) => {return this.doProcessXML(result);});
 	},
@@ -1187,14 +1211,14 @@ var GBE2 = {
 // после загрузки обновляем список закладок
 $(document).ready(function()
 {
-	_consoleLog("GBE2:background.js started");
+	_consoleLog("background.js started");
 	GBE2.opt.read()
 		.then(function(){
 			//return GBE2.reloadBkmks();
 			// может добавить опцию - загружать закладки при загрузке?
 		})
 		.catch ( (error) => {
-    	_errorLog("GBE2:background:ready", error);
+    	_errorLog("background:ready", error);
 	 	});
 });
 
@@ -1337,8 +1361,10 @@ chrome.runtime.onMessage.addListener(
 	     			browser.runtime.sendMessage(result);
 	     			GBE2.setBrowserActionIcon(request.tab);
 	     		})
-	     		.catch ( (error) => {
-	  	    	_errorLog("GBE2:background:refresh", error);
+	     		.catch ( (e) => {
+	  	    	_errorLog("background:refresh", e);
+	  	    	browser.runtime.sendMessage({ type: "refreshError", text: _getMsg("notify_loadingError")});
+	  	    	GBE2.showNotify(_getMsg("notify_accessErrorTitle"), _getMsg("notify_relogin")+"\n"+e.message, _getMsg("notify_errorDetails"));
 	   	 		}
 	     		);
 		    break;
@@ -1360,10 +1386,11 @@ chrome.runtime.onMessage.addListener(
 	    				GBE2.opt.favIcons[request.url] = request.favIconUrl;
 	    				GBE2.opt.writeFavIcons().then();
 	    			}
-	    			// console.log("GBE2:background:editBookmark");
+	    			// console.log("background:editBookmark");
 	    		})
 	    		.catch((e) => {
-	    			_errorLog("GBE2:background:editBookmark", e);
+	    			_errorLog("background:editBookmark", e);
+	    			GBE2.showNotify(_getMsg("notify_saveBkmkError"), e.message, _getMsg("notify_errorDetails"));
 	    		});
 	    	break;
 	    }
@@ -1372,7 +1399,7 @@ chrome.runtime.onMessage.addListener(
 	    	GBE2.doDeleteBookmark(request.data)
 	    		.then(() => {
 	    			browser.runtime.sendMessage({type: "needRefresh"});
-	    			// console.log("GBE2:background:deleteBookmark");
+	    			// console.log("background:deleteBookmark");
 	    			// удаляем иконку из хранилища, если она была сохранена
 	    			if (GBE2.opt.showFavicons && GBE2.opt.favIcons && GBE2.opt.favIcons[request.data.url]) {
 	    				delete GBE2.opt.favIcons[request.data.url];
@@ -1380,7 +1407,8 @@ chrome.runtime.onMessage.addListener(
 	    			}
 	    		})
 	    		.catch((e) => {
-	    			_errorLog("GBE2:background:deleteBookmark", e);
+	    			_errorLog("background:deleteBookmark", e);
+	    			GBE2.showNotify(_getMsg("notify_saveBkmkError"), e.message, _getMsg("notify_errorDetails"));
 	    		});
 	    	break;
 	    // необходимо изменить метку
@@ -1403,7 +1431,8 @@ chrome.runtime.onMessage.addListener(
 	    			browser.runtime.sendMessage({type: "needRefresh"});
 	    		})
 	    		.catch((e) => {
-	    			_errorLog("GBE2:background:editLabel", e);
+	    			_errorLog("background:editLabel", e);
+	    			GBE2.showNotify(_getMsg("notify_saveLabelError"), e.message, _getMsg("notify_errorDetails"));
 	    		});
 	    	break;
 	    }
@@ -1417,7 +1446,8 @@ chrome.runtime.onMessage.addListener(
 	    				browser.runtime.sendMessage({type: "needRefresh"});
 	    			})
 	    			.catch((e) => {
-	    				_errorLog("GBE2:background:deleteLabel", e);
+	    				_errorLog("background:deleteLabel", e);
+	    				GBE2.showNotify(_getMsg("notify_saveLabelError"), e.message, _getMsg("notify_errorDetails"));
 	    			});
 	    	}
 	    	// удаляем вложенные закладки
@@ -1435,7 +1465,8 @@ chrome.runtime.onMessage.addListener(
 	    				browser.runtime.sendMessage({type: "needRefresh"});
 	    			})
 	    			.catch((e) => {
-	    				_errorLog("GBE2:background:editLabel", e);
+	    				_errorLog("background:deleteLabel", e);
+	    				GBE2.showNotify(_getMsg("notify_saveLabelError"), e.message, _getMsg("notify_errorDetails"));
 	    			});		
 	    	}
 	    	break;
@@ -1480,7 +1511,10 @@ chrome.runtime.onMessage.addListener(
 	    				browser.runtime.sendMessage({type: "stopReloadFavicons"});
 	    				GBE2.opt.writeFavIcons().then();
 	    		})
-	    		.catch();
+	    		.catch((e) => {
+	    				_errorLog("background:reloadFavIcons", e);
+	    				GBE2.showNotify(_getMsg("notify_reloadFavIconsError"), e.message, _getMsg("notify_errorDetails"));
+	    			});	
 				}
       	break;
       }	 
@@ -1499,7 +1533,7 @@ chrome.runtime.onMessage.addListener(
       			browser.runtime.sendMessage({type: "needRefresh"});
       		})
       		.catch((e) => {
-      			_errorLog("GBE2:background:addAllTabs", e);
+      			_errorLog("background:addAllTabs", e);
       		});		
       	break;
       }
@@ -1558,11 +1592,21 @@ chrome.runtime.onMessage.addListener(
     	    	}
     	    })
     	    .catch((e) => {
-	    			_errorLog("GBE2:background:moveBookmark", e);
+	    			_errorLog("background:moveBookmark", e);
+	    			GBE2.showNotify(_getMsg("notify_mvBkmkDnDError"), e.message, _getMsg("notify_errorDetails"));
 	    		});
       	
       	break;
       }
+      case "resetBookmarks" : {
+      	GBE2.m_bookmarkList = [];
+      	GBE2.m_labelsList = null;
+      	GBE2.m_treeSource = [];
+      	GBE2.m_signature = null;
+      	GBE2.m_needRefresh = null;
+      	break;
+      }
+
 
 	    // case "test1" :
 	    // {

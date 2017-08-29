@@ -2,7 +2,7 @@
 var _getMsg = browser.i18n.getMessage;
 
 function _consoleLog (s) {
-	var str = "";
+	var str = "GBE2:";
 	for (var i = 0; i < arguments.length; i++)
 	{
 		str += arguments[i] + " ";
@@ -11,13 +11,13 @@ function _consoleLog (s) {
 }
 
 function _errorLog (f, e) {
-	console.log ("GBE-" + f + " : " + e.message);
-	console.log ("GBE-" + f + " : " + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName + ")");
+	console.log ("GBE2:" + f + " : " + e.message);
+	console.log ("GBE2:" + f + " : " + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName + ")");
 }
 
 function _escape(s) {
     return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-};
+}
 
 function Options () {
 	// включить 10 последний закладок

@@ -212,10 +212,17 @@ a.clrBtn {
 	display: none;
 	/*display: flex;*/
   align-items: center;
-/*  justify-content: center;*/
+  justify-content: center;
   padding-right: 15px;
 	/*max-width: 330px !important;*/
 	max-width: 99%;
+}
+
+.info-box div, .error-box div {
+	display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 

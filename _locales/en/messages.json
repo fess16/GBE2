@@ -37,9 +37,6 @@
   "popup_hmenuReadLater": {
     "message": "Read Later"
   },
-  "popup_infoBox_loading": {
-    "message": "Loading bookmarks!"
-  },
 
   "cntx_folder_menuEdit": {
     "message": "Edit"
@@ -300,6 +297,35 @@
   },
   "contextMenuAddLinkToBookmark": {
     "message": "Add Link to Google Bookmarks"
+  }, 
+
+
+  "notify_accessErrorTitle": {
+    "message": "Google Bookmarks access error"
+  },
+  "notify_errorDetails": {
+    "message": "Error information: Ctrl+Shift+J"
+  },
+  "notify_relogin": {
+    "message": "Please sign in Google Account, if you are signed out "
+  },
+  "notify_loadingBkmrks": {
+    "message": "Loading bookmarks..."
+  },
+  "notify_loadingError": {
+    "message": "Loading bookmarks error..."
+  },
+  "notify_saveBkmkError": {
+    "message": "Save/delete bookmark error"
+  },
+  "notify_saveLabelError": {
+    "message": "Save/delete label error"
+  },
+  "notify_reloadFavIconsError": {
+    "message": "Loading Favicons error"
+  },
+  "notify_mvBkmkDnDError": {
+    "message": "Drag-and-drop bookmark error"
   }
 
 }

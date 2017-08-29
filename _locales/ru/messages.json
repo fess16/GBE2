@@ -38,10 +38,6 @@
   "popup_hmenuReadLater": {
     "message": "Читать позже"
   },
-  "popup_infoBox_loading": {
-    "message": "Загрузка закладок!"
-  },
-
 
   "cntx_folder_menuEdit": {
     "message": "Редактировать"
@@ -315,6 +311,35 @@
   },
   "contextMenuAddLinkToBookmark": {
     "message": "Добавить ссылку в Google Bookmarks"
+  },
+
+
+  "notify_accessErrorTitle": {
+    "message": "Ошибка доступа к Google Bookmarks"
+  },
+  "notify_errorDetails": {
+    "message": "Информация об ошибках: Ctrl+Shift+J"
+  },
+  "notify_relogin": {
+    "message": "Войдите в аккаунт Google, если вы вышли из него."
+  },
+  "notify_loadingBkmrks": {
+    "message": "Получение закладок..."
+  },
+  "notify_loadingError": {
+    "message": "Ошибка при получении закладок..."
+  },
+  "notify_saveBkmkError": {
+    "message": "Ошибка при сохранении/удалении закладки"
+  },
+  "notify_saveLabelError": {
+    "message": "Ошибка при сохранении/удалении метки"
+  },
+  "notify_reloadFavIconsError": {
+    "message": "Ошибка при загрузке иконок для закладок"
+  },
+  "notify_mvBkmkDnDError": {
+    "message": "Ошибка при перемещении закладки"
   }
 
 }

@@ -17,18 +17,13 @@
 
   "permissions": [
     "http://www.google.com/bookmarks/", "https://www.google.com/bookmarks/", "http://*/*", "https://*/*" ,
-    "bookmarks",
-    "tabs",
-    "activeTab","contextMenus","cookies","notifications","storage", "history", "downloads",
-        "<all_urls>" 
+    "tabs", "activeTab","contextMenus","notifications","storage", "history", "downloads",
+    "<all_urls>" 
   ],
 
   "optional_permissions": [
     "http://www.google.com/bookmarks/", "https://www.google.com/bookmarks/", "http://*/*", "https://*/*" ,
-    "bookmarks",
-    "tabs",
-    "activeTab","cookies","notifications", "history"
-
+    "tabs", "activeTab","notifications", "history"
   ],
 
   "browser_action": {

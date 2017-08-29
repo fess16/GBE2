@@ -32,11 +32,11 @@ function setClickHandlers (aBkmk)
 {
 	removeClickHandlers();
 	$(".hmenuLgt a").attr('title', "Logout");
-	if (bg.GBE2.m_bookmarkList.length) {
+	if (bg.GBE2.m_bookmarkList.length > 0 ) {
 		$(".hmenuLgt a")
 			.css({display: 'block'})
 			.click(function(event) {
-				console.log("Logout");
+				logout();
 			});
 	}
 	else {
@@ -101,15 +101,31 @@ function isSpecialUrl (url) {
 	return SearchString.test(url);
 }
 
+function logout () {
+	_consoleLog("popup:logout");
+	showURL("https://www.google.com/accounts/Logout");
+	browser.runtime.sendMessage({	"type": "resetBookmarks" }).then();
+	// bg.GBE2.m_bookmarkList = [];
+	// bg.GBE2.m_labelsList = null;
+	// bg.GBE2.m_treeSource = [];
+	// bg.GBE2.m_signature = null;
+	// bg.GBE2.m_needRefresh = null;
+	$.ui.fancytree.getTree("#bkmk-tree").reload([]);
+	// fTree.reload([]);
+  popup.close();
+}
+
 // открывает ссылку в соответствии с переданными параметрами
 function showURL (url, newTab = true, activate = true)
 {
 	if (url.length) {
 		// пропускаем специальные адреса
 		if (isSpecialUrl(url)) {
-			console.log("You are trying open url: " + url);
-			console.log("But in Firefox Webextension, you can't open or navigate to privileged URLs: chrome:, javascript:, data:, about:");
-			console.log("https://developer.mozilla.org/ru/Add-ons/WebExtensions/Chrome_incompatibilities");
+			let msg = "You are trying open privileged URL: " + url;
+			msg += "\n(chrome:, javascript:, data:, about:)";
+			msg += "\nhttps://developer.mozilla.org/ru/Add-ons/WebExtensions/Chrome_incompatibilities";
+			console.log(msg);
+			bg.GBE2.showNotify("Privileged URL", msg);
 		}
 		else {
 			if (newTab)
@@ -1457,6 +1473,18 @@ function bgListener(message)
 		case "needRefresh":
 			refresh();
 			break;
+		case "refreshError" :
+			$(".info-box").css({display: 'none'});
+			$(".info-box label").text("");
+			$(".error-box label").text(message.text);
+			$(".error-box").css({display: 'block'});
+			setTimeout(() => {
+				$(".error-box").css({display: 'none'});
+				$("#bkmk-tree").fancytree("enable").show();
+			}, 2000);
+
+
+			break;
 		// список закладок обновлен
 		case "refreshed":
 			aBkmk = bg.GBE2.getBookmark({ url : aTab.url});
@@ -1464,7 +1492,7 @@ function bgListener(message)
 			$.ui.fancytree.getTree("#bkmk-tree").reload(
 	          bg.GBE2.m_treeSource
 	        ).done(function(){
-	          _consoleLog("GBE2:popup:reloaded");
+	          _consoleLog("popup:reloaded");
 	        });
 	    $("#bkmk-tree").fancytree("enable").show();
 	    $(".info-box").css({display: 'none'});
@@ -1478,10 +1506,10 @@ function bgListener(message)
 
 // начало обновление списка закладок (посылка сообщения в background.js)
 function refresh() {
-  _consoleLog("GBE2:popup:refresh");
-  $(".info-box").css({display: 'flex'});
+  _consoleLog("popup:refresh");
+  $(".info-box").css({display: 'block'});
   // TODO сообщение при ошибке обновления
-  $(".info-box label").text(_getMsg("popup_infoBox_loading"));
+  $(".info-box label").text(_getMsg("notify_loadingBkmrks"));
   $("#bkmk-tree").fancytree("disable").hide();
   chrome.runtime.sendMessage({
       type: "refresh",
