@@ -818,7 +818,8 @@ function openBkmkDialog (bkmk)
       position: { my: "center", at: "center", of: "#wrapper" },
       // closeOnEscape: false
       // minWidth: "480px",
-      width: "500px",
+      width: "310px",
+      // width: "500px",
       buttons: [
         {
           text: _getMsg("btn_Save"),
@@ -850,10 +851,12 @@ function openBkmkDialog (bkmk)
           }
         },
       ],
-      close: function( event, ui ) {$("#wrapper").width("350px");}
+      close: function( event, ui ) {$("#wrapper").width("300px");}
+      // close: function( event, ui ) {$("#wrapper").width("350px");}
      });
 	}
-	$("#wrapper").width("500px");
+	$("#wrapper").width("300px");
+	// $("#wrapper").width("500px");
 	setBkmkControls(bkmk);
 
 	$('#editBkmkDlg-labels').autocomplete({
@@ -975,7 +978,8 @@ function openEditLblDlg (aLbl) {
 	    modal: true,
 	    draggable: false,
 	    resizable: false,
-	    width: 320,
+	    width: "310px",
+	    // width: 320,
 	    position: { my: "center", at: "center", of: "#wrapper" },
 	    title: 	_getMsg("editLblDlg_title"),
       buttons: [
@@ -1019,7 +1023,8 @@ function openDelLblDlg (aLbl){
 	    modal: true,
 	    draggable: false,
 	    resizable: false,
-	     width: 320,
+	     width: "310px",
+	     // width: 320,
 	    position: { my: "center", at: "center", of: "#wrapper" },
 	    title: 	_getMsg("delLblkDlg_title"),
 	    buttons: [
@@ -1084,7 +1089,8 @@ function openConfirmDlg(message, callback){
 	    modal: true,
 	    draggable: false,
 	    resizable: false,
-	    width: 320,
+	    width: "310px",
+	    // width: 320,
 	    position: { my: "center", at: "center", of: "#wrapper" },
 	    title: 	_getMsg("confirmDlg_title"),
 		});
@@ -1174,7 +1180,8 @@ function openAddAllTabsDlg(label="_OpenTabs") {
 	        }
 	      },
 	    ],
-	    beforeClose: function( event, ui ) {$("#wrapper").width("350px");}
+	    beforeClose: function( event, ui ) {$("#wrapper").width("300px");}
+	    // beforeClose: function( event, ui ) {$("#wrapper").width("350px");}
 		});
 		$("#addAllTabsDlg-headCheckBox").on("change", function(e) {
 			$("div.divTableCell  input").prop("checked", $(this).prop('checked'));
@@ -1183,7 +1190,8 @@ function openAddAllTabsDlg(label="_OpenTabs") {
 		$(".addAllTabsDlg_tblHeadTitle").text(_getMsg("addAllTabsDlg_tblHeadTitle"));
 		$(".addAllTabsDlg_tblHeadUrl").text(_getMsg("addAllTabsDlg_tblHeadUrl"));
 	}
-	$("#wrapper").width("500px");
+	$("#wrapper").width("300px");
+	// $("#wrapper").width("500px");
 
 	$("#addAllTabsDlg-label").val(label);
 	$('#addAllTabsDlg-label').autocomplete({
