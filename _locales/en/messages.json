@@ -293,6 +293,9 @@
   },
   "options_msgSaved": {
     "message": "Settings have been saved"
+  },
+  "options_suggestLabel": {
+    "message": "Automatically propose label"
   },  
 
   "contextMenuAddBookmark": {

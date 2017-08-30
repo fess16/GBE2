@@ -760,6 +760,52 @@ function setBkmkControls (bkmk)
 	// при добавлении закладки
 	if (bkmk.id == null) 	{
 		$("#editBkmkDlg-enableUrlEdit").attr("disabled",true);
+		// автоподстановка меток для закладки на основании ее заголовка, 
+		// только для новых закладок (и не через "добавить закладку здесь")
+		if (bg.GBE2.opt.suggestLabel && bkmk.title !== "" && bkmk.labels.length==0 && bg.GBE2.m_labelsList !== null) {
+			let sep = bg.GBE2.opt.nestedLabelSep;
+			// делим заголовок на слова
+			let words = bkmk.title.split(/[ {}|=\[\]\(\)\-\\\/!?,.;:]/);
+			// для хранения уникальных слов
+			let seen = {};
+			let sLbs = [];
+			// проходим по всем словам
+			words.forEach((item) => {
+			  // пропускаем повторяющиеся и слова из одного символа
+			  if (item.length <= 1 || seen.hasOwnProperty(item)) return false;
+			  seen[item] = true;
+			  // регулярка для поиска
+			  // ищем с начала строки/после nestedLabelSep до конца строки/nestedLabelSep 
+			  let re1 = new RegExp (".*(^|" + _escape(sep) + ")" + _escape(item) + "(?=" + _escape(sep) + "|$|\\s|\\[/\\|[{(!?,.;:]).*?", "i");
+			  // выражение для выбора значения метки
+			  // ограничиваем уровень вложенности метки
+			  // например: ищем chrome, есть закладка Browsers/Chrome/test
+			  // newLabel будет Browsers/Chrome/
+			  // Browsers/браузер Chrome - не подходит
+			  // Browsers/Chrome браузер - подходит
+			  let re2 = new RegExp (".*(^|" + _escape(sep) + ")(" + _escape(item) + ".*?)(?=$|" + _escape(sep) + ")", "i");
+			  //.*(^|\/)работа(?=[\/\s{}|=\[\]\(\)\-\\\/!?,.;:]).*?
+			  //.*(^|\/)js(?=\/|$|\s|\[/|[{(!?,.;:]).*?
+			  //.*(^|\/)(работа.*?)(?=$|\/)
+			  // проверяем метки на совпадение
+			  for(let i=0, len=bg.GBE2.m_labelsList.length; i<len; i++) {
+			  	let lTitle = bg.GBE2.m_labelsList[i].title;
+			    if (re1.test(lTitle)) {
+			      let lbl = lTitle.match(re2);
+			      // добавляем их в массив только по одному разу
+			      if (lbl.length && sLbs.indexOf(lbl[0]) === -1)
+			        sLbs.push(lbl[0]);
+			    }
+			  }
+			});
+			// если что-то нашли подходящее - заполняем поле с метками
+			if (sLbs.length) {
+				sLbs.sort();
+				sLbs.push("");
+				$("#editBkmkDlg-labels").val(sLbs.join(', '));
+			}
+			seen = {};
+		}
 	}
 	// при редактировании закладки
 	else {

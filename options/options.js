@@ -69,6 +69,7 @@ function setTexts()
 	$("label[for=showHiddenLabels]").text(_getMsg("options_showHiddenLabels"));
 	$("label[for=hiddenLabelsTitle]").text(_getMsg("options_hiddenLabelsTitle"));
 	$("label[for=readLaterTitle]").text(_getMsg("options_readLaterTitle"));
+	$("label[for=suggestLabel]").text(_getMsg("options_suggestLabel"));
 
 	$("#fsFilter legend").text(_getMsg("options_fsFilter_legend"));
 	$("#fsLabelHiding legend").text(_getMsg("options_fsLabelHiding_legend"));
@@ -105,6 +106,7 @@ function restoreOptions()
   	$("#hiddenLabelsTitle").val(r.hiddenLabelsTitle);
   	$("#readLaterTitle").val(r.readLaterTitle);
   	$("#timeout").val(r.timeout);
+  	$("#suggestLabel").prop("checked", r.suggestLabel);
 
   	$("#clrFavIcons").attr('disabled', !r.showFavicons);
   	$("#reloadFavIcons").attr('disabled', !r.showFavicons);
@@ -167,6 +169,7 @@ function saveOptions(e)
 		return false;
 	}
 	opt.timeout = timeout;
+	opt.suggestLabel = $("#suggestLabel").prop("checked");
 
 	console.log("saveOptions:write");
 	opt.write().then()

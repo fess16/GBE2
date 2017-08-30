@@ -308,6 +308,9 @@
   "options_msgSaved": {
     "message": "Настройки сохранены"
   },
+  "options_suggestLabel": {
+    "message": "Автоматически предлагать метку"
+  },
 
   "contextMenuAddBookmark": {
     "message": "Добавить страницу в Google Bookmarks"

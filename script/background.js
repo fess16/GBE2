@@ -1057,11 +1057,14 @@ var GBE2 = {
 
 	// обновление закладок
 	reloadBkmks :  function () {
+		this.m_bookmarkList = [];
+		this.m_labelsList = null;
+		this.m_treeSource = [];
 		// нет сигнатуры - запрашиваем
-		if (!this.m_signature)
-		{
+		// if (!this.m_signature)
+		// {
 			this.doRequestSignature().catch((error) => {_errorLog("background:reloadBkmks", error);});
-		}
+		// }
 		return this.doRequestBookmarks().then((result) => {return this.doProcessXML(result);});
 	},
 
