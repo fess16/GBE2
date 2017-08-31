@@ -246,10 +246,10 @@
     "message": "Clear favicons"
   },
   "options_lbl_reloadFavIcons": {
-    "message": "Force reload all favicons (via http://www.google.com/s2/favicons)"
+    "message": "Force all favicons (via http://www.google.com/s2/favicons)"
   },
   "options_btn_reloadFavIcons": {
-    "message": "Reload favicons"
+    "message": "Set favicons"
   },
 
   "options_enable10recentBookmark": {
@@ -299,7 +299,10 @@
   },
   "options_loadOnStart": {
     "message": "Load bookmarks on start"
-  },  
+  },
+  "options_fsBrowseActionIcons_legend": {
+    "message": "Use"
+  },
 
   "contextMenuAddBookmark": {
     "message": "Add Page to Google Bookmarks"

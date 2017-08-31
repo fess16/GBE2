@@ -32,8 +32,6 @@ $(document).ready(function()
 		);
 		return false;
 	});
-
-
 });
 
 // задает подписи элементов управления формы настроек
@@ -74,6 +72,7 @@ function setTexts()
 
 	$("#fsFilter legend").text(_getMsg("options_fsFilter_legend"));
 	$("#fsLabelHiding legend").text(_getMsg("options_fsLabelHiding_legend"));
+	$("#fsBrowseActionIcons legend").text(_getMsg("options_fsBrowseActionIcons_legend"));
 
 	$("label[for=sortType]").text(_getMsg("options_sortType"));
 	$('#sortType option[value="name"]').text(_getMsg("options_sortType_name"));
@@ -112,6 +111,11 @@ function restoreOptions()
 
   	$("#clrFavIcons").attr('disabled', !r.showFavicons);
   	$("#reloadFavIcons").attr('disabled', !r.showFavicons);
+
+  	if (r.ThemeIcon == "light")
+  		$("#iconLight").prop("checked", true);
+  	else
+  		$("#iconDark").prop("checked", true);
 
   });
 }
@@ -173,6 +177,8 @@ function saveOptions(e)
 	opt.timeout = timeout;
 	opt.suggestLabel = $("#suggestLabel").prop("checked");
 	opt.loadOnStart = $("#loadOnStart").prop("checked");
+	
+	opt.ThemeIcon = $("#iconLight").prop("checked") ? "light" : "dark";
 
 	console.log("saveOptions:write");
 	opt.write().then()
@@ -182,15 +188,15 @@ function saveOptions(e)
 }
 
 // отображение процесса перезагрузки иконок
-browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-  switch (request.type) {
-  	case "startReloadFavicons":
-      $("#reloadFavIcons").text("0/" + request.bkmkCount);
-      break;
-    case "tickReloadFavicons":
-      $("#reloadFavIcons").text(request.counter + "/" + request.bkmkCount);
-      break;
-    case "stopReloadFavicons":
-      $("#reloadFavIcons").text(_getMsg("options_btn_reloadFavIcons"));
-  }
-})
+// browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+//   switch (request.type) {
+//   	case "startReloadFavicons":
+//       $("#reloadFavIcons").text("0/" + request.bkmkCount);
+//       break;
+//     case "tickReloadFavicons":
+//       $("#reloadFavIcons").text(request.counter + "/" + request.bkmkCount);
+//       break;
+//     case "stopReloadFavicons":
+//       $("#reloadFavIcons").text(_getMsg("options_btn_reloadFavIcons"));
+//   }
+// })

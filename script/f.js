@@ -19,6 +19,11 @@ function _escape(s) {
     return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 }
 
+function _isSpecialUrl (url) {
+	let SearchString = new RegExp("^chrome:|^javascript:|^data:|^about:|^file:.*" );
+	return SearchString.test(url);
+}
+
 function Options () {
 	// включить 10 последний закладок
 	this.enable10recentBookmark = true;
@@ -66,6 +71,8 @@ function Options () {
   this.suggestLabel = false;
   // флаг загрузки закладок при старте
   this.loadOnStart = true;
+  // светлая или темная тема для иконок на панели
+  this.ThemeIcon = "light";
   this.favIcons = {};
 }
 
@@ -100,6 +107,7 @@ Options.prototype.read = function() {
 			this.timeout = (r.hasOwnProperty('timeout')) ? r.timeout : 10000;
 			this.suggestLabel = (r.hasOwnProperty('suggestLabel')) ? r.suggestLabel : false;
 			this.loadOnStart = (r.hasOwnProperty('loadOnStart')) ? r.loadOnStart : true;
+			this.ThemeIcon = (r.hasOwnProperty('ThemeIcon')) ? r.ThemeIcon : "light";
 			
 			this.favIcons = (res.hasOwnProperty('favIcons')) ? res.favIcons : {};
 		}

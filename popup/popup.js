@@ -96,10 +96,10 @@ function removeClickHandlers () {
 }
 
 
-function isSpecialUrl (url) {
-	let SearchString = new RegExp("^chrome:|^javascript:|^data:|^about:|^file:.*" );
-	return SearchString.test(url);
-}
+// function isSpecialUrl (url) {
+// 	let SearchString = new RegExp("^chrome:|^javascript:|^data:|^about:|^file:.*" );
+// 	return SearchString.test(url);
+// }
 
 function logout () {
 	_consoleLog("popup:logout");
@@ -120,7 +120,7 @@ function showURL (url, newTab = true, activate = true)
 {
 	if (url.length) {
 		// пропускаем специальные адреса
-		if (isSpecialUrl(url)) {
+		if (_isSpecialUrl(url)) {
 			let msg = "You are trying open privileged URL: " + url;
 			msg += "\n(chrome:, javascript:, data:, about:)";
 			msg += "\nhttps://developer.mozilla.org/ru/Add-ons/WebExtensions/Chrome_incompatibilities";

@@ -244,10 +244,10 @@
     "message": "Очистить иконки"
   },
   "options_lbl_reloadFavIcons": {
-    "message": "Принудительно получить иконки для закладок (через http://www.google.com/s2/favicons)"
+    "message": "Принудительно задать иконки для закладок (через http://www.google.com/s2/favicons)"
   },
   "options_btn_reloadFavIcons": {
-    "message": "Загрузить иконки"
+    "message": "Установить иконки"
   },
 
 
@@ -313,6 +313,9 @@
   },
   "options_loadOnStart": {
     "message": "Загружать закладки при старте"
+  },
+  "options_fsBrowseActionIcons_legend": {
+    "message": "Использовать"
   },
 
   "contextMenuAddBookmark": {

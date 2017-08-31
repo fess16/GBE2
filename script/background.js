@@ -1071,16 +1071,30 @@ var GBE2 = {
 	// меняет иконку дополнения на панели в зависимости от адреса текущей вкладки 
 	setBrowserActionIcon : function (tTab) {
 		if (this.isBookmarked(tTab.url)) {
-			browser.browserAction.setIcon({
-				path: { 18: "./images/Star_full.png", 32: "./images/Star_full32.png" }
-			});
+			if (this.opt.ThemeIcon == "light") {
+				browser.browserAction.setIcon({
+					path: { 18: "./images/Star_full.png", 32: "./images/Star_full32.png" }
+				});
+			} else {
+				// TODO: иконку 32 на всякий случай сделать для темной темы
+				browser.browserAction.setIcon({
+					path: { 18: "./images/Star_full1.png"/*, 32: "./images/Star_full32.png" */}
+				});
+			}
+
 			if (tTab.favIconUrl) this.setFavicon(tTab);
 		}
 		else
 		{
-			browser.browserAction.setIcon({ 
-				path: { 18: "./images/Star_empty.png", 32: "./images/Star_empty32.png" }
-			});
+			if (this.opt.ThemeIcon == "light") {
+				browser.browserAction.setIcon({
+					path: { 18: "./images/Star_empty.png", 32: "./images/Star_empty32.png" }
+				});
+			} else {
+				browser.browserAction.setIcon({
+					path: { 18: "./images/Star_empty1.png"/*, 32: "./images/Star_full32.png" */}
+				});
+			}
 		}
 	}, 
 
@@ -1476,49 +1490,62 @@ chrome.runtime.onMessage.addListener(
 	    // необходимо обновить иконки для всех закладок 
 	    case "reloadFavIcons" : {
 	    	if (GBE2.m_bookmarkList.length) {
-	    		let counter = 0;
-	    		let bkmkCount = GBE2.m_bookmarkList.length;
-	    		browser.runtime.sendMessage({type: "startReloadFavicons", bkmkCount: bkmkCount});
-	    		let chain = Promise.resolve();
-	    		GBE2.opt.favIcons = {};
-	    		GBE2.opt.showFavicons = true;
+		    	GBE2.opt.favIcons = {};
+		    	GBE2.opt.showFavicons = true;
+		    	GBE2.m_bookmarkList.forEach(function(bkmk) {
+		    		if (bkmk.url !== "" && !_isSpecialUrl (bkmk.url)) {
+		    			let favicon = "http://www.google.com/s2/favicons?domain_url=" + encodeURIComponent(bkmk.url);
+		    			GBE2.opt.favIcons[bkmk.url] = favicon; 
+		    			GBE2.setTreeNodeField(GBE2.m_treeSource, {url: bkmk.url}, {icon: favicon});
+		    		}
+		    	});
+		    	GBE2.opt.writeFavIcons().then();
+	    	}
+	    	break;
+	   //  	if (GBE2.m_bookmarkList.length) {
+	   //  		let counter = 0;
+	   //  		let bkmkCount = GBE2.m_bookmarkList.length;
+	   //  		browser.runtime.sendMessage({type: "startReloadFavicons", bkmkCount: bkmkCount});
+	   //  		let chain = Promise.resolve();
+	   //  		GBE2.opt.favIcons = {};
+	   //  		GBE2.opt.showFavicons = true;
 
-	    		let doRequestFavIcon = (url, favicon, msg) => {
-    				return	$.ajax({
-    					url: "http://www.google.com/s2/favicons",
-    					method: "GET",
-							data: { domain_url : url }
-    				})
-    				.then( (response, status, xhr) => { 
-    					GBE2.opt.favIcons[url] = favicon; 
-    					GBE2.setTreeNodeField(GBE2.m_treeSource, {url: url}, {icon: favicon});
-	    				browser.runtime.sendMessage(msg);
-    					return Promise.resolve();
-    				})
-    				.catch(() => {return Promise.resolve()});
-	    		}
+	   //  		let doRequestFavIcon = (url, favicon, msg) => {
+    // 				return	$.ajax({
+    // 					url: "http://www.google.com/s2/favicons",
+    // 					method: "GET",
+				// 			data: { domain_url : url }
+    // 				})
+    // 				.then( (response, status, xhr) => { 
+    // 					GBE2.opt.favIcons[url] = favicon; 
+    // 					GBE2.setTreeNodeField(GBE2.m_treeSource, {url: url}, {icon: favicon});
+	   //  				browser.runtime.sendMessage(msg);
+    // 					return Promise.resolve();
+    // 				})
+    // 				.catch(() => {return Promise.resolve()});
+	   //  		}
 
-	    		GBE2.m_bookmarkList.forEach(function(bkmk) {
-	    			counter++;
-	    			if (bkmk.url) {
-	    				let favicon = "http://www.google.com/s2/favicons?domain_url=" + encodeURIComponent(bkmk.url);
-	    				chain = chain.then(() => {
-	    					let msg = {type: "tickReloadFavicons", counter: counter, bkmkCount: bkmkCount};
-	    					// browser.runtime.sendMessage({type: "tickReloadFavicons", counter: counter, bkmkCount: bkmkCount});
-			    			return doRequestFavIcon(bkmk.url, favicon, msg);
-		    			})
-						}
-					});
-	    		chain.then(() => {
-	    				browser.runtime.sendMessage({type: "stopReloadFavicons"});
-	    				GBE2.opt.writeFavIcons().then();
-	    		})
-	    		.catch((e) => {
-	    				_errorLog("background:reloadFavIcons", e);
-	    				GBE2.showNotify(_getMsg("notify_reloadFavIconsError"), e.message, _getMsg("notify_errorDetails"));
-	    			});	
-				}
-      	break;
+	   //  		GBE2.m_bookmarkList.forEach(function(bkmk) {
+	   //  			counter++;
+	   //  			if (bkmk.url) {
+	   //  				let favicon = "http://www.google.com/s2/favicons?domain_url=" + encodeURIComponent(bkmk.url);
+	   //  				chain = chain.then(() => {
+	   //  					let msg = {type: "tickReloadFavicons", counter: counter, bkmkCount: bkmkCount};
+	   //  					// browser.runtime.sendMessage({type: "tickReloadFavicons", counter: counter, bkmkCount: bkmkCount});
+			 //    			return doRequestFavIcon(bkmk.url, favicon, msg);
+		  //   			})
+				// 		}
+				// 	});
+	   //  		chain.then(() => {
+	   //  				browser.runtime.sendMessage({type: "stopReloadFavicons"});
+	   //  				GBE2.opt.writeFavIcons().then();
+	   //  		})
+	   //  		.catch((e) => {
+	   //  				_errorLog("background:reloadFavIcons", e);
+	   //  				GBE2.showNotify(_getMsg("notify_reloadFavIconsError"), e.message, _getMsg("notify_errorDetails"));
+	   //  			});	
+				// }
+    //   	break;
       }	 
       // необходимо добавить в закладки выбранные вкладки
       case "addAllTabs" : {
