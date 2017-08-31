@@ -70,6 +70,7 @@ function setTexts()
 	$("label[for=hiddenLabelsTitle]").text(_getMsg("options_hiddenLabelsTitle"));
 	$("label[for=readLaterTitle]").text(_getMsg("options_readLaterTitle"));
 	$("label[for=suggestLabel]").text(_getMsg("options_suggestLabel"));
+	$("label[for=loadOnStart]").text(_getMsg("options_loadOnStart"));
 
 	$("#fsFilter legend").text(_getMsg("options_fsFilter_legend"));
 	$("#fsLabelHiding legend").text(_getMsg("options_fsLabelHiding_legend"));
@@ -107,6 +108,7 @@ function restoreOptions()
   	$("#readLaterTitle").val(r.readLaterTitle);
   	$("#timeout").val(r.timeout);
   	$("#suggestLabel").prop("checked", r.suggestLabel);
+  	$("#loadOnStart").prop("checked", r.loadOnStart);
 
   	$("#clrFavIcons").attr('disabled', !r.showFavicons);
   	$("#reloadFavIcons").attr('disabled', !r.showFavicons);
@@ -170,6 +172,7 @@ function saveOptions(e)
 	}
 	opt.timeout = timeout;
 	opt.suggestLabel = $("#suggestLabel").prop("checked");
+	opt.loadOnStart = $("#loadOnStart").prop("checked");
 
 	console.log("saveOptions:write");
 	opt.write().then()

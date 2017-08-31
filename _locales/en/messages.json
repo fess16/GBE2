@@ -296,6 +296,9 @@
   },
   "options_suggestLabel": {
     "message": "Automatically propose label"
+  },
+  "options_loadOnStart": {
+    "message": "Load bookmarks on start"
   },  
 
   "contextMenuAddBookmark": {

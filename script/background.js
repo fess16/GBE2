@@ -1217,8 +1217,7 @@ $(document).ready(function()
 	_consoleLog("background.js started");
 	GBE2.opt.read()
 		.then(function(){
-			//return GBE2.reloadBkmks();
-			// может добавить опцию - загружать закладки при загрузке?
+			if (GBE2.opt.loadOnStart) return GBE2.reloadBkmks();
 		})
 		.catch ( (error) => {
     	_errorLog("background:ready", error);

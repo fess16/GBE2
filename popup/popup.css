@@ -1,11 +1,13 @@
-body 
+html, body 
 { 
 	/*font-family: sans-serif; */
 	/*min-width:  350px;*/
 	font-family: Tahoma;
 	font-size: 11px;
 	font-weight: 400;
-	width:  100%;
+	/*width:  100%;*/
+	width:  340px;
+	max-width: 100%;
 	height:  100%;
 	overflow: hidden;
 	/*min-height: 550px;*/
@@ -160,14 +162,16 @@ body
 }
 
 #wrapper{
-	width: 300px;
+	width: calc(100% - 5px);
+	/*width: 300px;*/
 	/*height: 450px;*/
 }
 
 div.filterHBox{
     padding:0.1em;
     margin:0.1em;
-    width: 310px;
+    width: 100%;
+    /*width: 310px;*/
     display: flex;
 }
 
@@ -180,7 +184,8 @@ div.filterHBox label{
 
 div.filterHBox span.first {
     display: flex;
-    width:90%;
+    width:100%;
+    /*width:90%;*/
     overflow: hidden;
     padding-right: 0px;
     padding-top: 1px;
@@ -199,7 +204,7 @@ div.filterHBox span:last-child{
     display: flex;
     margin: 0 5px;
 		padding-right: 2px;
-		width: 10%;
+		/*width: 10%;*/
 }
 
 a.clrBtn {
@@ -261,13 +266,14 @@ ul.fancytree-container {
   overflow-y: auto!important;
   position: relative!important;
   font-family: inherit!important;
-	font-size: inherit!important;
+	font-size: 1em!important;
+	/*font-size: inherit!important;*/
 	font-weight: inherit!important;
 /*background-color: #E8FDFB!important;*/
 }
 
 .dialog {
-	display: none
+	display: none;
 }
 
 .dialog input[type="text"], .dialog textarea,  .dialog input[type="url"]
@@ -284,11 +290,14 @@ ul.fancytree-container {
 
 .ui-dialog {
 /*	font-size: 10pt;*/
-	font-size: inherit!important;
+	font-size: 1em!important;
+	/*font-size: inherit!important;*/
+	width: calc(100% - 6px)!important;
 }
 
 .ui-menu {
-	font-size: 12px;
+	font-size: 1em!important;
+	/*font-size: inherit!important;*/
 /*	font-size: 0.75em;*/
 	border-radius: 6px;
 	width: 270px;
@@ -408,7 +417,7 @@ div.tabsList {
 }
 
 .divTable.tabsList .divTableBody .divTableCell {
-/*  font-size: 0.8em;*/
+  /*font-size: 0.8em;*/
 }
 .divTable.tabsList .divTableHeading {
   background: #D7EBF9;
@@ -418,7 +427,7 @@ div.tabsList {
   border-bottom: 3px solid #aed0ea;
 }
 .divTable.tabsList .divTableHeading .divTableHead {
-/*  font-size: 0.8em;*/
+  font-size: 1.1em;
   font-weight: bold;
   color: #222;
   text-align: center;

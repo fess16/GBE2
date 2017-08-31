@@ -64,6 +64,8 @@ function Options () {
   this.readLaterTitle = "Read Later";
   // флаг автоподстановки меток для новых закладок
   this.suggestLabel = false;
+  // флаг загрузки закладок при старте
+  this.loadOnStart = true;
   this.favIcons = {};
 }
 
@@ -97,6 +99,7 @@ Options.prototype.read = function() {
 			this.readLaterTitle = (r.hasOwnProperty('readLaterTitle')) ? r.readLaterTitle : "Read Later";
 			this.timeout = (r.hasOwnProperty('timeout')) ? r.timeout : 10000;
 			this.suggestLabel = (r.hasOwnProperty('suggestLabel')) ? r.suggestLabel : false;
+			this.loadOnStart = (r.hasOwnProperty('loadOnStart')) ? r.loadOnStart : true;
 			
 			this.favIcons = (res.hasOwnProperty('favIcons')) ? res.favIcons : {};
 		}
