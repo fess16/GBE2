@@ -258,22 +258,34 @@ $(document).ready(function(){
       	// запрет перемещения для элементов с установленным ignoreMe
       	// 10 последних закладок и т.д.
       	if (node.data.ignoreMe) return false;
+      	if (bg.GBE2.opt.enableLabelUnlabeled && node.data.path === bg.GBE2.opt.labelUnlabeledName) return false;
       	// перемещаемый элемент
       	dragInfo.item = data.node;
       	let parent = data.node.getParent();
       	// источник перемещения (текущий родитель или null для верхнего уровня)
       	dragInfo.source = (parent.key == "root_1") ? null : parent;
+      	if (bg.GBE2.opt.enableLabelUnlabeled && parent.data.path === bg.GBE2.opt.labelUnlabeledName)
+        	dragInfo.source = null;
         /** This function MUST be defined to enable dragging for the tree.
          *  Return false to cancel dragging of node.
          */
         return true;
       },
       dragEnter: function(node, data) {
-      	// запрет дропа на метки с ignoreMe и закладки
-        if (node.data.ignoreMe || !node.isFolder()) return false;
-        // 
-        let parent = data.node.getParent();
-        if (parent.key !== "root_1" || (parent.key == data.otherNode.getParent().key))
+      	// родитель перемещаемого элемента
+        let otherParent = data.otherNode.getParent();
+        // родитель target элемента
+        let parent = node.getParent();
+      	// запрет дропа на метки с ignoreMe, закладки и в метку-родитель
+        if (node.data.ignoreMe || !node.isFolder() || (node.data.path === otherParent.data.path)) return false;
+        // запрет дропа меток на labelUnlabeledName
+        if (bg.GBE2.opt.enableLabelUnlabeled && node.data.path === bg.GBE2.opt.labelUnlabeledName && data.otherNode.isFolder())
+        	return false;
+        // когда target - не метка верхнего уровня
+        // или верхнего, но и source - верхнего 
+        // или включено enableLabelUnlabeled и перемещаем закладку,
+        // то бросать можно только на метку (а не перед/после нее)
+        if (parent.key !== "root_1" || (parent.key == otherParent.key) || (bg.GBE2.opt.enableLabelUnlabeled && !data.otherNode.isFolder()))
         	return ["over"];
         /** data.otherNode may be null for non-fancytree droppables.
          *  Return false to disallow dropping on node. In this case
@@ -302,6 +314,8 @@ $(document).ready(function(){
         dragInfo.target = node;
         if ((data.hitMode == "before" || data.hitMode == "after") && node.getParent().key == "root_1")
           dragInfo.target = null;
+        if (bg.GBE2.opt.enableLabelUnlabeled && node.data.path === bg.GBE2.opt.labelUnlabeledName)
+        	dragInfo.target = null;
         // console.log(dragInfo.item.title + "|" 
         // 	+ (dragInfo.source == null ? dragInfo.source : dragInfo.source.data.path) + "|" 
         // 	+ (dragInfo.target == null ? dragInfo.target : dragInfo.target.data.path));
@@ -371,9 +385,9 @@ $(document).ready(function(){
       		}).then((result) => {
       			// элементы (закладки и метки), вложенные в новую метку (или верхний уровень)
       			let children = null;
-      			if (bkmk.labels.length == 0) {
-      				let tree = $("#bkmk-tree").fancytree("getTree");
-      				children = tree.rootNode.getChildren();
+      			if (bkmk.labels.length == 0 && !bg.GBE2.opt.enableLabelUnlabeled) {
+      				// let tree = $("#bkmk-tree").fancytree("getTree");
+      				children = data.tree.rootNode.getChildren();
       			}
       			else {
       				children = node.getChildren();
@@ -783,7 +797,8 @@ function setBkmkControls (bkmk)
 			  // newLabel будет Browsers/Chrome/
 			  // Browsers/браузер Chrome - не подходит
 			  // Browsers/Chrome браузер - подходит
-			  let re2 = new RegExp (".*(^|" + _escape(sep) + ")(" + _escape(item) + ".*?)(?=$|" + _escape(sep) + ")", "i");
+			  // let re2 = new RegExp (".*(^|" + _escape(sep) + ")(" + _escape(item) + ".*?)(?=$|" + _escape(sep) + ")", "i");
+			  let re2 = new RegExp ("(^.*" + _escape(sep) + ")(" + _escape(item) + ".*?)(?=$|" + _escape(sep) + ")", "i");
 			  //.*(^|\/)работа(?=[\/\s{}|=\[\]\(\)\-\\\/!?,.;:]).*?
 			  //.*(^|\/)js(?=\/|$|\s|\[/|[{(!?,.;:]).*?
 			  //.*(^|\/)(работа.*?)(?=$|\/)
