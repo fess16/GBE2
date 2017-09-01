@@ -67,7 +67,8 @@ input:checked + .slider:before {
 }
 
 #tabs .ui-tabs-panel {
-    height: 400px;
+    height: auto;
+    /*height: 400px;*/
     overflow: auto;
 }
 
@@ -192,6 +193,15 @@ input[type=radio]:checked ~ .check::before{
   background: #2196F3;
 }
 
+#fontExample {
+  border: 1px solid #2196F3;
+  border-radius: 6px;
+  width: 60%;
+  line-height:1em;
+  padding: 5px;
+  margin-left: 10px;
+  color: #024377;
+}
 /* input[type=radio]:checked ~ label{
   color: #2196F3;
 } */

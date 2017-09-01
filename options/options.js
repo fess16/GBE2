@@ -32,6 +32,13 @@ $(document).ready(function()
 		);
 		return false;
 	});
+	$("#fontSize, #fontFamily").on("change", function () {
+		let fontFamily = $("#fontFamily").val().trim();
+		let fontSize = Math.min(Math.max(parseInt($("#fontSize").val()), 9), 17);
+		$("#fontSize").val(fontSize);
+		$("#fontExample").css({'font-size' : fontSize + "px", 'font-family' : fontFamily});
+	});
+
 });
 
 // задает подписи элементов управления формы настроек
@@ -46,6 +53,7 @@ function setTexts()
 	$("label[for=reloadFavIcons]").text(_getMsg("options_lbl_reloadFavIcons"));
 	$("#clrFavIcons").text(_getMsg("options_btn_clrFavIcons"));
 	$("#reloadFavIcons").text(_getMsg("options_btn_reloadFavIcons"));
+	$("#fontExample").text(_getMsg("options_fontExample"));
 
 	$("a[href='#mainPanel']").text(_getMsg("options_mainPanel"));
 	$("a[href='#advPanel']").text(_getMsg("options_advPanel"));
@@ -62,6 +70,7 @@ function setTexts()
 	$("label[for=enableFilterByNotes]").text(_getMsg("options_enableFilterByNotes"));
 	$("label[for=filterDelay]").text(_getMsg("options_filterDelay"));
 	$("label[for=timeout]").text(_getMsg("options_timeout"));
+	$("label[for=enablePageAction]").text(_getMsg("options_enablePageAction"));
 	
 	$("label[for=enableLabelHiding]").text(_getMsg("options_enableLabelHiding"));
 	$("label[for=showHiddenLabels]").text(_getMsg("options_showHiddenLabels"));
@@ -69,10 +78,13 @@ function setTexts()
 	$("label[for=readLaterTitle]").text(_getMsg("options_readLaterTitle"));
 	$("label[for=suggestLabel]").text(_getMsg("options_suggestLabel"));
 	$("label[for=loadOnStart]").text(_getMsg("options_loadOnStart"));
+	$("label[for=fontSize]").text(_getMsg("options_fontSize"));
+	$("label[for=fontFamily]").text(_getMsg("options_fontFamily"));
 
 	$("#fsFilter legend").text(_getMsg("options_fsFilter_legend"));
 	$("#fsLabelHiding legend").text(_getMsg("options_fsLabelHiding_legend"));
 	$("#fsBrowseActionIcons legend").text(_getMsg("options_fsBrowseActionIcons_legend"));
+	$("#fsFontSettings legend").text(_getMsg("options_fsFontSettings_legend"));
 
 	$("label[for=sortType]").text(_getMsg("options_sortType"));
 	$('#sortType option[value="name"]').text(_getMsg("options_sortType_name"));
@@ -108,6 +120,9 @@ function restoreOptions()
   	$("#timeout").val(r.timeout);
   	$("#suggestLabel").prop("checked", r.suggestLabel);
   	$("#loadOnStart").prop("checked", r.loadOnStart);
+  	$("#fontSize").val(r.fontSize);
+  	$("#fontFamily").val(r.fontFamily);
+  	$("#enablePageAction").prop("checked", r.enablePageAction);
 
   	$("#clrFavIcons").attr('disabled', !r.showFavicons);
   	$("#reloadFavIcons").attr('disabled', !r.showFavicons);
@@ -156,27 +171,48 @@ function saveOptions(e)
 	opt.filterDelay = filterDelay;
 	opt.enableLabelHiding = $("#enableLabelHiding").prop("checked");
 	opt.showHiddenLabels = $("#showHiddenLabels").prop("checked");
+
 	let hiddenLabelsTitle = $("#hiddenLabelsTitle").val().trim();
 	if (hiddenLabelsTitle.length == 0) {
 		$("#hiddenLabelsTitle").val(opt.hiddenLabelsTitle);
 		hiddenLabelsTitle = opt.hiddenLabelsTitle;
 	}
 	opt.hiddenLabelsTitle = hiddenLabelsTitle;
+
 	let readLaterTitle = $("#readLaterTitle").val().trim();
 	if (readLaterTitle.length == 0) {
 		$("#readLaterTitle").val(opt.readLaterTitle);
 		readLaterTitle = opt.readLaterTitle;
 	}
 	opt.readLaterTitle = readLaterTitle;
+
 	let timeout = $("#timeout").val();
 	if (!/^[0-9]+$/.test(timeout)) {
-		alert("Filter delay must be a number");
+		alert("Timeout must be a number");
 		$("#timeout").val(opt.timeout).focus();
 		return false;
 	}
 	opt.timeout = timeout;
+
+	let fontFamily = $("#fontFamily").val().trim();
+	if (fontFamily.length == 0) {
+		$("#fontFamily").val(opt.fontFamily);
+		fontFamily = opt.fontFamily;
+	}
+	opt.fontFamily = fontFamily;
+
+	let fontSize = Math.min(Math.max(parseInt($("#fontSize").val()), 9), 17);
+	if (!/^[0-9]+$/.test(fontSize)) {
+		alert("Filter delay must be a number");
+		//var number = Math.min(Math.max(parseInt(number), 1), 20);
+		$("#fontSize").val(opt.fontSize).focus();
+		return false;
+	}
+	opt.fontSize = fontSize;
+	
 	opt.suggestLabel = $("#suggestLabel").prop("checked");
 	opt.loadOnStart = $("#loadOnStart").prop("checked");
+	opt.enablePageAction = $("#enablePageAction").prop("checked");
 	
 	opt.ThemeIcon = $("#iconLight").prop("checked") ? "light" : "dark";
 

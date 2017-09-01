@@ -303,6 +303,21 @@
   "options_fsBrowseActionIcons_legend": {
     "message": "Use"
   },
+  "options_fsFontSettings_legend": {
+    "message": "Font"
+  },
+  "options_fontSize": {
+    "message": "Family"
+  },
+  "options_fontFamily": {
+    "message": "Size (9 - 17 px)"
+  },
+  "options_fontExample": {
+    "message": "A red flair silhouetted the jagged edge of a wing. 01234567890 "
+  },
+  "options_enablePageAction": {
+    "message": "Enable 'Read Later' button in the browser address bar"
+  },
 
   "contextMenuAddBookmark": {
     "message": "Add Page to Google Bookmarks"

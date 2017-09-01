@@ -165,6 +165,9 @@ function filteredLabelAction (node) {
 
 
 $(document).ready(function(){
+
+	$("html, body").css({'font-size' : bg.GBE2.opt.fontSize + "px", 'font-family' : bg.GBE2.opt.fontFamily});
+
   $("#bkmk-tree").fancytree({
   	extensions: ["filter", "dnd", "edit"],
 		quicksearch: true,
@@ -798,7 +801,7 @@ function setBkmkControls (bkmk)
 			  // Browsers/браузер Chrome - не подходит
 			  // Browsers/Chrome браузер - подходит
 			  // let re2 = new RegExp (".*(^|" + _escape(sep) + ")(" + _escape(item) + ".*?)(?=$|" + _escape(sep) + ")", "i");
-			  let re2 = new RegExp ("(^.*" + _escape(sep) + ")(" + _escape(item) + ".*?)(?=$|" + _escape(sep) + ")", "i");
+			  let re2 = new RegExp ("(^.*" + _escape(item) + ".*?)(?=$|" + _escape(sep) + ")", "i");
 			  //.*(^|\/)работа(?=[\/\s{}|=\[\]\(\)\-\\\/!?,.;:]).*?
 			  //.*(^|\/)js(?=\/|$|\s|\[/|[{(!?,.;:]).*?
 			  //.*(^|\/)(работа.*?)(?=$|\/)

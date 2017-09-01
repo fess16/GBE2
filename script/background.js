@@ -1070,32 +1070,37 @@ var GBE2 = {
 
 	// меняет иконку дополнения на панели в зависимости от адреса текущей вкладки 
 	setBrowserActionIcon : function (tTab) {
+		let icon18 = "";
+		let icon32 = "";
 		if (this.isBookmarked(tTab.url)) {
+			browser.pageAction.hide(tTab.id);
+			// 	// TODO: иконку 32 на всякий случай сделать для темной темы
 			if (this.opt.ThemeIcon == "light") {
-				browser.browserAction.setIcon({
-					path: { 18: "./images/Star_full.png", 32: "./images/Star_full32.png" }
-				});
+				icon18 = "./images/Star_full.png";
+				icon32 = "./images/Star_full32.png";
 			} else {
-				// TODO: иконку 32 на всякий случай сделать для темной темы
-				browser.browserAction.setIcon({
-					path: { 18: "./images/Star_full1.png"/*, 32: "./images/Star_full32.png" */}
-				});
+				icon18 = "./images/Star_full1.png";
+				icon32 = "./images/Star_full32.png";
 			}
-
 			if (tTab.favIconUrl) this.setFavicon(tTab);
 		}
 		else
 		{
 			if (this.opt.ThemeIcon == "light") {
-				browser.browserAction.setIcon({
-					path: { 18: "./images/Star_empty.png", 32: "./images/Star_empty32.png" }
-				});
+				icon18 = "./images/Star_empty.png";
+				icon32 = "./images/Star_empty32.png";
 			} else {
-				browser.browserAction.setIcon({
-					path: { 18: "./images/Star_empty1.png"/*, 32: "./images/Star_full32.png" */}
+				icon18 = "./images/Star_empty1.png";
+				icon32 = "./images/Star_empty32.png";
+			}
+			if (this.opt.enablePageAction) {
+				browser.pageAction.setIcon({
+				  tabId: tTab.id, path: "./images/readLater_on.png"
 				});
+				browser.pageAction.show(tTab.id); 
 			}
 		}
+		browser.browserAction.setIcon({	path: { 18: icon18, 32: icon32 } });
 	}, 
 
 	// сохраняет и задает иконку для закладки
@@ -1317,6 +1322,33 @@ function handleTabActivated(activeInfo) {
 }
 browser.tabs.onActivated.addListener(handleTabActivated);
 
+
+browser.pageAction.onClicked.addListener((tab) => {
+	let bkmk = {id: null, title: tab.title, url: tab.url, labels: [GBE2.opt.readLaterTitle], notes: "", favIconUrl: tab.favIconUrl, oldUrl : ""}
+	GBE2.doChangeBookmark(bkmk)
+		.then(() => {
+			// сохраняем иконку при необходимости
+			if (GBE2.opt.showFavicons && bkmk.favIconUrl) {
+				GBE2.opt.favIcons[bkmk.url] = bkmk.favIconUrl;
+				GBE2.opt.writeFavIcons().then();
+			}
+		})
+		.catch((e) => {
+			_errorLog("background:pageAction", e);
+			GBE2.showNotify(_getMsg("notify_saveBkmkError"), e.message, _getMsg("notify_errorDetails"));
+		})
+		.then(() => {
+	    return GBE2.reloadBkmks();
+		})
+  	.then((result) => {
+			GBE2.setBrowserActionIcon(tab);
+		})
+		.catch ( (e) => {
+	  	_errorLog("background:pageAction", e);
+	  	GBE2.showNotify(_getMsg("notify_accessErrorTitle"), _getMsg("notify_relogin")+"\n"+e.message, _getMsg("notify_errorDetails"));
+	 	});
+});
+
 // Provide help text to the user.
 browser.omnibox.setDefaultSuggestion({
   description: `Search in Google Bookmarks. Only the first five suggestions will be displayed`
@@ -1374,7 +1406,7 @@ chrome.runtime.onMessage.addListener(
 	    	GBE2.reloadBkmks()
 	    		.then((result) => {
 	    			// уведомляем popup, что закладки обновлены
-	     			browser.runtime.sendMessage(result);
+	    			browser.runtime.sendMessage(result);
 	     			GBE2.setBrowserActionIcon(request.tab);
 	     		})
 	     		.catch ( (e) => {

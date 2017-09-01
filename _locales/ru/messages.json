@@ -317,6 +317,21 @@
   "options_fsBrowseActionIcons_legend": {
     "message": "Использовать"
   },
+  "options_fsFontSettings_legend": {
+    "message": "Шрифт"
+  },
+  "options_fontFamily": {
+    "message": "Семейство"
+  },
+  "options_fontSize": {
+    "message": "Размер (9 - 17 px)"
+  },
+  "options_fontExample": {
+    "message": "Алая вспышка осветила силуэт зазубренного крыла. 01234567890"
+  },
+  "options_enablePageAction": {
+    "message": "Включить кнопку 'Read Later' в адресной строке браузера"
+  },
 
   "contextMenuAddBookmark": {
     "message": "Добавить страницу в Google Bookmarks"

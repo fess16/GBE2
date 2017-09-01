@@ -105,7 +105,13 @@
             <label for="timeout">timeout:</label>
             <input type="text" id="timeout" name="timeout">
           </div>
-
+          <div class="fRow">
+            <label class="switch">
+              <input id="enablePageAction" type="checkbox">
+              <div class="slider round"></div>
+            </label>
+            <label for="enablePageAction">enablePageAction:</label>
+          </div>
         </div>
         <div id="advPanel">
           <div class="fRow">
@@ -169,7 +175,18 @@
               <input type="text" name="hiddenLabelsTitle" id="hiddenLabelsTitle">
             </div>
           </fieldset>
-
+          <fieldset id="fsFontSettings">
+            <legend>!Шрифт</legend>
+            <div class="fRow">
+              <label for="fontSize">fontSize:</label>
+              <input type="text" name="fontSize" id="fontSize">
+              <span id="fontExample"></span>
+            </div>
+            <div class="fRow">
+              <label for="fontFamily">fontFamily:</label>
+              <input type="text" name="fontFamily" id="fontFamily">
+            </div>
+          </fieldset>
         </div>
         <div id="iconsPanel">
           <fieldset id="fsBrowseActionIcons">

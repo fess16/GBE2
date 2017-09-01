@@ -36,6 +36,13 @@
     "browser_style": false
   },
 
+  "page_action": {
+    "default_icon": {
+      "18": "readLater_on.png"
+    },
+    "default_title": "Fess GBE: Read Later"
+  },
+
   "commands": {
     "_execute_browser_action": {
       "suggested_key": {

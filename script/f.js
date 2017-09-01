@@ -73,6 +73,12 @@ function Options () {
   this.loadOnStart = true;
   // светлая или темная тема для иконок на панели
   this.ThemeIcon = "light";
+  // настройки шрифта
+  this.fontFamily = 'Tahoma, "Ubuntu", "Geneva CY", sans-serif';
+  this.fontSize = 11;
+  // включить popup action
+  this.enablePageAction = true;
+  // иконки закладок
   this.favIcons = {};
 }
 
@@ -108,6 +114,9 @@ Options.prototype.read = function() {
 			this.suggestLabel = (r.hasOwnProperty('suggestLabel')) ? r.suggestLabel : false;
 			this.loadOnStart = (r.hasOwnProperty('loadOnStart')) ? r.loadOnStart : true;
 			this.ThemeIcon = (r.hasOwnProperty('ThemeIcon')) ? r.ThemeIcon : "light";
+			this.fontFamily = (r.hasOwnProperty('fontFamily')) ? r.fontFamily : 'Tahoma, "Ubuntu", "Geneva CY", sans-serif';
+			this.fontSize = (r.hasOwnProperty('fontSize')) ? r.fontSize : 11;
+			this.enablePageAction = (r.hasOwnProperty('enablePageAction')) ? r.enablePageAction : true;
 			
 			this.favIcons = (res.hasOwnProperty('favIcons')) ? res.favIcons : {};
 		}
