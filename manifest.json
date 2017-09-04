@@ -1,28 +1,26 @@
 {
   "manifest_version": 2,
   "name": "Fess GBE2",
-  "version": "0.0.1b",
-  "description": "Google Bookmark tool",
-  "homepage_url": "https://github.com/mdn/webextensions-examples/tree/master/bookmark-it",
+  "version": "1.0.1b",
+  "description": "Allows you to access and manage your Google Bookmarks.",
   "icons": {
     "48": "images/logo.svg"
   },
 
   "applications": {
     "gecko": {
-      "id": "GBE2@fess16.blogspot.com",
-      "strict_min_version": "55.0"
+      "id": "GBE@fess16.blogspot.com",
+      "strict_min_version": "56.0"
     }
   },
 
   "permissions": [
-    "http://www.google.com/bookmarks/", "https://www.google.com/bookmarks/", "http://*/*", "https://*/*" ,
-    "tabs", "activeTab","contextMenus","notifications","storage", "history", "downloads",
-    "<all_urls>" 
+    "<all_urls>",
+    "tabs", "activeTab","contextMenus","notifications","storage", "history", "downloads"
   ],
 
   "optional_permissions": [
-    "http://www.google.com/bookmarks/", "https://www.google.com/bookmarks/", "http://*/*", "https://*/*" ,
+    "<all_urls>",
     "tabs", "activeTab","notifications", "history"
   ],
 
@@ -31,7 +29,7 @@
       "18" : "images/Star_empty.png",
       "32" : "images/Star_empty32.png"
     },
-    "default_title": "Fess GBE2",
+    "default_title": "Fess GBE",
     "default_popup": "popup/popup.html",
     "browser_style": false
   },
@@ -47,7 +45,8 @@
     "_execute_browser_action": {
       "suggested_key": {
         "default": "Ctrl+Shift+F"
-      }
+      },
+      "description": "Open add-on popup window"
     }
   },
 
