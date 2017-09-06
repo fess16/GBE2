@@ -84,7 +84,7 @@ function Options () {
 
 Options.prototype.read = function() {
 	return browser.storage.local.get(["settings", "favIcons"]).then((res) => {
-		console.log("options:read");
+		// console.log("options:read");
 		// console.log(res);
 		if (res.hasOwnProperty('settings')) {
 		let r = res["settings"];
@@ -120,7 +120,7 @@ Options.prototype.read = function() {
 			
 			this.favIcons = (res.hasOwnProperty('favIcons')) ? res.favIcons : {};
 		}
-		console.log(this);
+		// console.log(this);
 		return this;
 	});
 }
@@ -136,8 +136,8 @@ Options.prototype.write = function() {
 	  			temp.settings[name] = this[name];
 	  }
 	}
-	console.log("write");
-	console.log(temp);
+	// console.log("write");
+	// console.log(temp);
  	return browser.storage.local.set(temp).then(null, (e) => {_errorLog("Options", e)});
 	// let temp = {settings : {}, favIcons : {}};
 	// for (var name in this) {
@@ -158,7 +158,7 @@ Options.prototype.write = function() {
 Options.prototype.writeFavIcons = function() {
 	// browser.storage.local.clear().then();
 	let temp = {favIcons : this.favIcons};
-	console.log("writeFavIcons");
-	console.log(temp);
+	// console.log("writeFavIcons");
+	// console.log(temp);
  	return browser.storage.local.set(temp).then(null, (e) => {_errorLog("Options", e)});
 }

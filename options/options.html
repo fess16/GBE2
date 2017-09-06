@@ -15,6 +15,7 @@
 
   <body>
     <form id="optForm" class="ui-widget">
+      <div id="formTitle" class="ui-widget-header">Настройки Fess Google Bookmarks Extention</div>
       <div id="tabs">
         <ul>
           <li><a href="#mainPanel">Nunc tincidunt</a></li>
@@ -27,7 +28,7 @@
               <input id="loadOnStart" type="checkbox">
               <div class="slider round"></div>
             </label>
-            <label for="loadOnStart">loadOnStart</label>
+            <label for="loadOnStart" title="Will load bookmarks before open popup">loadOnStart</label>
           </div>
           <div class="fRow">
             <label class="switch">
@@ -36,7 +37,7 @@
             </label>
             <label for="reverseLeftClick">Открывать закладки в той же вкладке</label>
           </div>
-          <div class="fRow">
+          <div class="fRow alignRow50">
             <label for="sortType"">Сортировка по: </label>
             <select id="sortType">
               <option value="name">Назаванию</option>
@@ -88,42 +89,47 @@
               </label>
               <label for="showFavicons">Показывать иконки сайтов</label>
             </div>
-            <div class="fRow">
+            <div class="fRow alignRow70">
             <label for="clrFavIcons">!Удалить сохраненные иконки</label>
-              <button id="clrFavIcons">!Clear facicons</button>
+              <button class="ui-button ui-corner-all ui-widget" id="clrFavIcons">!Clear facicons</button>
             </div>
-            <div class="fRow">
+            <div class="fRow alignRow70">
             <label for="reloadFavIcons">Принудительно получить иконки для закладок (через http://www.google.com/s2/favicons)</label>
-              <button id="reloadFavIcons">Reload facicons</button>
+              <button class="ui-button ui-corner-all ui-widget"  id="reloadFavIcons">Reload facicons</button>
             </div>
           </fieldset>
-          <div class="fRow">
-            <label for="readLaterTitle">readLaterTitle:</label>
-            <input type="text" id="readLaterTitle" name="readLaterTitle">
-          </div>
-          <div class="fRow">
+          <fieldset id="fsReadLater">
+          <legend>Read Later</legend>
+            <div class="fRow">
+              <label class="switch">
+                <input id="enablePageAction" type="checkbox">
+                <div class="slider round"></div>
+              </label>
+              <label for="enablePageAction">enablePageAction:</label>
+            </div>
+            <div class="fRow alignRow50">
+              <label for="readLaterTitle">readLaterTitle:</label>
+              <input type="text" id="readLaterTitle" name="readLaterTitle">
+            </div>
+          </fieldset>
+          <div class="fRow alignRow50">
             <label for="timeout">timeout:</label>
-            <input type="text" id="timeout" name="timeout">
-          </div>
-          <div class="fRow">
-            <label class="switch">
-              <input id="enablePageAction" type="checkbox">
-              <div class="slider round"></div>
-            </label>
-            <label for="enablePageAction">enablePageAction:</label>
+            <input type="text" id="timeout" name="timeout" pattern="[0-9]{1,5}" >
           </div>
         </div>
         <div id="advPanel">
-          <div class="fRow">
+          <div class="fRow alignRow50">
             <label for="nestedLabelSep">Nested labels separator:</label>
-            <input type="text" id="nestedLabelSep" name="nestedLabelSep">
+            <input type="text" id="nestedLabelSep" name="nestedLabelSep" maxlength="1" size="3" pattern=".{1}">
           </div>
-          <div class="fRow">
-            <label class="switch">
-              <input id="enableLabelUnlabeled" type="checkbox">
-              <div class="slider round"></div>
-            </label>
-            <label for="enableLabelUnlabeled">enableLabelUnlabeled:</label>
+          <div class="fRow alignRow50">
+            <div>
+              <label class="switch">
+                <input id="enableLabelUnlabeled" type="checkbox">
+                <div class="slider round"></div>
+              </label>
+              <label for="enableLabelUnlabeled">enableLabelUnlabeled:</label>
+            </div>
             <input type="text" name="labelUnlabeledName" id="labelUnlabeledName">
           </div>
           <div class="fRow">
@@ -149,9 +155,9 @@
               </label>
               <label for="enableFilterByNotes">enableFilterByNotes:</label>
             </div>
-            <div class="fRow">
+            <div class="fRow alignRow50">
               <label for="filterDelay">enableLabelUnlabeled:</label>
-              <input type="text" name="filterDelay" id="filterDelay">
+              <input type="text" name="filterDelay" id="filterDelay" size="3" pattern='[0-9]{1,3}'>
             </div>
           </fieldset>
           <fieldset id="fsLabelHiding">
@@ -170,21 +176,21 @@
               </label>
               <label for="showHiddenLabels">showHiddenLabels:</label>
             </div>
-            <div class="fRow">
+            <div class="fRow alignRow50">
               <label for="hiddenLabelsTitle">hiddenLabelsTitle:</label>
               <input type="text" name="hiddenLabelsTitle" id="hiddenLabelsTitle">
             </div>
           </fieldset>
           <fieldset id="fsFontSettings">
             <legend>!Шрифт</legend>
-            <div class="fRow">
+            <div class="fRow alignRow20" style="height: 4.5em;">
               <label for="fontSize">fontSize:</label>
               <input type="text" name="fontSize" id="fontSize">
               <span id="fontExample"></span>
             </div>
-            <div class="fRow">
+            <div class="fRow alignRow20">
               <label for="fontFamily">fontFamily:</label>
-              <input type="text" name="fontFamily" id="fontFamily">
+              <input type="text" name="fontFamily" id="fontFamily" size="80">
             </div>
           </fieldset>
         </div>
@@ -209,7 +215,8 @@
         </div>
       </div>
       <div id="buttons">
-        <button id="save" type="submit">Save</button>
+        <button id="save" class="ui-button ui-corner-all ui-widget" type="submit">Save</button>
+        <button id="reset" class="ui-button ui-corner-all ui-widget" type="button">Reset to default</button>
         <span>Saved</span>
       </div>
     </form>

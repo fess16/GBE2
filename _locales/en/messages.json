@@ -251,6 +251,12 @@
   "options_btn_reloadFavIcons": {
     "message": "Set favicons"
   },
+  "options_btn_reset": {
+    "message": "Reset settings"
+  },
+  "options_formTitle": {
+    "message": "Fess Google Bookmarks Extention settings"
+  },
 
   "options_enable10recentBookmark": {
     "message": "10 most recent bookmarks"
@@ -298,7 +304,7 @@
     "message": "Automatically propose label"
   },
   "options_loadOnStart": {
-    "message": "Load bookmarks on start"
+    "message": "Load bookmarks on add-on start"
   },
   "options_fsBrowseActionIcons_legend": {
     "message": "Use"

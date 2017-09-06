@@ -3,7 +3,7 @@ $(document).ready(function()
 	restoreOptions();
 	setTexts();
 	$("#tabs").tabs();
-	$("form").submit(saveOptions);
+	$("#save").on("click", saveOptions);
 
 	$("#enableLabelUnlabeled").change(function(event) {
     $("#labelUnlabeledName").attr('disabled', !$(this).prop('checked'));
@@ -38,6 +38,12 @@ $(document).ready(function()
 		$("#fontSize").val(fontSize);
 		$("#fontExample").css({'font-size' : fontSize + "px", 'font-family' : fontFamily});
 	});
+	$("#reset").on("click", function() {
+		let opt = new Options();
+		console.log("saveOptions:write");
+		opt.write().then();
+		restoreOptions();
+	})
 
 });
 
@@ -54,6 +60,8 @@ function setTexts()
 	$("#clrFavIcons").text(_getMsg("options_btn_clrFavIcons"));
 	$("#reloadFavIcons").text(_getMsg("options_btn_reloadFavIcons"));
 	$("#fontExample").text(_getMsg("options_fontExample"));
+	$("#reset").text(_getMsg("options_btn_reset"));
+	$("#formTitle").text(_getMsg("options_formTitle"));
 
 	$("a[href='#mainPanel']").text(_getMsg("options_mainPanel"));
 	$("a[href='#advPanel']").text(_getMsg("options_advPanel"));
@@ -216,8 +224,8 @@ function saveOptions(e)
 	
 	opt.ThemeIcon = $("#iconLight").prop("checked") ? "light" : "dark";
 
-	console.log("saveOptions:write");
-	opt.write().then()
+	// console.log("saveOptions:write");
+	opt.write().then();
 	$("#buttons span").css("display", "block");
 	setTimeout(() => {$("#buttons span").hide()}, 1000);
 

@@ -95,6 +95,14 @@ fieldset legend{
   margin-right: 5px;
 }
 
+#formTitle {
+  color: #0070a3;
+  line-height: 3em;
+  text-align: center;
+  margin: 10px 0;
+  border-radius: 6px;
+}
+
 fieldset {
   border-radius: 8px;
   margin-bottom: 5px;
@@ -196,7 +204,7 @@ input[type=radio]:checked ~ .check::before{
 #fontExample {
   border: 1px solid #2196F3;
   border-radius: 6px;
-  width: 60%;
+  width: 50%;
   line-height:1em;
   padding: 5px;
   margin-left: 10px;
@@ -205,3 +213,27 @@ input[type=radio]:checked ~ .check::before{
 /* input[type=radio]:checked ~ label{
   color: #2196F3;
 } */
+
+.alignRow50 > label{
+  width: 50%;
+}
+
+.alignRow50 > div{
+  width: 50%;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.alignRow50 > select{
+  margin-left: 0;
+}
+
+
+.alignRow70 > label{
+  width: 70%;
+}
+
+.alignRow20 > label{
+  width: 20%;
+}

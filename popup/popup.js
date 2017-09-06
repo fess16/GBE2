@@ -1,6 +1,6 @@
 // получаем ссылку на background страницу
 browser.runtime.onMessage.addListener(bgListener);
-var getting = browser.runtime.getBackgroundPage();
+// var getting = browser.runtime.getBackgroundPage();
 var bg, aTab, aBkmk = null;
 var popup = window;
 var fTree = null;
@@ -13,7 +13,8 @@ var addAllTabsDlg = null;
 var dragInfo = {item : null, source : null,	target : null};
 
 // получаем BackgroundPage
-getting.then((page) => {bg = page}, (error) => {_errorLog ("Popup-getBackgroundPage", error)});
+// getting.then((page) => {bg = page}, (error) => {_errorLog ("Popup-getBackgroundPage", error)});
+bg = browser.extension.getBackgroundPage();
 // получаем информацию о текущей вкладке и соответствующей закладке (по адресу)
 browser.tabs.query({active: true, currentWindow: true}).then((tabs) => {
 	aTab = tabs[0];
@@ -443,6 +444,8 @@ $(document).ready(function(){
   fTree = $("#bkmk-tree").fancytree("getTree");
 
   let hiddenPKey  = bg.GBE2.genereteLabelId(bg.GBE2.opt.hiddenLabelsTitle);
+
+	if (bg.GBE2.m_treeSource && bg.GBE2.m_treeSource.length == 0) refresh();
 
   // настройки плагина контекстного меню для дерева
   $("#bkmk-tree").contextmenu({
@@ -1136,13 +1139,14 @@ function openQRdialog(aBkmk){
 		draggable: false,
 		resizable: false,
 		position: { my: "center", at: "center", of: "#wrapper" },
-		width: 225,
+		width: "225px",
 		title: 	"QR-code for bookmark",
     open: function( event, ui ) {
     	$("#qr_dialog_image")
     		.attr("src", "https://chart.googleapis.com/chart?cht=qr&chl=" + encodeURIComponent(aBkmk.url) + "&choe=UTF-8&chs=200x200");
     }
 	});
+	dlg.css({"text-align": "center"});
 	dlg.dialog("open");
 }
 
@@ -1463,7 +1467,7 @@ function folderMenuExport(lbl) {
 // обработчик кликов для пунктов контекстного меню дерева закладок
 function handleContextMenuClick(event, ui) {
   var node = $.ui.fancytree.getNode(ui.target);
-  console.log("select " + ui.cmd + " on " + node);
+  // console.log("select " + ui.cmd + " on " + node);
   let bkmk = null;
   let lbl = null;
   switch (ui.cmd) {

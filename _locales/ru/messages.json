@@ -249,6 +249,12 @@
   "options_btn_reloadFavIcons": {
     "message": "Установить иконки"
   },
+  "options_btn_reset": {
+    "message": "Сбросить настроки"
+  },
+  "options_formTitle": {
+    "message": "Настройки Fess Google Bookmarks Extention"
+  },
 
 
   "options_sortType": {
@@ -312,7 +318,7 @@
     "message": "Автоматически предлагать метку"
   },
   "options_loadOnStart": {
-    "message": "Загружать закладки при старте"
+    "message": "Загружать закладки при старте дополнения"
   },
   "options_fsBrowseActionIcons_legend": {
     "message": "Использовать"

@@ -237,8 +237,10 @@ a.clrBtn {
 
 ul.fancytree-container {
 	/*width:  330px!important;*/
-	width:  99%;
-	height: 450px!important;
+	width:  98%;
+	margin-left: 2px!important;
+	margin-bottom: 2px!important;
+	height: 500px!important;
   /*overflow: auto!important;*/
   overflow-x: hidden;;
   overflow-y: auto!important;
@@ -248,6 +250,7 @@ ul.fancytree-container {
 	/*font-size: inherit!important;*/
 	font-weight: inherit!important;
 /*background-color: #E8FDFB!important;*/
+
 }
 
 .dialog {

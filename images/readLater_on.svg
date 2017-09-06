@@ -26,10 +26,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="24.0625"
-     inkscape:cx="2.410246"
-     inkscape:cy="6.8973383"
+     inkscape:cx="2.5036062"
+     inkscape:cy="6.8557799"
      inkscape:document-units="px"
-     inkscape:current-layer="g4142"
+     inkscape:current-layer="g4139"
      showgrid="true"
      units="px"
      inkscape:snap-object-midpoints="true"
@@ -94,8 +94,8 @@
            rx="7.25"
            ry="7.2502255" />
         <path
-           style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#003cb4;stroke-width:1.99016474;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
-           d="m 7.9980521,1039.958 0,5.3836 3.2227269,-2.1836"
+           style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#003cb4;stroke-width:1.99016476;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+           d="m 7.9980521,1039.958 0,5.3836 -3.139443,1.8246"
            id="path4140"
            inkscape:connector-curvature="0"
            sodipodi:nodetypes="ccc" />
