@@ -287,6 +287,9 @@
   "options_enableFilterByNotes": {
     "message": "Включить фильтр по примечаниям"
   },
+  "options_enableLableFilter": {
+    "message": "Включить фильтр по метке (Keyword2 Label:keyword1 или Label:keyword1 или Label:\"keyword with spaces\")"
+  },
   "options_filterDelay": {
     "message": "Задержка фильтра, мс (1с = 1000мс)"
   },

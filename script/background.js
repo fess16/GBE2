@@ -1,4 +1,9 @@
-﻿"use strict";
+﻿//1.0.1b
+// +	возможность искать по значению метки с помощью - label:xxxxx или label:"Programming/google bookmark" 
+// 		допускается только одна такая конструкция в строке поиска,
+// 		если их будет несколько - игнорируются все 
+
+"use strict";
 var GBE2 = {
 	// адрес для получения списка закладок
 	'm_baseUrl' : "https://www.google.com/bookmarks/",
@@ -1139,13 +1144,35 @@ var GBE2 = {
 		let enableFilterByUrl = this.opt.enableFilterByUrl;
 		let enableFilterByNotes = this.opt.enableFilterByNotes;
 
+		
+		let labelFilter = "";
+		// разрешен фильтр по метке
+		if (this.opt.enableLableFilter)
+		{
+			//label:Programming/jQuery
+			// var re = new RegExp(/(label:(\S+))(?=\s|$)/ig);
+			let re = new RegExp(/((?:^|\s+)(?:label:"(.*?)"))(?=\s|$)|(?:^|\s+)(?:label:([^"]\S+))(?=\s|$)/ig);
+			let reMatch = search.match(re);
+			// если нашли только одно совпадение
+			if ( reMatch && Array.isArray(reMatch) && reMatch.length == 1)
+			{
+				// запоминаем его (без начального label:)
+				labelFilter = reMatch[0].trim().replace("label:","").replace(/"/g,"").toLowerCase();
+			}
+			// удаляем совпадения из строки поиска
+			search = search.replace(re,"").trim();
+			// значение фильтра по метке установлено и таких меток у закладки нет - пропускаем ее
+			if (labelFilter != "" && bkmk.labels.findIndex(lbl => labelFilter === lbl.toLowerCase()) == -1)
+				return result;
+		}
+
 		// если в строке нечетное число кавычек, например
 		// "
 		// "значение
 		// знач1 "знач2
 		// "знач1" знач2 "знач3
 		if (Math.abs((search.match(/"/g) || []).length % 2) == 1) {
-			var pos = search.lastIndexOf('"');
+			let pos = search.lastIndexOf('"');
 			// удаляем последнюю кавычку
 		  search = search.substring(0,pos) + "" + search.substring(pos+1)
 			if (search.length == 0) {
@@ -1744,6 +1771,26 @@ chrome.runtime.onMessage.addListener(
 	    // 	    "title": "You clicked a link!",
 	    // 	    "message": request.url
 	    // 	  });
+	    
+
+			    // a = [1, 2, 3, 4, 5];
+					// p = a.reduce(
+					//   (p, i) => p.then(
+					//     () => new Promise(
+					//       (resolve, reject) => {
+
+					//         setTimeout(() => {
+					//           console.log(i);
+					//           resolve();
+					//         }, 500);
+
+					//       }
+					//     )
+					//   ),
+					//   Promise.resolve()
+					// );
+
+					// p.then(() => console.log(a));
   	}
  });
 

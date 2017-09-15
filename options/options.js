@@ -79,6 +79,7 @@ function setTexts()
 	$("label[for=filterDelay]").text(_getMsg("options_filterDelay"));
 	$("label[for=timeout]").text(_getMsg("options_timeout"));
 	$("label[for=enablePageAction]").text(_getMsg("options_enablePageAction"));
+	$("label[for=enableLableFilter]").text(_getMsg("options_enableLableFilter"));
 	
 	$("label[for=enableLabelHiding]").text(_getMsg("options_enableLabelHiding"));
 	$("label[for=showHiddenLabels]").text(_getMsg("options_showHiddenLabels"));
@@ -131,6 +132,7 @@ function restoreOptions()
   	$("#fontSize").val(r.fontSize);
   	$("#fontFamily").val(r.fontFamily);
   	$("#enablePageAction").prop("checked", r.enablePageAction);
+  	$("#enableLableFilter").prop("checked", r.enableLableFilter);
 
   	$("#clrFavIcons").attr('disabled', !r.showFavicons);
   	$("#reloadFavIcons").attr('disabled', !r.showFavicons);
@@ -221,6 +223,7 @@ function saveOptions(e)
 	opt.suggestLabel = $("#suggestLabel").prop("checked");
 	opt.loadOnStart = $("#loadOnStart").prop("checked");
 	opt.enablePageAction = $("#enablePageAction").prop("checked");
+	opt.enableLableFilter = $("#enableLableFilter").prop("checked");
 	
 	opt.ThemeIcon = $("#iconLight").prop("checked") ? "light" : "dark";
 

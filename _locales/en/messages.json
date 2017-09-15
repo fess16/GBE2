@@ -273,6 +273,9 @@
   "options_enableFilterByNotes": {
     "message": "Enable filter by Notes"
   },
+  "options_enableLableFilter": {
+    "message": "Enable filter by label (Keyword2 Label:keyword1 or Label:keyword1 or Label:\"keyword with spaces\")"
+  },
   "options_filterDelay": {
     "message": "Filter delay, milliseconds (1 second = 1000 milliseconds)"
   },

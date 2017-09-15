@@ -723,8 +723,10 @@ $(document).ready(function(){
 				let bkmk = {
 					title : node.title,
 					notes : node.data.notes ? node.data.notes : "",
-					url : node.data.url ? node.data.url : ""
+					url : node.data.url ? node.data.url : "",
+					labels: (node.getParent().key == "root_1") ? [] : [node.getParent().data.path]
 				}
+				//console.log(bkmk.title + " " + bkmk.label);
 				// выделяем найденный текст
 				let replacement = '<mark>$&</mark>';
 				// проверяем текущее значение фильтра
@@ -1085,6 +1087,8 @@ function openEditLblDlg (aLbl) {
 }
 
 // открывает диалог удаления метки
+// TODO: добавить показ удаляемых закладок (удалять только с этой меткой, включая вложенные метки, не удалять закладку,
+// если у нее есть другие метки)
 function openDelLblDlg (aLbl){
 	if (delLblkDlg == null) {
 		delLblkDlg = $("#delLblkDlg");

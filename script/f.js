@@ -78,6 +78,10 @@ function Options () {
   this.fontSize = 11;
   // включить popup action
   this.enablePageAction = true;
+  // возможность искать по значению метки с помощью - label:xxxxx или label:"Programming/google bookmark" 
+	// допускается только одна такая конструкция в строке поиска,
+	// если их будет несколько - игнорируются все 
+  this.enableLableFilter = true;
   // иконки закладок
   this.favIcons = {};
 }
@@ -117,6 +121,7 @@ Options.prototype.read = function() {
 			this.fontFamily = (r.hasOwnProperty('fontFamily')) ? r.fontFamily : 'Tahoma, "Ubuntu", "Geneva CY", sans-serif';
 			this.fontSize = (r.hasOwnProperty('fontSize')) ? r.fontSize : 11;
 			this.enablePageAction = (r.hasOwnProperty('enablePageAction')) ? r.enablePageAction : true;
+			this.enableLableFilter = (r.hasOwnProperty('enableLableFilter')) ? r.enableLableFilter : true;
 			
 			this.favIcons = (res.hasOwnProperty('favIcons')) ? res.favIcons : {};
 		}
