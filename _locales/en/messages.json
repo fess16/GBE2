@@ -258,6 +258,22 @@
     "message": "Fess Google Bookmarks Extention settings"
   },
 
+  "options_sortType": {
+    "message": "Sort by:"
+  },
+  "options_sortType_name": {
+    "message": "name"
+  },
+  "options_sortType_timestamp": {
+    "message": "timestamp"
+  },
+  "options_sortOrder_asc": {
+    "message": "ascending"
+  },
+  "options_sortOrder_desc": {
+    "message": "descending"
+  },
+
   "options_enable10recentBookmark": {
     "message": "10 most recent bookmarks"
   },
