@@ -603,6 +603,8 @@ $(document).ready(function(){
 	$("label[for='editBkmkDlg-url']").text(_getMsg("editBkmkDlg_url"));
 	$("label[for='editBkmkDlg-labels']").text(_getMsg("editBkmkDlg_labels"));
 	$("label[for='editBkmkDlg-notes']").text(_getMsg("editBkmkDlg_notes"));
+
+	$("label[for='editLblDlg-name']").text(_getMsg("editLblDlg_name"));
 	
 	//отключаем контекстное меню на кнопках дополнения
 	$(".nav-bar li").on("contextmenu",function(){

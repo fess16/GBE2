@@ -302,7 +302,7 @@
     "message": "Show hidden labels"
   },
   "options_hiddenLabelsTitle": {
-    "message": "Заголовок для скрытых меток"
+    "message": "Name"
   },
   "options_fsFilter_legend": {
     "message": "Filter settings"

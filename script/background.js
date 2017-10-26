@@ -1085,7 +1085,7 @@ var GBE2 = {
 				icon32 = "./images/Star_full32.png";
 			} else {
 				icon18 = "./images/Star_full1.png";
-				icon32 = "./images/Star_full32.png";
+				icon32 = "./images/Star_full132.png";
 			}
 			if (tTab.favIconUrl) this.setFavicon(tTab);
 		}
@@ -1096,7 +1096,7 @@ var GBE2 = {
 				icon32 = "./images/Star_empty32.png";
 			} else {
 				icon18 = "./images/Star_empty1.png";
-				icon32 = "./images/Star_empty32.png";
+				icon32 = "./images/Star_empty132.png";
 			}
 			if (this.opt.enablePageAction) {
 				browser.pageAction.setIcon({
