@@ -354,7 +354,7 @@
     "message": "Ошибка доступа к Google Bookmarks"
   },
   "notify_errorDetails": {
-    "message": "Информация об ошибках: Ctrl+Shift+J"
+    "message": "Error information: Ctrl+Shift+J"
   },
   "notify_relogin": {
     "message": "Войдите в аккаунт Google, если вы вышли из него."

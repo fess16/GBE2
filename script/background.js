@@ -594,6 +594,10 @@ var GBE2 = {
 					this.m_bookmarkList[i].url = bookmark.find(bkmkFN[oType].url).text() || "";
 					// read timestamp field
 					this.m_bookmarkList[i].timestamp = bookmark.find(bkmkFN[oType].date).text() || "";
+					// convert string date/time to timestamp
+					if (this.opt.enableNotes && this.m_bookmarkList[i].timestamp !== "") {
+						this.m_bookmarkList[i].timestamp = "" + Date.parse(this.m_bookmarkList[i].timestamp)*1000;
+					}
 					// read label field
 					this.m_bookmarkList[i].hidden = false;
 					let self = this;
@@ -1669,13 +1673,28 @@ chrome.runtime.onMessage.addListener(
     	    	// находим закладку
     	    	let bkmk = GBE2.getBookmark({ id : tBkmk.id});
     	    	if (bkmk) {
+    	    		bkmk.timestamp = "" + Date.now()*1000;
     	    		// меняем у нее метки
     	    		bkmk.labels = tBkmk.labels;
     	    		// если в старой метке закладок больше не осталось - удаляем эту метку
     	    		if (request.data.oldParent !== null) {
     	    			GBE2.m_labelsList = GBE2.m_labelsList.filter(lbl => lbl.title !== request.data.oldParent)
     	    		}
+    	    		// добавляем новые метки в массив или обновляем timestamp у существующих
+    	    		bkmk.labels.forEach(function(lbl) {
+    	    			let existLbl = GBE2.m_labelsList.find(x => x.title === lbl);
+    	    			if (existLbl) {
+    	    				existLbl.timestamp = bkmk.timestamp;
+    	    				return;
+    	    			}
+    	    			let flagHidden = false;
+    	    			if (GBE2.opt.enableLabelHiding &&  GBE2.isHiddenLabel(lbl)) flagHidden = true; 
+    	    			GBE2.m_labelsList.push({"title" : lbl, "timestamp" : bkmk.timestamp, "id" : GBE2.genereteLabelId(lbl), "hidden" : flagHidden});
+    	    		});
+    	    		// сортируем метки и закладки
+    	    		GBE2.m_labelsList.sort((GBE2.opt.sortType == "timestamp") ? GBE2.compareByDate : GBE2.compareByName);	
     	    		GBE2.m_bookmarkList.sort((GBE2.opt.sortType == "timestamp")? GBE2.compareByDate : GBE2.compareByName);
+    	    		// обновляем m_treeSource
     	    		return GBE2.doBuildTree().then();
     	    	}
     	    })
