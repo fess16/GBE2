@@ -306,6 +306,8 @@ var GBE2 = {
 		// заполняем treeSource - данные для fancyTree
 		let treeSource = [];
 		let lbs = this.m_labelsList;
+		// const expandedLbs = _getTreePersistData()[_TREE_PERSIST_DATA.EXPANDED];
+		// console.log(expandedLbs);
 		if (lbs.length)
 		{
 			// проходим по меткам
@@ -324,9 +326,13 @@ var GBE2 = {
 				if (!$.grep(treeSource, function(e) {
 							return (e.key == tempKey);
 						}).length){
+							// let expandedFlag = (expandedLbs.indexOf("" + tempKey) >= 0 ? true : false);
+							// console.log(tempKey + " " + expandedFlag);
 							treeSource.push({
 								"title" 		: fullName,
 								"key" 			: tempKey,
+								//"expanded"	: (tempKey == '87529539' ? true : false),
+								// "expanded"	: expandedFlag,
 								"folder"		: true,
 								"children"	: [],
 								"path"			: fullName,
@@ -349,10 +355,13 @@ var GBE2 = {
 							notExist = false;
 					}
 					// добавляем, если такой метки еще не было
-					if (notExist)
+					if (notExist) {
+						// let expandedFlag = (expandedLbs.indexOf("" + tempKey) >= 0 ? true : false);
+						// console.log(tempKey + " " + expandedFlag);
 						parentContainer.children.push({
 							"title" 		: arr_nested_label[j],
 							"key" 			: tempKey,
+							// "expanded"	: expandedFlag,
 							"folder"		: true,
 							"children"	: [],
 							"path"			: fullName,
@@ -362,6 +371,7 @@ var GBE2 = {
 					}
 				}
 			}
+		}
 		// }
 
 	  // начало цепочки
@@ -1265,6 +1275,7 @@ var GBE2 = {
 $(document).ready(function()
 {
 	_consoleLog("background.js started");
+	// console.log(_getTreePersistData ());
 	GBE2.opt.read()
 		.then(function(){
 			if (GBE2.opt.loadOnStart) return GBE2.reloadBkmks();
@@ -1810,6 +1821,17 @@ chrome.runtime.onMessage.addListener(
 					// );
 
 					// p.then(() => console.log(a));
+					// 
+					// 
+					// 
+					// !!!!!!!!!!передача переменной или массива с преобразованием в массив
+					// function replaceChildNodes(e, t) {
+				  // if (removeChildNodes(e), t) {
+				  //   !!!!!!!! Array.isArray(t) || (t = [t]);
+				  //   const n = document.createDocumentFragment();
+				  //   t.forEach((e => n.appendChild(e))), e.appendChild(n)
+					//   }
+					// }
   	}
  });
 

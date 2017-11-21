@@ -343,6 +343,9 @@
   "options_enablePageAction": {
     "message": "Enable 'Read Later' button in the browser address bar"
   },
+  "options_enableTreePersisitData": {
+    "message": "Remember Expanded Labels"
+  },
 
   "contextMenuAddBookmark": {
     "message": "Add Page to Google Bookmarks"

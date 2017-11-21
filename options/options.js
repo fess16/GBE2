@@ -80,6 +80,7 @@ function setTexts()
 	$("label[for=timeout]").text(_getMsg("options_timeout"));
 	$("label[for=enablePageAction]").text(_getMsg("options_enablePageAction"));
 	$("label[for=enableLableFilter]").text(_getMsg("options_enableLableFilter"));
+	$("label[for=enableTreePersisitData]").text(_getMsg("options_enableTreePersisitData"));
 	
 	$("label[for=enableLabelHiding]").text(_getMsg("options_enableLabelHiding"));
 	$("label[for=showHiddenLabels]").text(_getMsg("options_showHiddenLabels"));
@@ -133,6 +134,7 @@ function restoreOptions()
   	$("#fontFamily").val(r.fontFamily);
   	$("#enablePageAction").prop("checked", r.enablePageAction);
   	$("#enableLableFilter").prop("checked", r.enableLableFilter);
+  	$("#enableTreePersisitData").prop("checked", r.enableTreePersisitData);
 
   	$("#clrFavIcons").attr('disabled', !r.showFavicons);
   	$("#reloadFavIcons").attr('disabled', !r.showFavicons);
@@ -220,6 +222,9 @@ function saveOptions(e)
 	}
 	opt.fontSize = fontSize;
 	
+	opt.enableTreePersisitData = $("#enableTreePersisitData").prop("checked");
+	if (!opt.enableTreePersisitData) _clearTreePersistData();
+
 	opt.suggestLabel = $("#suggestLabel").prop("checked");
 	opt.loadOnStart = $("#loadOnStart").prop("checked");
 	opt.enablePageAction = $("#enablePageAction").prop("checked");

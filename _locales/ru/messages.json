@@ -341,6 +341,9 @@
   "options_enablePageAction": {
     "message": "Включить кнопку 'Read Later' в адресной строке браузера"
   },
+  "options_enableTreePersisitData": {
+    "message": "Запоминать раскрытые метки"
+  },
 
   "contextMenuAddBookmark": {
     "message": "Добавить страницу в Google Bookmarks"

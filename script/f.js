@@ -1,6 +1,8 @@
 "use strict";
 var _getMsg = browser.i18n.getMessage;
 
+
+
 function _consoleLog (s) {
 	var str = "GBE2:";
 	for (var i = 0; i < arguments.length; i++)
@@ -22,6 +24,59 @@ function _escape(s) {
 function _isSpecialUrl (url) {
 	let SearchString = new RegExp("^chrome:|^javascript:|^data:|^about:|^file:.*" );
 	return SearchString.test(url);
+}
+
+const _TREE_PERSIST_DATA = {
+	EXPANDED  : "expanded",
+	ACTIVE 		: "active", 
+	delim 		: '|',
+	prefix 		: "fTree-"
+};
+
+// читаем сохраненные данные дерева закладок (активная метка, раскрытые метки)
+function _getTreePersistData () {
+	const local = window.localStorage,
+				opt = _TREE_PERSIST_DATA;
+	var res = {}; 
+	res[opt.ACTIVE] = local.getItem(opt.prefix + opt.ACTIVE) || null;
+	res[opt.EXPANDED] = (local.getItem(opt.prefix + opt.EXPANDED) || "").split(opt.delim);
+	return res;
+}
+
+function _clearTreePersistData () {
+	const local = window.localStorage,
+				opt = _TREE_PERSIST_DATA;
+	local.setItem(opt.prefix + opt.ACTIVE, null);
+	local.setItem(opt.prefix + opt.EXPANDED, "");
+}
+
+/**
+ * запись сохраненных данные дерева закладок
+ *
+ * @param      {string}   key         код закладки или null
+ * @param      {boolean}  appendFlag  флаг добавления/записи
+ * @param      {<type>}   type        тип сохраняемых данных
+ */
+function _appendPersist (key, appendFlag = true, type = _TREE_PERSIST_DATA.EXPANDED) {
+	const local = window.localStorage,
+				opt = _TREE_PERSIST_DATA;
+	// активная метка - просто перезаписываем
+	if (type === opt.ACTIVE && appendFlag) {
+		// console.log(key);
+		local.setItem(opt.prefix + type, key);
+	}
+	// раскрытые метки
+	else if (key) {
+		// читаем текущее сохраненное значение
+		// ищем переданное	
+		let data = _getTreePersistData()[type],
+				idx = data.indexOf(key);
+		// если уже есть - удаляем в любом случае
+		if (idx >= 0) data.splice(idx, 1);
+		// при включенном флаге записи - добавляем в конец массива
+		if (appendFlag) data.push("" + key);
+		local.setItem(opt.prefix + type, data.join(opt.delim));
+	}
 }
 
 function Options () {
@@ -82,17 +137,16 @@ function Options () {
 	// допускается только одна такая конструкция в строке поиска,
 	// если их будет несколько - игнорируются все 
   this.enableLableFilter = true;
+	// включить сохранение состояния дерева закладок
+	this.enableTreePersisitData = true;
   // иконки закладок
   this.favIcons = {};
 }
 
 Options.prototype.read = function() {
 	return browser.storage.local.get(["settings", "favIcons"]).then((res) => {
-		// console.log("options:read");
-		// console.log(res);
 		if (res.hasOwnProperty('settings')) {
 		let r = res["settings"];
-			// console.log(r);
 			this.nestedLabelSep = (r.hasOwnProperty('nestedLabelSep') && r.nestedLabelSep.length == 1) ? r.nestedLabelSep : '/';
 			this.enableNotes = (r.hasOwnProperty('enableNotes')) ? r.enableNotes : false;
 			this.enable10recentBookmark = (r.hasOwnProperty('enable10recentBookmark')) ? r.enable10recentBookmark : true;
@@ -122,17 +176,16 @@ Options.prototype.read = function() {
 			this.fontSize = (r.hasOwnProperty('fontSize')) ? r.fontSize : 11;
 			this.enablePageAction = (r.hasOwnProperty('enablePageAction')) ? r.enablePageAction : true;
 			this.enableLableFilter = (r.hasOwnProperty('enableLableFilter')) ? r.enableLableFilter : true;
+			this.enableTreePersisitData = (r.hasOwnProperty('enableTreePersisitData')) ? r.enableTreePersisitData : true;
 			
 			this.favIcons = (res.hasOwnProperty('favIcons')) ? res.favIcons : {};
 		}
-		// console.log(this);
 		return this;
 	});
 }
 
 
 Options.prototype.write = function() {
-	// browser.storage.local.clear().then();
 	let temp = {settings : {}};
 	for (var name in this) {
 	  if (this.hasOwnProperty(name)) 
@@ -141,29 +194,10 @@ Options.prototype.write = function() {
 	  			temp.settings[name] = this[name];
 	  }
 	}
-	// console.log("write");
-	// console.log(temp);
  	return browser.storage.local.set(temp).then(null, (e) => {_errorLog("Options", e)});
-	// let temp = {settings : {}, favIcons : {}};
-	// for (var name in this) {
-	//   if (this.hasOwnProperty(name)) 
-	//   {
-	//     if (name == "favIcons" && (opt == "favicons" || opt == "all") )
-	//     	temp[name] = this[name];
-	//    	else
-	//    		if (opt =="settings" || opt == "all")
-	//   			temp.settings[name] = this[name];
-	//     // console.log('f.js write  (' + name + '). Value: ' + this[name]);
-	//   }
-	// }
-	// console.log(temp);
- // 	return browser.storage.local.set(temp).then(null, (e) => {_errorLog("Options", e)});
 }
 
 Options.prototype.writeFavIcons = function() {
-	// browser.storage.local.clear().then();
 	let temp = {favIcons : this.favIcons};
-	// console.log("writeFavIcons");
-	// console.log(temp);
  	return browser.storage.local.set(temp).then(null, (e) => {_errorLog("Options", e)});
 }

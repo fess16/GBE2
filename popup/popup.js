@@ -170,7 +170,7 @@ $(document).ready(function(){
 	$("html, body").css({'font-size' : bg.GBE2.opt.fontSize + "px", 'font-family' : bg.GBE2.opt.fontFamily});
 
   $("#bkmk-tree").fancytree({
-  	extensions: ["filter", "dnd", "edit"],
+  	extensions: ["filter", "dnd", "edit"/*, "persist"*/],
 		quicksearch: true,
   	autoScroll: true, // Automatically scroll nodes into visible area
     clickFolderMode: 4, // 1:activate, 2:expand, 3:activate and expand, 4:activate (dblclick expands)
@@ -229,15 +229,98 @@ $(document).ready(function(){
 		    }
 	  	}
 	  },
-	  // renderNode: function (event, data) {
-	  // 	//console.log(data.node);
-	  // 	// $(data.node).addEventListener('contextmenu', function(){
-			// $(data.node).find("span.fancytree-title").contextmenu(function(){
-			//   // Trigger popup menu on the first target element
-			//   console.log("contextmenu" + data.node.data.url);
-			//   // $(document).contextmenu("open", $(".hasmenu:first"), {foo: "bar"});
-			// });
+
+	  // deactivate : function(event, data) {
+	  // 	const node =  data.node;
+	  // 	if (node.isFolder()) {
+	  // 		console.log(`deactivate ${node.key} - ${node.data.path}`);
+	  // 		//_appendPersist(node.get, true, _TREE_PERSIST_DATA.ACTIVE);
+	  // 	}
 	  // },
+
+	  // сохраняем текущий активную метку при активации элементов дерева
+	  activate: function(event, data) {
+	  	if (bg.GBE2.opt.enableTreePersisitData) {
+		  	const node =  data.node;
+		  	if (node.isFolder()) {
+		  		// console.log(`activate ${node.key} - ${node.data.path}`);
+		  		_appendPersist(node.key, true, _TREE_PERSIST_DATA.ACTIVE);
+		  	}
+		  	// при активации закладки (клик левый/правый...) запоминаем ее метку
+		  	else {
+		  		// console.log(`node activate ${node.key}`);
+		  		const parent = node.getParent().key;
+		  		_appendPersist(parent == "root_1" ? null : parent, true, _TREE_PERSIST_DATA.ACTIVE);
+		  	}
+		  }
+	  },
+
+	  // сохраняем раскрытые метки - добавляем при раскрытии
+	  expand: function (event, data) {
+		  if (bg.GBE2.opt.enableTreePersisitData) {
+		  	const node =  data.node;
+		  	_appendPersist(node.key);
+		  }
+	  },
+
+	  // сохраняем раскрытые метки - удаляем при сворачивании
+	  collapse: function (event, data) {
+		  if (bg.GBE2.opt.enableTreePersisitData) {
+		  	const node =  data.node;
+		  	// console.log(`collapse ${node.key} - ${node.data.path}`);
+		  	_appendPersist(node.key, false);
+		  	// если активная метка была среди свернутых, то убираем ее из сохраненных (ACTIVE)
+		  	const active = data.tree.getActiveNode();
+		  	if (active !== null) {
+		  		if (data.tree.getNodeByKey(active.key, node) !== null) {
+		  			// console.log(`collapseactive ${active.key}`);
+		  			_appendPersist(null, true, _TREE_PERSIST_DATA.ACTIVE);
+		  		}
+		  	}
+		  }	
+	  },
+
+	  // восстанавливаем раскрытые, активные метки при обновлении
+	  init: function (event, data) {
+	  	// console.log("init " + bg.GBE2.opt.enableTreePersisitData);
+	  	if (bg.GBE2.opt.enableTreePersisitData && bg.GBE2.m_treeSource && bg.GBE2.m_treeSource.length) {
+	  		const persistData = _getTreePersistData();
+		  	const expandedLbs = persistData[_TREE_PERSIST_DATA.EXPANDED];
+		  	const activeLb = persistData[_TREE_PERSIST_DATA.ACTIVE];
+		  	let lastExpanded = null;
+		  	// console.log(expandedLbs);
+		  	// console.log(activeLb);
+		  	// перебираем раскрытые
+		  	for (let i=0;i<expandedLbs.length; i++) {
+		  		let key = expandedLbs[i];
+		  		if (key.length > 0) {
+		  			let node = data.tree.getNodeByKey(key);
+		  			// если такой элемент не найден (возможно уже удален/переименован)
+		  			if (node == null){
+		  				// удалеем его из сохраненных
+		  				_appendPersist(key, false);
+		  			}
+		  			else {
+		  				// раскрываем
+		  				node.setExpanded(true, {noAnimation: true, noEvents: true});
+		  				// запонимаем последнюю раскрытую метку
+		  				lastExpanded = node;
+		  			}
+		  		}
+		  	}
+		  	// ищем активную метку
+	  		let node = activeLb ? data.tree.getNodeByKey(activeLb) : null;
+	  		// не нашли - удаляем из _TREE_PERSIST_DATA.ACTIVE
+	  		if (node == null){
+	  			_appendPersist(null, true, _TREE_PERSIST_DATA.ACTIVE);
+	  			// и активируем последнюю раскрытую метку
+	  			if (lastExpanded !== null)
+	  				node = lastExpanded;
+	  		}
+	  		if (node) node.setActive(true, {noEvents: true, noFocus: false});
+	  	}
+	  },
+
 	  // параметры расширения-фильтра
 	  filter: {
 			autoApply: true,   // Re-apply last filter if lazy data is loaded
@@ -1600,11 +1683,24 @@ function refresh() {
   // TODO сообщение при ошибке обновления
   $(".info-box label").text(_getMsg("notify_loadingBkmrks"));
   $("#bkmk-tree").fancytree("disable").hide();
-  chrome.runtime.sendMessage({
-      type: "refresh",
-      tab: aTab
-    }
-  );
+  if (aTab) {
+	  chrome.runtime.sendMessage({
+	      type: "refresh",
+	      tab: aTab
+	    }
+	  );
+  } else {
+  	browser.tabs.query({active: true, currentWindow: true}).then((tabs) => {
+  		const aTab = tabs[0];
+  		chrome.runtime.sendMessage({
+	      type: "refresh",
+	      tab: aTab
+	    });
+  		// aBkmk = bg.GBE2.getBookmark({ url : aTab.url});
+  		// setClickHandlers (aBkmk);
+  	});
+  }
+
   $("#filterTextbox").val("");
   resetFilter();
 }
@@ -1616,12 +1712,12 @@ function openOptionsPage () {
 
 
 
-function test1() {
-  console.log("test1");
-  chrome.runtime.sendMessage({
-      type: "test1"
-    },
-    function(response) {
-    	// if (response) document.getElementById("div").textContent = response.msg;
-    });
-}
+// function test1() {
+//   console.log("test1");
+//   chrome.runtime.sendMessage({
+//       type: "test1"
+//     },
+//     function(response) {
+//     	// if (response) document.getElementById("div").textContent = response.msg;
+//     });
+// }
