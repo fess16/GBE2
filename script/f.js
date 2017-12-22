@@ -33,6 +33,15 @@ const _TREE_PERSIST_DATA = {
 	prefix 		: "fTree-"
 };
 
+const _LIGHT = "light", _DARK = "dark";
+const _ICONS = {};
+_ICONS[_LIGHT] = 	{	empty : { 18: "./images/Star_empty.png", 32 : "./images/Star_empty32.png"},
+										full 	: { 18: "./images/Star_full.png", 32 : "./images/Star_full32.png"}
+									};
+_ICONS[_DARK] = 	{	empty : { 18: "./images/Star_empty1.png", 32 : "./images/Star_empty132.png"},
+										full 	: { 18: "./images/Star_full1.png", 32 : "./images/Star_full132.png"}
+									};	
+
 // читаем сохраненные данные дерева закладок (активная метка, раскрытые метки)
 function _getTreePersistData () {
 	const local = window.localStorage,

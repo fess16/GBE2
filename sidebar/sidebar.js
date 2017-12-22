@@ -24,6 +24,27 @@ browser.tabs.query({active: true, currentWindow: true}).then((tabs) => {
 });
 
 
+/*
+Update content when a new tab becomes active.
+*/
+browser.tabs.onActivated.addListener(updateToolbar);
+
+/*
+Update content when a new page is loaded into a tab.
+*/
+browser.tabs.onUpdated.addListener(updateToolbar);
+
+function updateToolbar() {
+	browser.tabs.query({active: true, currentWindow: true}).then((tabs) => {
+		aTab = tabs[0];
+		// console.log("updateToolbar");
+		// console.log(aTab.url);
+		aBkmk = bg.GBE2.getBookmark({ url : aTab.url});
+		setClickHandlers (aBkmk);
+		// browser.sidebarAction.setIcon({	path: _ICONS[bg.GBE2.opt.ThemeIcon][(aBkmk !== null ? "full" : "empty")] });
+	});
+}
+
 /**
  * Устанавливает отбаботчики клика по кнопкам редактирования закладки
  *
@@ -696,7 +717,7 @@ $(document).ready(function(){
    return false;
 	}); 
 
-	console.log("GBE2:popup.js");
+	console.log("GBE2:sidebar.js");
 
 	// при установленном признаке необходимости обновления списка закладок
 	// когда меняются настроки дополнения

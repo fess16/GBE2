@@ -41,6 +41,12 @@
     "default_title": "Fess GBE: Read Later"
   },
 
+  "sidebar_action": {
+    "default_title": "Fess GBE",
+    "default_panel": "sidebar/sidebar.html",
+    "default_icon": "images/Star_empty32.png"
+  },
+
   "commands": {
     "_execute_browser_action": {
       "suggested_key": {

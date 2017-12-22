@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="../lib/jquery-ui.min.css" type="text/css">
+    <link rel="stylesheet" type="text/css" href="sidebar.css" />
+    <link href="../lib/skin-lion/ui.fancytree.min.css" rel="stylesheet">
+    <script type="text/javascript" src="../lib/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../lib/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../lib/jquery.ui-contextmenu.min.js"></script>
+    <script type="text/javascript" src="../lib/jquery.fancytree-all.min.js"></script>
+
+       
+
+    <script type="text/javascript" src="../script/f.js"></script>
+    <script type="text/javascript" src="sidebar.js"></script>
+  </head>
+  <body class="panel">
+  <div id="wrapper">
+    <div id="popup">
+      <nav id="hmenu">
+        <ul class="nav-bar">
+          <li class="hmenuRefresh"><a class="hmenuBtn" href="#"></a></li>
+          <li class="hmenuEmpty"><a></a></li>
+          <li class="hmenuReadLater"><a class="hmenuBtn" href="#"></a></li>
+          <li class="hmenuEmpty"><a></a></li>
+          <li class="hmenuAdd"><a class="hmenuBtn" href="#"></a></li>
+          <li class="hmenuEdit"><a class="hmenuBtn" href="#"></a></li>
+          <li class="hmenuDel"><a class="hmenuBtn" href="#"></a></li>
+          <li class="hmenuEmpty"><a></a></li>
+          <li class="hmenuAddOpenTabs"><a class="hmenuBtn" href="#"></a></li>
+          <li class="hmenuEmpty"><a></a></li>
+          <li class="hmenuOpt"><a class="hmenuBtn" href="#"></a></li>
+          <li class="hmenuGBs"><a class="hmenuBtn" href="#"></a></li>
+          <!-- <li class="hmenuFFbookmark"><a href="#"></a></li> -->
+          <!-- <li class="menuAbout"><a href="#"></a></li> -->
+          <!-- <li class="hmenuLgn"><a href="#">Login</a></li> -->
+          <li class="hmenuLgt"><a class="hmenuBtn" href="#"></a></li>
+        </ul>
+      </nav>
+      <div class="filterHBox">
+          <label for="filterTextbox">Search: </label>
+          <span class="first">
+            <input type="text" name="filterTextbox" id="filterTextbox" value=""  placeholder="" tabindex="1"/>
+          </span>
+          <span>
+            <a class="clrBtn" tabindex="1"></a>
+          </span>
+          <!-- <div class="filterHBox-clear"><a class="clrBtn" disabled="true"></a></div> -->
+      </div>
+      <hr>
+<!--       </div> -->
+      <div class="info-box">
+        <div><img src="../images/ajax-loader.gif"></div>
+        <div><label></label></div>
+      </div>
+      <div class="error-box">
+        <div><img src="../images/warning.png"></div>
+        <div><label></label></div>
+      </div>
+ <!--      <div id="wrap"> -->
+      <div id="bkmk-tree"></div>
+<!--       </div> -->
+    </div>
+      <!-- add/edit bookmark dialog -->
+      <div id="editBkmkDlg" title="Редактирование закладки" class="dialog">
+        <input type="hidden" name="editBkmkDlg-id" id="editBkmkDlg-id" value="">
+        <input type="hidden" name="editBkmkDlg-oldUrl" id="editBkmkDlg-oldUrl" value="">
+        <input type="hidden" name="editBkmkDlg-favIconUrl" id="editBkmkDlg-favIconUrl" value="">
+        <label for="editBkmkDlg-name">Название:</label><br/>
+        <input type="text" name="editBkmkDlg-name" id="editBkmkDlg-name"><br/>
+        <span>
+        <label for="editBkmkDlg-url">URL:</label><!-- <br/> -->
+          <input id="editBkmkDlg-enableUrlEdit" type="checkbox"><!-- <br/> -->
+        </span>
+          <input type="url" name="editBkmkDlg-url" id="editBkmkDlg-url"><br/>
+
+        <label for="editBkmkDlg-labels">!Метки:</label><br/>
+        <input type="text" name="editBkmkDlg-labels" id="editBkmkDlg-labels"><br/>
+        <label for="editBkmkDlg-notes">!Заметки:</label><br/>
+        <textarea rows="3" name="editBkmkDlg-notes" id="editBkmkDlg-notes"></textarea> 
+      </div>
+
+      <!-- delete bookmark dialog -->
+      <div id="delBkmkDlg" class="dialog">
+        <input type="hidden" name="delBkmkDlg-id" id="delBkmkDlg-id" value="">
+        <label>!Вы действительно хотите удалить закладку?</label>
+      </div>
+
+      <!-- edit label dialog -->
+      <div id="editLblDlg" class="dialog">
+        <input type="hidden" name="editLblDlg-oldName" id="editLblDlg-oldName" value="">
+        <label for="editLblDlg-name">Название:</label><br/>
+        <input type="text" name="editLblDlg-name" id="editLblDlg-name"><br/>
+      </div>
+
+      <!-- delete label dialog -->
+      <div id="delLblkDlg" class="dialog">
+        <input type="hidden" name="delLblkDlg-name" id="delLblkDlg-name" value="">
+        <label id="delLblkDlg-lblInfo">!Вы действительно хотите удалить метку:</label><br/><br/>
+        <input id="delLblkDlg-deleteChildren" type="checkbox">
+        <label id="delLblkDlg-lblChildren">!Удалить вложенные закладки?</label>
+      </div>
+
+      <!-- QR-code dialog -->
+      <div id="QRdialog" title="QR-code for bookmark" class="dialog">
+        <a href=""><img id="qr_dialog_image"  src=""></a>
+      </div>
+
+      <!-- confirmation dialog -->
+      <div id="confirmDlg" class="dialog">
+        <label id="confirmDlg-Info">!Вы действительно хотите удалить ?</label>
+      </div>
+
+      <!-- add all tabs to bookmarks dialog -->
+      <div id="addAllTabsDlg" class="dialog">
+        <label for="addAllTabsDlg-label">!Метки:</label><br/>
+        <input type="text" name="addAllTabsDlg-label" id="addAllTabsDlg-label"><br/>
+        <div class="table-wraper">
+          <div class="divTable tabsList">
+            <div class="divTableHeading">
+              <div class="divTableRow">
+                <div class="divTableHead"><input id="addAllTabsDlg-headCheckBox" type="checkbox"></div>
+                <div class="divTableHead addAllTabsDlg_tblHeadTitle">!Title</div>
+                <div class="divTableHead addAllTabsDlg_tblHeadUrl">!Url</div>
+            </div>
+            </div>
+            <div class="divTableBody">
+              <div class="divTableRow">
+                <div class="divTableCell"><input type="checkbox"></div>
+                <div class="divTableCell">cell2_1</div>
+                <div class="divTableCell">cell3_1</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </body>
+</html>

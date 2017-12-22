@@ -1087,31 +1087,18 @@ var GBE2 = {
 		return this.doRequestBookmarks().then((result) => {return this.doProcessXML(result);});
 	},
 
+
 	// меняет иконку дополнения на панели в зависимости от адреса текущей вкладки 
 	setBrowserActionIcon : function (tTab) {
-		let icon18 = "";
-		let icon32 = "";
+		let state = "empty";
 		if (this.isBookmarked(tTab.url)) {
+			state = "full"
 			browser.pageAction.hide(tTab.id);
 			// 	// TODO: иконку 32 на всякий случай сделать для темной темы
-			if (this.opt.ThemeIcon == "light") {
-				icon18 = "./images/Star_full.png";
-				icon32 = "./images/Star_full32.png";
-			} else {
-				icon18 = "./images/Star_full1.png";
-				icon32 = "./images/Star_full132.png";
-			}
 			if (tTab.favIconUrl) this.setFavicon(tTab);
 		}
 		else
 		{
-			if (this.opt.ThemeIcon == "light") {
-				icon18 = "./images/Star_empty.png";
-				icon32 = "./images/Star_empty32.png";
-			} else {
-				icon18 = "./images/Star_empty1.png";
-				icon32 = "./images/Star_empty132.png";
-			}
 			if (this.opt.enablePageAction) {
 				browser.pageAction.setIcon({
 				  tabId: tTab.id, path: "./images/readLater_on.png"
@@ -1119,7 +1106,9 @@ var GBE2 = {
 				browser.pageAction.show(tTab.id); 
 			}
 		}
-		browser.browserAction.setIcon({	path: { 18: icon18, 32: icon32 } });
+		const path = _ICONS[this.opt.ThemeIcon][state];
+		browser.browserAction.setIcon({	path: path });
+		browser.sidebarAction.setIcon({	path: path });
 	}, 
 
 	// сохраняет и задает иконку для закладки
