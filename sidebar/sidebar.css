@@ -1,18 +1,65 @@
 html, body 
 { 
-	/*font-family: sans-serif; */
-	/*min-width:  350px;*/
 	font-family: Tahoma, "Ubuntu", "Geneva CY", sans-serif;
 	font-size: 11px;
 	font-weight: 400;
-	/*width:  100%;*/
-	width:  340px;
 	max-width: 100%;
 	height:  100%;
 	overflow: hidden;
-	/*min-height: 550px;*/
-	/*max-height: 700px;*/
 }
+
+			#popup {
+				position: absolute;
+				top: 60px;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				overflow-y: auto;
+			}
+
+			#hmenu {
+				height: 27px;
+				padding-top: 2px;
+				position: fixed;
+				top: 0;
+				width: 100%;
+			}
+
+			#info-box {
+				position: fixed;
+				top: 57px;
+				left: 5%;
+				width: 90%;
+				height: 60px;
+				display: none;
+			}
+
+			#error-box {
+				position: fixed;
+				top: 57px;
+				left: 5%;
+				width: 90%;
+				height: 60px;
+				display: none;
+			}
+
+			#filterHBox {
+				position: fixed;
+				top: 27px;
+				left: 0;
+				width: 100%;
+				height: 30px;
+				padding:0.1em;
+    		margin:0.1em;
+    		display: flex;
+    		border-bottom: thin solid gray;
+    		padding-bottom: 5px;
+    		margin-top: 0px;
+    		margin-bottom: 0px;
+    		padding-top: 0px;
+    		margin-left: 5px;
+			}
+
 
 #hmenu .nav-bar  {
     list-style: none;
@@ -31,9 +78,7 @@ html, body
 	margin: 0;
 	padding: 0;
 }
-#hmenu .nav-bar li:first-child {
-  padding-left: 10px;
-}
+
 #hmenu .nav-bar li a {
   width: 22px;
   display: block;
@@ -145,25 +190,22 @@ html, body
 	/*height: 450px;*/
 }
 
-div.filterHBox{
+/*div.filterHBox{
     padding:0.1em;
     margin:0.1em;
     width: 100%;
-    /*width: 310px;*/
     display: flex;
-}
+}*/
 
 div.filterHBox label{
     float:left;
     margin-right:5px;
     padding: 4px 0;
-/*    font-size: 10pt;*/
 }
 
 div.filterHBox span.first {
     display: flex;
     width:100%;
-    /*width:90%;*/
     overflow: hidden;
     padding-right: 0px;
     padding-top: 1px;
@@ -174,15 +216,12 @@ div.filterHBox input{
     padding-top:1px;
     border:thin solid gray;
     background: url("../images/searchicon.png") no-repeat 99% center;
-    /*background: url("../images/searchicon.png") no-repeat right center;*/
-/*    font-size: 11pt;*/
 }
 
 div.filterHBox span:last-child{
     display: flex;
     margin: 0 5px;
 		padding-right: 2px;
-		/*width: 10%;*/
 }
 
 a.clrBtn {
@@ -196,11 +235,9 @@ a.clrBtn {
 
 .info-box, .error-box {
 	display: none;
-	/*display: flex;*/
   align-items: center;
   justify-content: center;
   padding-right: 15px;
-	/*max-width: 330px !important;*/
 	max-width: 99%;
 }
 
@@ -234,13 +271,18 @@ a.clrBtn {
 	overflow-y: scroll
 }*/
 
+#bkmk-tree {
+			overflow-y: auto;
+/*	height: 100vh;
+	padding-bottom: 15px;*/
+}
 
 ul.fancytree-container {
 	/*width:  330px!important;*/
 	width:  98%;
 	margin-left: 2px!important;
 	margin-bottom: 2px!important;
-	/*height: 500px!important;*/
+	/*height: 100vh!important;*/
   /*overflow: auto!important;*/
   overflow-x: hidden;;
   overflow-y: auto!important;

@@ -1,5 +1,5 @@
 "use strict";
-var _getMsg = browser.i18n.getMessage;
+const _getMsg = browser.i18n.getMessage;
 
 
 
@@ -41,6 +41,7 @@ _ICONS[_LIGHT] = 	{	empty : { 18: "./images/Star_empty.png", 32 : "./images/Star
 _ICONS[_DARK] = 	{	empty : { 18: "./images/Star_empty1.png", 32 : "./images/Star_empty132.png"},
 										full 	: { 18: "./images/Star_full1.png", 32 : "./images/Star_full132.png"}
 									};	
+const _OPEN_IN_POPUP = true, _OPEN_IN_SIDEBAR = false;
 
 // читаем сохраненные данные дерева закладок (активная метка, раскрытые метки)
 function _getTreePersistData () {
@@ -148,6 +149,8 @@ function Options () {
   this.enableLableFilter = true;
 	// включить сохранение состояния дерева закладок
 	this.enableTreePersisitData = true;
+	// где открывать форму из контекстного меню страницы/ссылки
+	this.openContextIn = _OPEN_IN_POPUP;
   // иконки закладок
   this.favIcons = {};
 }
@@ -186,6 +189,7 @@ Options.prototype.read = function() {
 			this.enablePageAction = (r.hasOwnProperty('enablePageAction')) ? r.enablePageAction : true;
 			this.enableLableFilter = (r.hasOwnProperty('enableLableFilter')) ? r.enableLableFilter : true;
 			this.enableTreePersisitData = (r.hasOwnProperty('enableTreePersisitData')) ? r.enableTreePersisitData : true;
+			this.openContextIn = (r.hasOwnProperty('openContextIn')) ? r.openContextIn : _OPEN_IN_POPUP;
 			
 			this.favIcons = (res.hasOwnProperty('favIcons')) ? res.favIcons : {};
 		}

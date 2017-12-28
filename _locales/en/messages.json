@@ -346,6 +346,15 @@
   "options_enableTreePersisitData": {
     "message": "Remember Expanded Labels"
   },
+  "options_openContextIn": {
+    "message": "Open Add Bookmark form (from page/link context menu) in"
+  },
+  "options_lblOpenContextIn_popup" {
+    "message": "popup"
+  },
+  "options_lblOpenContextIn_sidebar" {
+    "message": "sidebar"
+  },
 
   "contextMenuAddBookmark": {
     "message": "Add Page to Google Bookmarks"

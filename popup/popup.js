@@ -705,6 +705,12 @@ $(document).ready(function(){
 		refresh();
 	}
 
+	if (bg.GBE2.m_dlgInfo !== null && bg.GBE2.m_dlgInfo.closePopup) {
+		window.close();
+		exit;
+	}
+
+
 	// если m_dlgInfo.needOpen == true, то необходимо открыть диалог редактирования закладки
 	// с параметрами из m_dlgInfo
 	if (bg.GBE2.m_dlgInfo !== null && bg.GBE2.m_dlgInfo.needOpen && !bg.GBE2.m_needRefresh)
@@ -1675,6 +1681,7 @@ function bgListener(message)
 	  // открыть диалог создания закладки (вызывается через контекстное меню ссылки или страницы)
 		case "CntxOpenBkmkDialog":
 			openBkmkDialog({id: null, title: message.title, url: message.url, labels: "", notes: "", favIconUrl: message.favIconUrl});
+			return Promise.resolve({panel: "browserAction"});
 			break;
 	}
 }

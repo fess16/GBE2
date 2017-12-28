@@ -344,6 +344,16 @@
   "options_enableTreePersisitData": {
     "message": "Запоминать раскрытые метки"
   },
+  "options_fsOpenContextIn_legend": {
+    "message": "Открывать форму добавления закладки из контекстного меню страницы/ссылки в"
+  },
+  "options_lblOpenContextIn_popup" {
+    "message": "всплывающее окно"
+  },
+  "options_lblOpenContextIn_sidebar" {
+    "message": "боковая панель"
+  },
+
 
   "contextMenuAddBookmark": {
     "message": "Добавить страницу в Google Bookmarks"

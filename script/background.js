@@ -1300,6 +1300,8 @@ browser.contextMenus.onClicked.addListener(function(info, tab) {
   	// при клике на одном из пунктов контекстного меню (добавление страницы или ссылки в закладки)
     case "contextMenuAddBookmark":
     case "contextMenuAddLinkToBookmark":
+    	browser.sidebarAction.open().then();
+    	GBE2.m_dlgInfo = { closePopup : true };
     	// название закладки
     	let title = (mId == "contextMenuAddBookmark") ? tab.title : info.linkText;
     	// адрес закладки
@@ -1314,7 +1316,13 @@ browser.contextMenus.onClicked.addListener(function(info, tab) {
     		"title": title,
     		"url": url,
     		"favIconUrl" : favIconUrl
-    	}).catch((e) => {
+    	})
+    	.then((msg) => {
+    		if (msg.panel == "sidebar") {
+    			GBE2.m_dlgInfo = { closePopup : true };
+    		}
+    	})
+    	.catch((e) => {
     		// при неудаче (popup еще не открылся) - заполняем m_dlgInfo (будет прочитан при открыии popup)
     		GBE2.m_dlgInfo = {
       		"needOpen" : true,

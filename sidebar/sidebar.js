@@ -202,6 +202,7 @@ $(document).ready(function(){
     tabindex: "-1", // Whole tree behaves as one single control
     tooltip: true, // Use title as tooltip (also a callback could be specified)
   	source: bg.GBE2.m_treeSource,
+  	scrollParent: $("#popup"),
   	// обработчик кликов по закладкам и меткам
   	// клик левой кнопкой назначается отдельно (ниже), для корректрой работы DnD
   	click: function(event, data) {
@@ -686,7 +687,7 @@ $(document).ready(function(){
     	if (event.originalEvent.which == 1 && !node.isFolder())	{
     		showURL(node.data.url, !bg.GBE2.opt.reverseLeftClick, true);
     		// return false;
-    		window.close();
+//    		window.close();
     	}
     	// клик колесиком (средней кнопкой)
     	if (event.originalEvent.which == 2) {
@@ -696,7 +697,7 @@ $(document).ready(function(){
   			else
   				// по закладке - открываем в той же вкладке (по-умолчанию), если reverseLeftClick = false
     			showURL(node.data.url, bg.GBE2.opt.reverseLeftClick);
-    		window.close();
+    	//	window.close();
     	}
     }
   }
@@ -770,13 +771,13 @@ $(document).ready(function(){
 		.attr('title', _getMsg("popup_hmenuGBs"))
 		.click(function(event) {
 			showURL("https://www.google.com/bookmarks/");
-			window.close();
+			//window.close();
 	});
 
 	// клик на QR-коде в диалоге - открываем его в новой вкладке 
 	$("#qr_dialog_image").on("click", function () {
 		showURL($(this).attr("src"));
-		window.close();
+		//window.close();
 	});
 
 	// разрешение/запрет редактирования адреса закладки
@@ -993,7 +994,7 @@ function openBkmkDialog (bkmk)
       modal: true,
       draggable: false,
       resizable: false,
-      position: { my: "center", at: "center", of: "#wrapper" },
+      position: { my: "center", at: "center", of: "body" },
       // closeOnEscape: false
       // minWidth: "480px",
       // width: "calc100%",
@@ -1120,7 +1121,7 @@ function openDelBkmkDlg (aBkmk){
 	    draggable: false,
 	    resizable: false,
 	    // width: 500,
-	    position: { my: "center", at: "center", of: "#wrapper" },
+	    position: { my: "center", at: "center", of: "body" },
 	    title: 	_getMsg("delBkmkDlg_title"),
 	    buttons: [
 	      {
@@ -1162,7 +1163,7 @@ function openEditLblDlg (aLbl) {
 	    width: "100%",
 	    // width: "310px",
 	    // width: 320,
-	    position: { my: "center", at: "center", of: "#wrapper" },
+	    position: { my: "center", at: "center", of: "body" },
 	    title: 	_getMsg("editLblDlg_title"),
       buttons: [
         {
@@ -1175,8 +1176,9 @@ function openEditLblDlg (aLbl) {
           	browser.runtime.sendMessage({
 		      		"type": "editLabel",
 		      		"data": result
-	      		}).then((result) => {
+	      		}).then(() => {
             	$(this).dialog("close");
+            	_appendPersist(bg.GBE2.genereteLabelId(result.name), true, _TREE_PERSIST_DATA.ACTIVE);
 	      		});
           }
         },
@@ -1210,7 +1212,7 @@ function openDelLblDlg (aLbl){
 	    width: "100%",
 	     // width: "310px",
 	     // width: 320,
-	    position: { my: "center", at: "center", of: "#wrapper" },
+	    position: { my: "center", at: "center", of: "body" },
 	    title: 	_getMsg("delLblkDlg_title"),
 	    buttons: [
 	      {
@@ -1251,7 +1253,7 @@ function openQRdialog(aBkmk){
 		modal: true,
 		draggable: false,
 		resizable: false,
-		position: { my: "center", at: "center", of: "#wrapper" },
+		position: { my: "center", at: "center", of: "body" },
 		width: "225px",
 		title: 	"QR-code for bookmark",
     open: function( event, ui ) {
@@ -1278,7 +1280,7 @@ function openConfirmDlg(message, callback){
 	    width: "100%",
 	    // width: "310px",
 	    // width: 320,
-	    position: { my: "center", at: "center", of: "#wrapper" },
+	    position: { my: "center", at: "center", of: "body" },
 	    title: 	_getMsg("confirmDlg_title"),
 		});
 	}
@@ -1315,7 +1317,7 @@ function openAddAllTabsDlg(label="_OpenTabs") {
 	    resizable: false,
 	    width: "100%",
 	    // width: 500,
-	    position: { my: "center", at: "center", of: "#wrapper" },
+	    position: { my: "center", at: "center", of: "body" },
 	    title: _getMsg("addAllTabsDlg_title"),
 	    buttons: [
 	      {
@@ -1427,7 +1429,7 @@ function contextMenuShareBookmark (bkmk, mode) {
          + "&body=" + bkmk.title + "%0D%0A" + escape(bkmk.url);
 		}
 		if (link.length > 0) showURL(link);
-		window.close();
+		//window.close();
 	}
 }
 
@@ -1588,7 +1590,7 @@ function handleContextMenuClick(event, ui) {
   	case "page-go":
   			if (node.data.url.length) {
   				showURL(node.data.url, bg.GBE2.opt.reverseLeftClick, true);
-  				window.close();
+  				//window.close();
   			}
   		break;
   	case "page-edit":
@@ -1696,6 +1698,7 @@ function bgListener(message)
 	  // открыть диалог создания закладки (вызывается через контекстное меню ссылки или страницы)
 		case "CntxOpenBkmkDialog":
 			openBkmkDialog({id: null, title: message.title, url: message.url, labels: "", notes: "", favIconUrl: message.favIconUrl});
+			return Promise.resolve({panel: "sidebar"});
 			break;
 	}
 }
@@ -1731,7 +1734,7 @@ function refresh() {
 
 // открывает окно настроек дополенения
 function openOptionsPage () {
-	browser.runtime.openOptionsPage().then( ()=> {window.close();});
+	browser.runtime.openOptionsPage().then( ()=> {/*window.close();*/});
 }
 
 

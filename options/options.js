@@ -90,6 +90,12 @@ function setTexts()
 	$("label[for=loadOnStart]").text(_getMsg("options_loadOnStart"));
 	$("label[for=fontSize]").text(_getMsg("options_fontSize"));
 	$("label[for=fontFamily]").text(_getMsg("options_fontFamily"));
+	
+	$("label[for=options_OpenContextIn_popup]").text(_getMsg("options_lblOpenContextIn_popup"));
+	$("label[for=options_OpenContextIn_sidebar]").text(_getMsg("options_lblOpenContextIn_sidebar"));
+	$("#options_fsOpenContextIn_legend legend").text(_getMsg("options_fsOpenContextIn_legend"));
+
+
 
 	$("#fsFilter legend").text(_getMsg("options_fsFilter_legend"));
 	$("#fsLabelHiding legend").text(_getMsg("options_fsLabelHiding_legend"));
