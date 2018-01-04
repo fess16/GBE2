@@ -346,14 +346,15 @@
   "options_enableTreePersisitData": {
     "message": "Remember Expanded Labels"
   },
-  "options_openContextIn": {
+  "options_fsOpenContextIn_legend": {
     "message": "Open Add Bookmark form (from page/link context menu) in"
   },
-  "options_lblOpenContextIn_popup" {
-    "message": "popup"
+  "options_lblOpenContextIn_popup" : {
+    "message" : "Popup"
   },
-  "options_lblOpenContextIn_sidebar" {
-    "message": "sidebar"
+
+  "options_lblOpenContextIn_sidebar" : {
+    "message" : "Sidebar"
   },
 
   "contextMenuAddBookmark": {

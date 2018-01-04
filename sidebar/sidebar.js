@@ -732,12 +732,12 @@ $(document).ready(function(){
 	if (bg.GBE2.m_dlgInfo !== null && bg.GBE2.m_dlgInfo.needOpen && !bg.GBE2.m_needRefresh)
 	{
 		bg.GBE2.m_dlgInfo.needOpen = false;
-		// setTimeout(() => {
-		openBkmkDialog(
-			{id: null, title: bg.GBE2.m_dlgInfo.title, url: bg.GBE2.m_dlgInfo.url, labels: "", notes: "", favIconUrl: bg.GBE2.m_dlgInfo.favIconUrl}
-		);
-		$("#editBkmkDlg").dialog('option', 'position', { my: "center", at: "center", of: "#wrapper" })
-		// }, 100);
+		setTimeout(() => {
+			openBkmkDialog(
+				{id: null, title: bg.GBE2.m_dlgInfo.title, url: bg.GBE2.m_dlgInfo.url, labels: "", notes: "", favIconUrl: bg.GBE2.m_dlgInfo.favIconUrl}
+			);
+			$("#editBkmkDlg").dialog('option', 'position', { my: "center", at: "center", of: "body" })
+		}, 100);
 	}
 
 	// назначем обработчики кнопок
@@ -994,7 +994,7 @@ function openBkmkDialog (bkmk)
       modal: true,
       draggable: false,
       resizable: false,
-      position: { my: "center", at: "center", of: "body" },
+      position: { my: "center center", at: "center center", of: "body" },
       // closeOnEscape: false
       // minWidth: "480px",
       // width: "calc100%",
@@ -1696,9 +1696,9 @@ function bgListener(message)
 	    $(".info-box").css({display: 'none'});
 	    break;
 	  // открыть диалог создания закладки (вызывается через контекстное меню ссылки или страницы)
-		case "CntxOpenBkmkDialog":
+		case "CntxOpenBkmkDialog_sidebar":
 			openBkmkDialog({id: null, title: message.title, url: message.url, labels: "", notes: "", favIconUrl: message.favIconUrl});
-			return Promise.resolve({panel: "sidebar"});
+			// return Promise.resolve({panel: "sidebar"});
 			break;
 	}
 }

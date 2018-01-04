@@ -705,10 +705,10 @@ $(document).ready(function(){
 		refresh();
 	}
 
-	if (bg.GBE2.m_dlgInfo !== null && bg.GBE2.m_dlgInfo.closePopup) {
-		window.close();
-		exit;
-	}
+	// if (bg.GBE2.m_dlgInfo !== null && bg.GBE2.m_dlgInfo.closePopup) {
+	// 	window.close();
+	// 	// exit;
+	// }
 
 
 	// если m_dlgInfo.needOpen == true, то необходимо открыть диалог редактирования закладки
@@ -716,12 +716,12 @@ $(document).ready(function(){
 	if (bg.GBE2.m_dlgInfo !== null && bg.GBE2.m_dlgInfo.needOpen && !bg.GBE2.m_needRefresh)
 	{
 		bg.GBE2.m_dlgInfo.needOpen = false;
-		// setTimeout(() => {
+		setTimeout(() => {
 		openBkmkDialog(
 			{id: null, title: bg.GBE2.m_dlgInfo.title, url: bg.GBE2.m_dlgInfo.url, labels: "", notes: "", favIconUrl: bg.GBE2.m_dlgInfo.favIconUrl}
 		);
 		$("#editBkmkDlg").dialog('option', 'position', { my: "center", at: "center", of: "#wrapper" })
-		// }, 100);
+		}, 300);
 	}
 
 	// назначем обработчики кнопок
@@ -1679,9 +1679,9 @@ function bgListener(message)
 	    $(".info-box").css({display: 'none'});
 	    break;
 	  // открыть диалог создания закладки (вызывается через контекстное меню ссылки или страницы)
-		case "CntxOpenBkmkDialog":
+		case "CntxOpenBkmkDialog_popup":
 			openBkmkDialog({id: null, title: message.title, url: message.url, labels: "", notes: "", favIconUrl: message.favIconUrl});
-			return Promise.resolve({panel: "browserAction"});
+			// return Promise.resolve({panel: "browserAction"});
 			break;
 	}
 }

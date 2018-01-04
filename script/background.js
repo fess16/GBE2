@@ -1279,7 +1279,7 @@ browser.contextMenus.create({
   id: "contextMenuAddBookmark",
   title: _getMsg("contextMenuAddBookmark"),
   contexts: ["page"],
-  command: "_execute_browser_action"
+  //command: "_execute_browser_action"
 });
 
 // добавляем в контекстное меню ссылок пункт для добавления ссылки в закладки
@@ -1287,7 +1287,7 @@ browser.contextMenus.create({
   id: "contextMenuAddLinkToBookmark",
   title: _getMsg("contextMenuAddLinkToBookmark"),
   contexts: ["link"],
-  command: "_execute_browser_action",
+  //command: "_execute_browser_action",
   icons: {
      16: "../images/bkmrk_add_link.png",
   },
@@ -1300,7 +1300,65 @@ browser.contextMenus.onClicked.addListener(function(info, tab) {
   	// при клике на одном из пунктов контекстного меню (добавление страницы или ссылки в закладки)
     case "contextMenuAddBookmark":
     case "contextMenuAddLinkToBookmark":
-    	browser.sidebarAction.open().then();
+	  	// название закладки
+	  	let title = (mId == "contextMenuAddBookmark") ? tab.title : info.linkText;
+	  	// адрес закладки
+	  	let url = (mId == "contextMenuAddBookmark") ? tab.url : info.linkUrl;
+	  	// иконка страницы
+	  	let favIconUrl = (mId == "contextMenuAddBookmark" && tab.hasOwnProperty("favIconUrl")) ? tab.favIconUrl : null;
+			if (mId == "contextMenuAddLinkToBookmark" && !info.linkText || info.linkText == url) 
+				title = url.replace(/^(?:https?:\/\/)?(?:www\.)?/i, "").split('/')[0];
+			GBE2.m_dlgInfo = {
+				"place"	: "popup",
+	  		"needOpen" : false,
+	  		"title": title,
+	  		"url": url,
+	  		"favIconUrl" : favIconUrl
+	  	}
+			
+    	if (GBE2.opt.openContextIn == _OPEN_IN_POPUP) {
+    		browser.browserAction.openPopup();
+    		GBE2.m_dlgInfo.needOpen = true;
+    	}
+    	else {
+    		browser.sidebarAction.open();
+    		GBE2.m_dlgInfo.place = "sidebar";
+    		// отправляем в popup сообщение о необходимости открыть диалог редактирования закладки 
+		  	browser.runtime.sendMessage({
+		  		"type": "CntxOpenBkmkDialog_" + GBE2.m_dlgInfo.place,
+		  		"title": title,
+		  		"url": url,
+		  		"favIconUrl" : favIconUrl
+		  	})
+		  	.then()
+	    	.catch((e) => {
+	    		// при неудаче (popup еще не открылся) - заполняем m_dlgInfo (будет прочитан при открытии popup)
+	    		GBE2.m_dlgInfo.needOpen = true;
+	    	});
+    	}
+	  	//GBE2.m_dlgInfo = { closePopup : true };
+
+
+/*	  	// отправляем в popup сообщение о необходимости открыть диалог редактирования закладки 
+	  	browser.runtime.sendMessage({
+	  		"type": "CntxOpenBkmkDialog_" + place,
+	  		"title": title,
+	  		"url": url,
+	  		"favIconUrl" : favIconUrl
+	  	})
+	  	.then()
+    	.catch((e) => {
+    		// при неудаче (popup еще не открылся) - заполняем m_dlgInfo (будет прочитан при открыии popup)
+    		GBE2.m_dlgInfo = {
+      		"needOpen" : true,
+      		"title": title,
+      		"url": url,
+      		"favIconUrl" : favIconUrl
+      	}
+    	});*/
+
+
+/*    	browser.sidebarAction.open().then();
     	GBE2.m_dlgInfo = { closePopup : true };
     	// название закладки
     	let title = (mId == "contextMenuAddBookmark") ? tab.title : info.linkText;
@@ -1330,7 +1388,8 @@ browser.contextMenus.onClicked.addListener(function(info, tab) {
       		"url": url,
       		"favIconUrl" : favIconUrl
       	}
-    	});
+    	});*/
+
   }
 });
 

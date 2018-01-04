@@ -95,8 +95,6 @@ function setTexts()
 	$("label[for=options_OpenContextIn_sidebar]").text(_getMsg("options_lblOpenContextIn_sidebar"));
 	$("#options_fsOpenContextIn_legend legend").text(_getMsg("options_fsOpenContextIn_legend"));
 
-
-
 	$("#fsFilter legend").text(_getMsg("options_fsFilter_legend"));
 	$("#fsLabelHiding legend").text(_getMsg("options_fsLabelHiding_legend"));
 	$("#fsBrowseActionIcons legend").text(_getMsg("options_fsBrowseActionIcons_legend"));
@@ -149,6 +147,11 @@ function restoreOptions()
   		$("#iconLight").prop("checked", true);
   	else
   		$("#iconDark").prop("checked", true);
+
+  	if (r.openContextIn == _OPEN_IN_POPUP)
+  		$("#options_OpenContextIn_popup").prop("checked", true);
+  	else
+  		$("#options_OpenContextIn_sidebar").prop("checked", true);
 
   });
 }
@@ -237,6 +240,8 @@ function saveOptions(e)
 	opt.enableLableFilter = $("#enableLableFilter").prop("checked");
 	
 	opt.ThemeIcon = $("#iconLight").prop("checked") ? "light" : "dark";
+
+	opt.openContextIn = $("#options_OpenContextIn_popup").prop("checked") ? _OPEN_IN_POPUP : _OPEN_IN_SIDEBAR;
 
 	// console.log("saveOptions:write");
 	opt.write().then();
