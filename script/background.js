@@ -1399,7 +1399,11 @@ browser.contextMenus.onClicked.addListener(function(info, tab) {
 browser.storage.onChanged.addListener((changes) => {
 	// console.log(JSON.stringify(changes));
 	if (changes.hasOwnProperty("settings"))
-		GBE2.opt.read().then(() => { GBE2.m_needRefresh = true;});
+		GBE2.opt.read().then(() => { 
+			GBE2.m_needRefresh = true;
+			// сообщение в sidebar о необходимости обновления списка закладок
+			browser.runtime.sendMessage({type: "needRefresh"}).catch((e) => {});
+		});
 });
 
 // при изменении адреса вкладки - меняем значок на панели,
