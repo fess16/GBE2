@@ -59,6 +59,7 @@ function setClickHandlers (aBkmk)
 			.css({display: 'block'})
 			.click(function(event) {
 				logout();
+				return false;
 			});
 	}
 	else {
@@ -80,11 +81,13 @@ function setClickHandlers (aBkmk)
 			.removeClass('disabled-link')
 			.click(function(event) {
 				openBkmkDialog(aBkmk);
+				return false;
 		});
 		$(".hmenuDel a")
 			.removeClass('disabled-link')
 			.click(function(event) {
 				openDelBkmkDlg(aBkmk);
+				return false;
 		});
 	}
 	else {
@@ -92,11 +95,13 @@ function setClickHandlers (aBkmk)
 			.removeClass('disabled-link')
 			.click(function(event) {
 				openBkmkDialog({id: null, title: aTab.title, url: aTab.url, labels: "", notes: "", favIconUrl: aTab.favIconUrl});
+				return false;
 		});
 		$(".hmenuReadLater a")
 			.removeClass('disabled-link')
 			.click(function(event) {
 				readLater({id: null, title: aTab.title, url: aTab.url, labels: "", notes: "", favIconUrl: aTab.favIconUrl});
+				return false;
 		});
 		$(".hmenuEdit a")
 			.addClass('disabled-link')
@@ -752,12 +757,14 @@ $(document).ready(function(){
 		.attr('title', _getMsg("popup_hmenuRefresh"))
 		.click(function(event) { 
 			refresh();	
+			return false;
 	});
 	// открытие настроек дополнения
 	$(".hmenuOpt a")
 		.attr('title', _getMsg("popup_hmenuOpt"))
 		.click(function(event) {
 			openOptionsPage();
+			return false;
 	});
 	// добавление в закладки открытых вкладок		
 	$(".hmenuAddOpenTabs a")
@@ -765,12 +772,14 @@ $(document).ready(function(){
 		.click(function(event) {
 			//test1();
 			openAddAllTabsDlg();
+			return false;
 	});
 	// открытие страницы Google Bookmarks
 	$(".hmenuGBs a")
 		.attr('title', _getMsg("popup_hmenuGBs"))
 		.click(function(event) {
 			showURL("https://www.google.com/bookmarks/");
+			return false;
 			//window.close();
 	});
 
