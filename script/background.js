@@ -280,7 +280,8 @@ var GBE2 = {
 				"tooltip" : bkmk.title + "\n" + bkmk.url,
 				"notes" : bkmk.notes,
 				"hidden" : bkmk.hidden,
-				"timestamp" : bkmk.timestamp
+				"timestamp" : bkmk.timestamp,
+				"lbls" : (bkmk.labels.length ? bkmk.labels.join(" ") : "")
 			};
 			// если включена опция показа иконок и иконка для данного адреса сохранена
 			// заменяем стандартную на сохраненную
@@ -464,7 +465,8 @@ var GBE2 = {
 					"children"	: [],
 					"path"			: this.m_RecentLabel,
 					"icon"			: "../images/folder_blue.png",
-					"ignoreMe"	: true
+					"ignoreMe"	: true,
+					"labels"		: ""
 				};
 				for (let i = 0; i < this.m_recent10bkmrk.length; i++)
 				{
@@ -487,7 +489,8 @@ var GBE2 = {
 					"children"	: [],
 					"path"			: this.m_VisitedLabel,
 					"icon"			: "../images/folder_blue.png",
-					"ignoreMe"	: true
+					"ignoreMe"	: true,
+					"labels"		: ""
 				};
 				let visitsCount = (visitsArray.length < 10 ? visitsArray.length : 10);
 				for (let i = 0; i < visitsCount; i++)
@@ -1146,7 +1149,7 @@ var GBE2 = {
 		let result = {isMatch: false, search: "", extra: null};
 		let enableFilterByUrl = this.opt.enableFilterByUrl;
 		let enableFilterByNotes = this.opt.enableFilterByNotes;
-
+		let multiLabelFlag = false;
 		
 		let labelFilter = "";
 		// разрешен фильтр по метке
@@ -1167,6 +1170,20 @@ var GBE2 = {
 			// значение фильтра по метке установлено и таких меток у закладки нет - пропускаем ее
 			if (labelFilter != "" && bkmk.labels.findIndex(lbl => labelFilter === lbl.toLowerCase()) == -1)
 				return result;
+		}
+
+		// фильтр по нескольким меткам
+		// lbls:key1 key2 "key3" "key 4"
+		let multipleLabelFilter = true;
+		if (multipleLabelFilter) {
+			let re = new RegExp(/(?:^|\s+)(lbls:)/ig);
+			let reMatch = search.match(re);
+			if ( reMatch && Array.isArray(reMatch) && reMatch.length == 1)
+			{
+				// запоминаем его (без начального label:)
+				search = search.trim().replace(re,"");
+				multiLabelFlag = true;
+			}
 		}
 
 		// если в строке нечетное число кавычек, например
@@ -1225,6 +1242,20 @@ var GBE2 = {
 		tMark = tMark.substring(0, tMark.length - 1);
 		var reSearch = new RegExp(tSearch, "ig");
 		var reMark = new RegExp(tMark, "ig");
+
+
+		if (multipleLabelFilter && multiLabelFlag) {
+			console.log(reSearch);
+			console.log(reMark);
+			console.log(bkmk.title);
+			console.log(bkmk.lbls);
+			let match = reSearch.exec(bkmk.lbls);
+			if (match) {
+				result.isMatch = true; 
+				result.search = reMark;
+				return result;
+			}
+		}
 
 		// поиск в заголовке закладки
 		let match = reSearch.exec(bkmk.title);

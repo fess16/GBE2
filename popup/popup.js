@@ -817,7 +817,8 @@ $(document).ready(function(){
 					title : node.title,
 					notes : node.data.notes ? node.data.notes : "",
 					url : node.data.url ? node.data.url : "",
-					labels: (node.isTopLevel()) ? [] : [node.getParent().data.path]
+					labels: (node.isTopLevel()) ? [] : [node.getParent().data.path],
+					lbls: node.data.lbls
 					// labels: (node.getParent().key == "root_1") ? [] : [node.getParent().data.path]
 				}
 				//console.log(bkmk.title + " " + bkmk.label);
