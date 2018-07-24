@@ -292,6 +292,9 @@
   "options_enableLableFilter": {
     "message": "Enable filter by label (Keyword2 Label:keyword1 or Label:keyword1 or Label:\"keyword with spaces\")"
   },
+  "options_enableMultipleLabelFilter": {
+    "message": "Enable multilabel filter ([bookmark_keyword1 ... bookmark_keywordN] lbls:[label_keyword1, ... , label_keywordN])"
+  },
   "options_filterDelay": {
     "message": "Filter delay, milliseconds (1 second = 1000 milliseconds)"
   },

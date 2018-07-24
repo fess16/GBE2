@@ -290,6 +290,9 @@
   "options_enableLableFilter": {
     "message": "Включить фильтр по метке (Keyword2 Label:keyword1 или Label:keyword1 или Label:\"keyword with spaces\")"
   },
+  "options_enableMultipleLabelFilter": {
+    "message": "Включить фильтр по метке ([bookmark_keyword1 ... bookmark_keywordN] lbls:[label_keyword1, ... , label_keywordN])"
+  },
   "options_filterDelay": {
     "message": "Задержка фильтра, мс (1с = 1000мс)"
   },

@@ -1149,6 +1149,7 @@ var GBE2 = {
 		let result = {isMatch: false, search: "", extra: null};
 		let enableFilterByUrl = this.opt.enableFilterByUrl;
 		let enableFilterByNotes = this.opt.enableFilterByNotes;
+		let enableMultipleLabelFilter = this.opt.enableMultipleLabelFilter;
 		let multiLabelFlag = false;
 		let lbls = "";
 		
@@ -1173,19 +1174,10 @@ var GBE2 = {
 				return result;
 		}
 
-		// фильтр по нескольким меткам
-		// lbls:key1 key2 "key3" "key 4"
-		let multipleLabelFilter = true;
-		if (multipleLabelFilter) {
+		// режим фильтра по нескольким меткам
+		// bkmk1 "bkmk2" lbls:label1,label2, "label3", label 4
+		if (enableMultipleLabelFilter) {
 			// let re = new RegExp(/(?:^|\s+)(lbls:)/ig);
-			// //let re = new RegExp(/(?:^|\s+)(.*?)(?:lbls:)(.*?$)/gi);
-			// let reMatch = search.match(re);
-			// if ( reMatch && Array.isArray(reMatch) && reMatch.length == 1)
-			// {
-			// 	// запоминаем его (без начального label:)
-			// 	search = search.trim().replace(re,"").trim();
-			// 	multiLabelFlag = true;
-			// }
 			let re = new RegExp(/(?:^|\s+)(.*?)(?:^|\s+)(?:lbls:)(.*?$)/gi);
 			let reExec = re.exec(search);
 			if (reExec != null && Array.isArray(reExec)) {
@@ -1197,9 +1189,11 @@ var GBE2 = {
 
 		}
 
-		// console.log(search);
-		// console.log(lbls);
-
+		// если в строке нечетное число кавычек, например
+		// "
+		// "значение
+		// знач1 "знач2
+		// "знач1" знач2 "знач3
 		function removeLastQuote (str) {
 			if (Math.abs((str.match(/"/g) || []).length % 2) == 1) {
 				let pos = str.lastIndexOf('"');
@@ -1239,23 +1233,9 @@ var GBE2 = {
 			return [new RegExp(tSearch, "ig"), new RegExp(tMark, "ig")];
 		}
 
-		// если в строке нечетное число кавычек, например
-		// "
-		// "значение
-		// знач1 "знач2
-		// "знач1" знач2 "знач3
-		// if (Math.abs((search.match(/"/g) || []).length % 2) == 1) {
-		// 	let pos = search.lastIndexOf('"');
-		// 	// удаляем последнюю кавычку
-		//   search = search.substring(0,pos) + "" + search.substring(pos+1)
-		// 	if (search.length == 0) {
-		// 		result.isMatch = true; 
-		// 		return result;
-		// 	}
-		// }
-		
 		search = removeLastQuote(search);
-		if (search.length == 0 && (multipleLabelFilter && !multiLabelFlag)) {
+		// если строка поиска пустая и при этом не идет поиск по нескольким меткам
+		if (search.length == 0 && (enableMultipleLabelFilter && !multiLabelFlag)) {
 			result.isMatch = true; 
 			return result;
 		}
@@ -1266,71 +1246,28 @@ var GBE2 = {
 		let result0 = /"(.*?\s.*?)"/i.exec(search);
 		if (result0 && Array.isArray(result0) && result0.length == 2){
 	    let search = _escape(result0[1]);
-	    // search1 = escape(result0[1].replace(/"/g,""));
-	    // let tRe = new RegExp(search, "i");
-	    // if (tRe.test(bkmk.title)) {
-	    //    result.isMatch = true; 
-	    //    result.search = tRe;
-	    //    return result;
-	    // }   
 	    reSearch = new RegExp(search, "i");
 	    reMark = reSearch; 
 		} 
 		else {
-			// var delimiterFlag = (multipleLabelFilter && multiLabelFlag) ? /\s*,\s*/ : /\s+/;
-			// // делим значение поиска по пробелам
-			// // var words = search.split(/\s+/);
-			// var words = search.split(delimiterFlag);
-			// // формируем регулярки для поиска и выделения
-			// // если слов несколько - должны встречаться все слова
-			// var tSearch = "(?:";
-			// var tMark = "";
-			// words.forEach((elem) => {
-		 //    if (elem.length == 0) return;
-		 //    // вариант для слова в кавычках - ищем целое слово
-		 //    if (/"\S*?"/ig.test(elem))
-		 //    {
-		 //      var elem = _escape(elem.replace(/"/g,""));
-		 //      // tSearch += '(?=.*\\b(' + elem + ')(?=\\s|$|[,.:;]))';
-		 //      tSearch += '(?=.*([^0-9a-zA-Zа-яёА-ЯЁ]|\\b)(' + elem + ')(?=\\s|$|[,.:;]))';
-		 //      // tMark += '(?=([^0-9a-zA-Zа-яёА-ЯЁ]+|\\b)(' + elem + ')(?=\\s|$|[,.:;]))|';
-		 //      tMark += '(?:([^0-9a-zA-Zа-яёА-ЯЁ]{0}|\\b)(' + elem + ')(?=\\s|$|[,.:;]))|';
-		 //    }
-		 //    // без кавычек - любое соответствие
-		 //    else {
-		 //      var elem = _escape(elem);
-		 //      tSearch += '(?=.*(' + elem + '))';
-		 //      tMark += '(' + elem + ')|';
-		 //    }
-			// });
-			// tSearch += '.+)';
-			// tMark = tMark.substring(0, tMark.length - 1);
-			// var reSearch = new RegExp(tSearch, "ig");
-			// var reMark = new RegExp(tMark, "ig");
 			[reSearch, reMark] = buildRegExp(search, /\s+/);
 		}
 
-		if (multipleLabelFilter && multiLabelFlag) {
-			let re1, re2;
-			[re1, re2] = buildRegExp(lbls, /\s*,\s*/);
-			let matchFlag = bkmk.isFolder ? bkmk.title.match(re2) : bkmk.lbls.match(re1);
-			// let match = bkmk.isFolder ? re2.exec(bkmk.title) : re1.exec(bkmk.lbls);
-			// let match = bkmk.isFolder ? reMark.exec(bkmk.title) : reSearch.exec(bkmk.lbls);
-			// if (match) {
-			// 	result.isMatch = true; 
-			// 	result.search = re2;
-			// 	return result;
-			// } //13 lbls:london,2018
+		// режим фильтра по нескольким меткам
+		if (enableMultipleLabelFilter && multiLabelFlag) {
+			let reSearch, reMark;
+			[reSearch, reMark] = buildRegExp(lbls, /\s*,\s*/);
+			let matchFlag = bkmk.isFolder ? bkmk.title.match(reMark) : bkmk.lbls.match(reSearch);
+			//13 lbls:london,2018
+			// нет нужной метки - пропускаем
 			if (matchFlag == null) {
-				console.log(bkmk.title);
-				console.log(matchFlag);
-				console.log(search);
 				return result;
 			}
 			else {
+				// текущий элемент = папка - дальше не проверяем
 				if (bkmk.isFolder || search == "") {
 					result.isMatch = true;
-					result.search = re2;
+					result.search = reMark;
 					return result;
 				}
 			}
@@ -1349,7 +1286,6 @@ var GBE2 = {
 		if (enableFilterByNotes && bkmk.notes.length > 0) {
 			reSearch.lastIndex = 0;
 			match = reSearch.exec(bkmk.notes);
-			// match = (new RegExp(tSearch, "ig")).exec(bkmk.notes);
 			if (match) {
 				result.isMatch = true; 
 				result.extra = {class : "markNote", text : "NOTE"};
@@ -1360,7 +1296,6 @@ var GBE2 = {
 		if (enableFilterByUrl && bkmk.url.length > 0) {
 			reSearch.lastIndex = 0;
 			match = reSearch.exec(bkmk.url);
-			// match = (new RegExp(tSearch, "ig")).exec(bkmk.url);
 			if (match) {
 				result.isMatch = true; 
 				result.extra = {class : "markUrl", text : "URL"};

@@ -151,6 +151,11 @@ function Options () {
 	this.enableTreePersisitData = true;
 	// где открывать форму из контекстного меню страницы/ссылки
 	this.openContextIn = _OPEN_IN_POPUP;
+	// возможность искать закладки с несколькими метками
+	// [bookmark keywords] lbls:[label keywords]
+	// например: 333 lbls:london,2017; 
+	// lbls:read later, 2018
+	this.enableMultipleLabelFilter = true;
   // иконки закладок
   this.favIcons = {};
 }
@@ -190,6 +195,7 @@ Options.prototype.read = function() {
 			this.enableLableFilter = (r.hasOwnProperty('enableLableFilter')) ? r.enableLableFilter : true;
 			this.enableTreePersisitData = (r.hasOwnProperty('enableTreePersisitData')) ? r.enableTreePersisitData : true;
 			this.openContextIn = (r.hasOwnProperty('openContextIn')) ? r.openContextIn : _OPEN_IN_POPUP;
+			this.enableMultipleLabelFilter = (r.hasOwnProperty('enableMultipleLabelFilter')) ? r.enableMultipleLabelFilter : true;
 			
 			this.favIcons = (res.hasOwnProperty('favIcons')) ? res.favIcons : {};
 		}

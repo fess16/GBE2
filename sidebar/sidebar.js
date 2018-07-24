@@ -822,6 +822,7 @@ $(document).ready(function(){
 		// !!!!! ESCAPE - не работает - окно закрывается
 		if(e && e.which === $.ui.keyCode.ESCAPE || $.trim(match) === "" || $.trim(match) === '"'){
 			resetFilter();
+			$(this).val("");
 			return false;
 		}
 		// показываем кнопку очистки фильтра

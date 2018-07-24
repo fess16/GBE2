@@ -81,6 +81,7 @@ function setTexts()
 	$("label[for=enablePageAction]").text(_getMsg("options_enablePageAction"));
 	$("label[for=enableLableFilter]").text(_getMsg("options_enableLableFilter"));
 	$("label[for=enableTreePersisitData]").text(_getMsg("options_enableTreePersisitData"));
+	$("label[for=enableMultipleLabelFilter]").text(_getMsg("options_enableMultipleLabelFilter"));
 	
 	$("label[for=enableLabelHiding]").text(_getMsg("options_enableLabelHiding"));
 	$("label[for=showHiddenLabels]").text(_getMsg("options_showHiddenLabels"));
@@ -139,6 +140,7 @@ function restoreOptions()
   	$("#enablePageAction").prop("checked", r.enablePageAction);
   	$("#enableLableFilter").prop("checked", r.enableLableFilter);
   	$("#enableTreePersisitData").prop("checked", r.enableTreePersisitData);
+  	$("#enableMultipleLabelFilter").prop("checked", r.enableMultipleLabelFilter);
 
   	$("#clrFavIcons").attr('disabled', !r.showFavicons);
   	$("#reloadFavIcons").attr('disabled', !r.showFavicons);
@@ -238,6 +240,7 @@ function saveOptions(e)
 	opt.loadOnStart = $("#loadOnStart").prop("checked");
 	opt.enablePageAction = $("#enablePageAction").prop("checked");
 	opt.enableLableFilter = $("#enableLableFilter").prop("checked");
+	opt.enableMultipleLabelFilter = $("#enableMultipleLabelFilter").prop("checked");
 	
 	opt.ThemeIcon = $("#iconLight").prop("checked") ? "light" : "dark";
 
