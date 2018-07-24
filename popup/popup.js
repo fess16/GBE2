@@ -818,7 +818,8 @@ $(document).ready(function(){
 					notes : node.data.notes ? node.data.notes : "",
 					url : node.data.url ? node.data.url : "",
 					labels: (node.isTopLevel()) ? [] : [node.getParent().data.path],
-					lbls: node.data.lbls
+					lbls: node.data.lbls,
+					isFolder : node.isFolder()
 					// labels: (node.getParent().key == "root_1") ? [] : [node.getParent().data.path]
 				}
 				//console.log(bkmk.title + " " + bkmk.label);
@@ -831,6 +832,8 @@ $(document).ready(function(){
 				{
 					// для меток и закладок (при совпадении в заголовке) - выделяем найденный текст
 					if (node.isFolder()) {
+						// console.log(check.search);
+						//console.log(replacement);
 						node.titleWithHighlight = node.title.replace(check.search, replacement);
 						return "branch";  // match the whole 'Foo' branch, if it's a folder
 					}

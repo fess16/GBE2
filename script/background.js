@@ -1150,6 +1150,7 @@ var GBE2 = {
 		let enableFilterByUrl = this.opt.enableFilterByUrl;
 		let enableFilterByNotes = this.opt.enableFilterByNotes;
 		let multiLabelFlag = false;
+		let lbls = "";
 		
 		let labelFilter = "";
 		// разрешен фильтр по метке
@@ -1176,14 +1177,66 @@ var GBE2 = {
 		// lbls:key1 key2 "key3" "key 4"
 		let multipleLabelFilter = true;
 		if (multipleLabelFilter) {
-			let re = new RegExp(/(?:^|\s+)(lbls:)/ig);
-			let reMatch = search.match(re);
-			if ( reMatch && Array.isArray(reMatch) && reMatch.length == 1)
-			{
-				// запоминаем его (без начального label:)
-				search = search.trim().replace(re,"");
+			// let re = new RegExp(/(?:^|\s+)(lbls:)/ig);
+			// //let re = new RegExp(/(?:^|\s+)(.*?)(?:lbls:)(.*?$)/gi);
+			// let reMatch = search.match(re);
+			// if ( reMatch && Array.isArray(reMatch) && reMatch.length == 1)
+			// {
+			// 	// запоминаем его (без начального label:)
+			// 	search = search.trim().replace(re,"").trim();
+			// 	multiLabelFlag = true;
+			// }
+			let re = new RegExp(/(?:^|\s+)(.*?)(?:^|\s+)(?:lbls:)(.*?$)/gi);
+			let reExec = re.exec(search);
+			if (reExec != null && Array.isArray(reExec)) {
+				search = reExec[1];
+				// search = reExec[2];
+				lbls = reExec[2];
 				multiLabelFlag = true;
 			}
+
+		}
+
+		// console.log(search);
+		// console.log(lbls);
+
+		function removeLastQuote (str) {
+			if (Math.abs((str.match(/"/g) || []).length % 2) == 1) {
+				let pos = str.lastIndexOf('"');
+				// удаляем последнюю кавычку
+			   return str.substring(0,pos) + "" + str.substring(pos+1)
+			}
+			return str;
+		}
+
+		// формирует регулярки для поиска и выделения
+		// если слов несколько - должны встречаться все слова
+		function buildRegExp (search, delimiter) {
+			// делим значение поиска по delimiterFlag
+			let words = search.split(delimiter);
+			let tSearch = "(?:";
+			let tMark = "";
+			words.forEach((elem) => {
+		    if (elem.length == 0) return;
+		    // вариант для слова в кавычках - ищем целое слово
+		    if (/"\S*?"/ig.test(elem))
+		    {
+		      let t = _escape(elem.replace(/"/g,""));
+		      // tSearch += '(?=.*\\b(' + elem + ')(?=\\s|$|[,.:;]))';
+		      tSearch += '(?=.*([^0-9a-zA-Zа-яёА-ЯЁ]|\\b)(' + t + ')(?=\\s|$|[,.:;]))';
+		      // tMark += '(?=([^0-9a-zA-Zа-яёА-ЯЁ]+|\\b)(' + elem + ')(?=\\s|$|[,.:;]))|';
+		      tMark += '(?:([^0-9a-zA-Zа-яёА-ЯЁ]{0}|\\b)(' + t + ')(?=\\s|$|[,.:;]))|';
+		    }
+		    // без кавычек - любое соответствие
+		    else {
+		      let t = _escape(elem);
+		      tSearch += '(?=.*(' + t + '))';
+		      tMark += '(' + t + ')|';
+		    }
+			});
+			tSearch += '.+)';
+			tMark = tMark.substring(0, tMark.length - 1);
+			return [new RegExp(tSearch, "ig"), new RegExp(tMark, "ig")];
 		}
 
 		// если в строке нечетное число кавычек, например
@@ -1191,69 +1244,95 @@ var GBE2 = {
 		// "значение
 		// знач1 "знач2
 		// "знач1" знач2 "знач3
-		if (Math.abs((search.match(/"/g) || []).length % 2) == 1) {
-			let pos = search.lastIndexOf('"');
-			// удаляем последнюю кавычку
-		  search = search.substring(0,pos) + "" + search.substring(pos+1)
-			if (search.length == 0) {
-				result.isMatch = true; 
-				return result;
-			}
+		// if (Math.abs((search.match(/"/g) || []).length % 2) == 1) {
+		// 	let pos = search.lastIndexOf('"');
+		// 	// удаляем последнюю кавычку
+		//   search = search.substring(0,pos) + "" + search.substring(pos+1)
+		// 	if (search.length == 0) {
+		// 		result.isMatch = true; 
+		// 		return result;
+		// 	}
+		// }
+		
+		search = removeLastQuote(search);
+		if (search.length == 0 && (multipleLabelFilter && !multiLabelFlag)) {
+			result.isMatch = true; 
+			return result;
 		}
 
+		var reSearch, reMark;
 		// проверка на "значение поиска с пробелами" в кавычках
 		// учитывается только одно вхождение
 		let result0 = /"(.*?\s.*?)"/i.exec(search);
 		if (result0 && Array.isArray(result0) && result0.length == 2){
 	    let search = _escape(result0[1]);
 	    // search1 = escape(result0[1].replace(/"/g,""));
-	    let tRe = new RegExp(search, "i");
-	    if (tRe.test(bkmk.title)) {
-	       result.isMatch = true; 
-	       result.search = tRe;
-	       return result;
-	    }    
+	    // let tRe = new RegExp(search, "i");
+	    // if (tRe.test(bkmk.title)) {
+	    //    result.isMatch = true; 
+	    //    result.search = tRe;
+	    //    return result;
+	    // }   
+	    reSearch = new RegExp(search, "i");
+	    reMark = reSearch; 
+		} 
+		else {
+			// var delimiterFlag = (multipleLabelFilter && multiLabelFlag) ? /\s*,\s*/ : /\s+/;
+			// // делим значение поиска по пробелам
+			// // var words = search.split(/\s+/);
+			// var words = search.split(delimiterFlag);
+			// // формируем регулярки для поиска и выделения
+			// // если слов несколько - должны встречаться все слова
+			// var tSearch = "(?:";
+			// var tMark = "";
+			// words.forEach((elem) => {
+		 //    if (elem.length == 0) return;
+		 //    // вариант для слова в кавычках - ищем целое слово
+		 //    if (/"\S*?"/ig.test(elem))
+		 //    {
+		 //      var elem = _escape(elem.replace(/"/g,""));
+		 //      // tSearch += '(?=.*\\b(' + elem + ')(?=\\s|$|[,.:;]))';
+		 //      tSearch += '(?=.*([^0-9a-zA-Zа-яёА-ЯЁ]|\\b)(' + elem + ')(?=\\s|$|[,.:;]))';
+		 //      // tMark += '(?=([^0-9a-zA-Zа-яёА-ЯЁ]+|\\b)(' + elem + ')(?=\\s|$|[,.:;]))|';
+		 //      tMark += '(?:([^0-9a-zA-Zа-яёА-ЯЁ]{0}|\\b)(' + elem + ')(?=\\s|$|[,.:;]))|';
+		 //    }
+		 //    // без кавычек - любое соответствие
+		 //    else {
+		 //      var elem = _escape(elem);
+		 //      tSearch += '(?=.*(' + elem + '))';
+		 //      tMark += '(' + elem + ')|';
+		 //    }
+			// });
+			// tSearch += '.+)';
+			// tMark = tMark.substring(0, tMark.length - 1);
+			// var reSearch = new RegExp(tSearch, "ig");
+			// var reMark = new RegExp(tMark, "ig");
+			[reSearch, reMark] = buildRegExp(search, /\s+/);
 		}
-		// делим значение поиска по пробелам
-		var words = search.split(/\s+/);
-		// формируем регулярки для поиска и выделения
-		// если слов несколько - должны встречаться все слова
-		var tSearch = "(?:";
-		var tMark = "";
-		words.forEach((elem) => {
-	    if (elem.length == 0) return;
-	    // вариант для слова в кавычках - ищем целое слово
-	    if (/"\S*?"/ig.test(elem))
-	    {
-	      var elem = _escape(elem.replace(/"/g,""));
-	      // tSearch += '(?=.*\\b(' + elem + ')(?=\\s|$|[,.:;]))';
-	      tSearch += '(?=.*([^0-9a-zA-Zа-яёА-ЯЁ]|\\b)(' + elem + ')(?=\\s|$|[,.:;]))';
-	      // tMark += '(?=([^0-9a-zA-Zа-яёА-ЯЁ]+|\\b)(' + elem + ')(?=\\s|$|[,.:;]))|';
-	      tMark += '(?:([^0-9a-zA-Zа-яёА-ЯЁ]{0}|\\b)(' + elem + ')(?=\\s|$|[,.:;]))|';
-	    }
-	    // без кавычек - любое соответствие
-	    else {
-	      var elem = _escape(elem);
-	      tSearch += '(?=.*(' + elem + '))';
-	      tMark += '(' + elem + ')|';
-	    }
-		});
-		tSearch += '.+)';
-		tMark = tMark.substring(0, tMark.length - 1);
-		var reSearch = new RegExp(tSearch, "ig");
-		var reMark = new RegExp(tMark, "ig");
-
 
 		if (multipleLabelFilter && multiLabelFlag) {
-			console.log(reSearch);
-			console.log(reMark);
-			console.log(bkmk.title);
-			console.log(bkmk.lbls);
-			let match = reSearch.exec(bkmk.lbls);
-			if (match) {
-				result.isMatch = true; 
-				result.search = reMark;
+			let re1, re2;
+			[re1, re2] = buildRegExp(lbls, /\s*,\s*/);
+			let matchFlag = bkmk.isFolder ? bkmk.title.match(re2) : bkmk.lbls.match(re1);
+			// let match = bkmk.isFolder ? re2.exec(bkmk.title) : re1.exec(bkmk.lbls);
+			// let match = bkmk.isFolder ? reMark.exec(bkmk.title) : reSearch.exec(bkmk.lbls);
+			// if (match) {
+			// 	result.isMatch = true; 
+			// 	result.search = re2;
+			// 	return result;
+			// } //13 lbls:london,2018
+			if (matchFlag == null) {
+				console.log(bkmk.title);
+				console.log(matchFlag);
+				console.log(search);
 				return result;
+			}
+			else {
+				if (bkmk.isFolder || search == "") {
+					result.isMatch = true;
+					result.search = re2;
+					return result;
+				}
 			}
 		}
 
@@ -1268,7 +1347,9 @@ var GBE2 = {
 		result.search = "";
 		// поиск в примечании
 		if (enableFilterByNotes && bkmk.notes.length > 0) {
-			match = (new RegExp(tSearch, "ig")).exec(bkmk.notes);
+			reSearch.lastIndex = 0;
+			match = reSearch.exec(bkmk.notes);
+			// match = (new RegExp(tSearch, "ig")).exec(bkmk.notes);
 			if (match) {
 				result.isMatch = true; 
 				result.extra = {class : "markNote", text : "NOTE"};
@@ -1277,7 +1358,9 @@ var GBE2 = {
 		}
 		// поиск в Url
 		if (enableFilterByUrl && bkmk.url.length > 0) {
-			match = (new RegExp(tSearch, "ig")).exec(bkmk.url);
+			reSearch.lastIndex = 0;
+			match = reSearch.exec(bkmk.url);
+			// match = (new RegExp(tSearch, "ig")).exec(bkmk.url);
 			if (match) {
 				result.isMatch = true; 
 				result.extra = {class : "markUrl", text : "URL"};

@@ -843,7 +843,8 @@ $(document).ready(function(){
 					notes : node.data.notes ? node.data.notes : "",
 					url : node.data.url ? node.data.url : "",
 					labels: (node.isTopLevel()) ? [] : [node.getParent().data.path],
-					lbls: node.data.lbls
+					lbls: node.data.lbls,
+					isFolder : node.isFolder()
 					// labels: (node.getParent().key == "root_1") ? [] : [node.getParent().data.path]
 				}
 				//console.log(bkmk.title + " " + bkmk.label);
