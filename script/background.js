@@ -1189,51 +1189,7 @@ var GBE2 = {
 
 		}
 
-		// если в строке нечетное число кавычек, например
-		// "
-		// "значение
-		// знач1 "знач2
-		// "знач1" знач2 "знач3
-		function removeLastQuote (str) {
-			if (Math.abs((str.match(/"/g) || []).length % 2) == 1) {
-				let pos = str.lastIndexOf('"');
-				// удаляем последнюю кавычку
-			   return str.substring(0,pos) + "" + str.substring(pos+1)
-			}
-			return str;
-		}
-
-		// формирует регулярки для поиска и выделения
-		// если слов несколько - должны встречаться все слова
-		function buildRegExp (search, delimiter) {
-			// делим значение поиска по delimiterFlag
-			let words = search.split(delimiter);
-			let tSearch = "(?:";
-			let tMark = "";
-			words.forEach((elem) => {
-		    if (elem.length == 0) return;
-		    // вариант для слова в кавычках - ищем целое слово
-		    if (/"\S*?"/ig.test(elem))
-		    {
-		      let t = _escape(elem.replace(/"/g,""));
-		      // tSearch += '(?=.*\\b(' + elem + ')(?=\\s|$|[,.:;]))';
-		      tSearch += '(?=.*([^0-9a-zA-Zа-яёА-ЯЁ]|\\b)(' + t + ')(?=\\s|$|[,.:;]))';
-		      // tMark += '(?=([^0-9a-zA-Zа-яёА-ЯЁ]+|\\b)(' + elem + ')(?=\\s|$|[,.:;]))|';
-		      tMark += '(?:([^0-9a-zA-Zа-яёА-ЯЁ]{0}|\\b)(' + t + ')(?=\\s|$|[,.:;]))|';
-		    }
-		    // без кавычек - любое соответствие
-		    else {
-		      let t = _escape(elem);
-		      tSearch += '(?=.*(' + t + '))';
-		      tMark += '(' + t + ')|';
-		    }
-			});
-			tSearch += '.+)';
-			tMark = tMark.substring(0, tMark.length - 1);
-			return [new RegExp(tSearch, "ig"), new RegExp(tMark, "ig")];
-		}
-
-		search = removeLastQuote(search);
+		search = _removeLastQuote(search);
 		// если строка поиска пустая и при этом не идет поиск по нескольким меткам
 		if (search.length == 0 && (enableMultipleLabelFilter && !multiLabelFlag)) {
 			result.isMatch = true; 
@@ -1250,13 +1206,13 @@ var GBE2 = {
 	    reMark = reSearch; 
 		} 
 		else {
-			[reSearch, reMark] = buildRegExp(search, /\s+/);
+			[reSearch, reMark] = _buildRegExp(search, /\s+/);
 		}
 
 		// режим фильтра по нескольким меткам
 		if (enableMultipleLabelFilter && multiLabelFlag) {
 			let reSearch, reMark;
-			[reSearch, reMark] = buildRegExp(lbls, /\s*,\s*/);
+			[reSearch, reMark] = _buildRegExp(_removeLastQuote(lbls), /\s*,\s*/);
 			let matchFlag = bkmk.isFolder ? bkmk.title.match(reMark) : bkmk.lbls.match(reSearch);
 			//13 lbls:london,2018
 			// нет нужной метки - пропускаем

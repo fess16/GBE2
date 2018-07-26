@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Fess Google Bookmark Extension",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Allows you to access and manage your Google Bookmarks.",
   "icons": {
     "48": "images/logo.svg"
