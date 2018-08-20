@@ -88,7 +88,12 @@
   "cntx_qrcode_icon": {
     "message": "Obtain QR-code"
   },
-
+  "cntx_page_copyName": {
+    "message": "Copy Name to clipboard"
+  },
+  "cntx_page_copyURL": {
+    "message": "Copy URL to clipboard"
+  },
 
 
   "editBkmkDlg_title": {

@@ -564,6 +564,9 @@ $(document).ready(function(){
       {title: _getMsg("cntx_page_edit"), cmd: "page-edit", uiIcon: "cntx-page-edit"},
       {title: _getMsg("cntx_page_delete"), cmd: "page-delete", uiIcon: "cntx-page-delete"},
       {title: "----", cmd: "msepp"},
+      {title: _getMsg("cntx_page_copyName"), cmd: "page-copyName"},
+      {title: _getMsg("cntx_page_copyURL"), cmd: "page-copyURL"},
+      {title: "----", cmd: "msepp"},
       {title: _getMsg("cntx_qrcode_icon"), cmd: "qrcode-icon", uiIcon: "cntx-qrcode-icon"},
       {title: "E-mail...", cmd: "bookmark-emai", uiIcon: "cntx-bookmark-emai"},
       {title: "Facebook...", cmd: "bookmark-fbshare", uiIcon: "cntx-bookmark-fbshare"},
@@ -607,18 +610,21 @@ $(document).ready(function(){
       	$("#bkmk-tree").contextmenu("showEntry", "bookmark-fbshare", false);
       	$("#bkmk-tree").contextmenu("showEntry", "bookmark-twshare", false);
       	$("#bkmk-tree").contextmenu("showEntry", "msepp", false);
+      	$("#bkmk-tree").contextmenu("showEntry", "page-copyName", false);
+      	$("#bkmk-tree").contextmenu("showEntry", "page-copyURL", false);
 			}
       else {
       	$("#bkmk-tree").contextmenu("showEntry", "page-go", true);
       	$("#bkmk-tree").contextmenu("showEntry", "page-newWidow", true);
       	$("#bkmk-tree").contextmenu("showEntry", "page-newPrivate", true);
       	$("#bkmk-tree").contextmenu("showEntry", "page-edit", true);
-      	$("#bkmk-tree").contextmenu("showEntry", "page-delete", true);
       	$("#bkmk-tree").contextmenu("showEntry", "qrcode-icon", true);
       	$("#bkmk-tree").contextmenu("showEntry", "bookmark-emai", true);
       	$("#bkmk-tree").contextmenu("showEntry", "bookmark-fbshare", true);
       	$("#bkmk-tree").contextmenu("showEntry", "bookmark-twshare", true);
       	$("#bkmk-tree").contextmenu("showEntry", "msepp", true);
+      	$("#bkmk-tree").contextmenu("showEntry", "page-copyName", true);
+      	$("#bkmk-tree").contextmenu("showEntry", "page-copyURL", true);
 
       	$("#bkmk-tree").contextmenu("showEntry", "menuEdit", false);
       	$("#bkmk-tree").contextmenu("showEntry", "menuRemove", false);
@@ -1647,7 +1653,23 @@ function handleContextMenuClick(event, ui) {
   		lbl = {id: node.key, name: node.data.path, title: node.title};
   		openAddAllTabsDlg(lbl.name);
   		break;
+  	case "page-copyName":
+  		bkmk = bg.GBE2.getBookmark({id: node.refKey});
+  		if (bkmk !== null) { copyToClipboard(bkmk.title) }
+  		break;
+  	case "page-copyURL":
+  		bkmk = bg.GBE2.getBookmark({id: node.refKey});
+  		if (bkmk !== null) { copyToClipboard(bkmk.url) }
+  		break;
   }
+}
+
+function copyToClipboard(txt) {
+	let temp = $("<input>");
+	$("body").append(temp);
+	temp.val(txt).select();
+	document.execCommand("copy");
+	temp.remove();
 }
 
 // слушает сообщения от background.js

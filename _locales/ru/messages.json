@@ -88,6 +88,12 @@
   "cntx_qrcode_icon": {
     "message": "Получить QR-код"
   },
+  "cntx_page_copyName": {
+    "message": "Копировать название в буфер"
+  },
+  "cntx_page_copyURL": {
+    "message": "Копировать URL в буфер"
+  },
 
 
   "editBkmkDlg_title": {
